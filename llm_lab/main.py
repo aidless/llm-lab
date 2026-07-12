@@ -155,7 +155,30 @@ async def submit_async(req: IntentRequest, background_tasks: BackgroundTasks):
 async def compare(req: IntentRequest):
     model_a = req.preferred_model or os.getenv("LLM_MODEL", "gpt-4o")
     model_b = req.preferred_model_2 or os.getenv("LLM_MODEL_2", "gpt-4o-mini")
-    return core.compare(req.goal, model_a, model_b)
+    result = core.compare(req.goal, model_a, model_b)
+    intent_id = db._sha16(req.goal)
+    verdict = (
+        "pass"
+        if result["model_a"]["all_passed"] and result["model_b"]["all_passed"]
+        else "fail"
+    )
+    cost = result["model_a"]["total_cost_usd"]
+    tokens = result["model_a"]["total_tokens"]
+    try:
+        await tracer.trace_call(
+            intent_id,
+            1,
+            model_a,
+            result["goal"],
+            json.dumps(result),
+            {"prompt_tokens": tokens, "completion_tokens": 0, "total_tokens": tokens},
+            cost,
+            verdict,
+        )
+    except Exception as exc:
+        warnings.warn(f"tracer.trace_call failed: {exc}", stacklevel=2)
+    result["intent_id"] = intent_id
+    return result
 
 
 # ── Compare (async) ─────────────────────────────────────────────────────────
@@ -176,7 +199,26 @@ async def compare_async(req: IntentRequest, background_tasks: BackgroundTasks):
 
 @app.post("/batch", response_model=BatchResult)
 async def batch_run(req: BatchRequest):
-    return core.batch(req.goal, req.models)
+    result = core.batch(req.goal, req.models)
+    intent_id = db._sha16(req.goal)
+    verdict = "pass" if all(m.get("all_passed", False) for m in result["models"]) else "fail"
+    cost = sum(m.get("total_cost_usd", 0.0) for m in result["models"])
+    tokens = sum(m.get("total_tokens", 0) for m in result["models"])
+    try:
+        await tracer.trace_call(
+            intent_id,
+            1,
+            ",".join(req.models),
+            result["goal"],
+            json.dumps(result),
+            {"prompt_tokens": tokens, "completion_tokens": 0, "total_tokens": tokens},
+            cost,
+            verdict,
+        )
+    except Exception as exc:
+        warnings.warn(f"tracer.trace_call failed: {exc}", stacklevel=2)
+    result["intent_id"] = intent_id
+    return result
 
 
 @app.post("/batch/async")
