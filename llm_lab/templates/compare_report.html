@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compare Report</title>
+<style>
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e4e6ef; padding: 24px; }}
+  h1 {{ font-size: 24px; margin-bottom: 16px; }}
+  .grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }}
+  .card {{ background: #1a1d27; border: 1px solid #2d3140; border-radius: 8px; padding: 16px; }}
+  .card h2 {{ font-size: 16px; margin-bottom: 8px; color: #4a6cf7; }}
+  .card pre {{ font-size: 12px; color: #aaa; max-height: 500px; overflow: auto; white-space: pre-wrap; word-break: break-all; }}
+  .badge {{ display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }}
+  .badge-pass {{ background: #1a3a2a; color: #4ade80; }}
+  .badge-fail {{ background: #3a1a1a; color: #f87171; }}
+</style>
+</head>
+<body>
+  <h1>Compare: <span style="color:#888;">{id_a}</span> vs <span style="color:#888;">{id_b}</span></h1>
+  <div class="grid">
+    <div class="card">
+      <h2>Run A — {id_a}</h2>
+      <pre>{json_a}</pre>
+    </div>
+    <div class="card">
+      <h2>Run B — {id_b}</h2>
+      <pre>{json_b}</pre>
+    </div>
+  </div>
+</body>
+</html>

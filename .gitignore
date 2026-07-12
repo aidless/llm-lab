@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Cache
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.deepeval/
+.hypothesis/
+
+# Environment
+.env
+.venv/
+venv/
+virtualenv/
+
+# Runtime / artifacts
+llm_lab.db
+*.db
+.coverage
+.coverage.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

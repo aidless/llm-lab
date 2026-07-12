@@ -1,0 +1,21 @@
+template_id: translation
+intent_keywords:
+  - translate
+  - translation
+  - convert language
+  - from english
+  - to english
+  - from chinese
+  - to chinese
+  - from japanese
+  - to japanese
+  - multilingual
+  - localization
+  - l10n
+steps:
+  - detect_source_language
+  - translate
+  - verify_translation
+  - refine_fluency
+verifier: structural
+artifact_schema: translation.md

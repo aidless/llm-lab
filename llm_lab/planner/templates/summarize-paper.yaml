@@ -1,0 +1,18 @@
+template_id: summarize-paper
+intent_keywords:
+  - summarize
+  - extract
+  - paper
+  - article
+  - research
+  - literature
+  - survey
+  - review
+steps:
+  - fetch
+  - chunk
+  - per_chunk_extract
+  - merge
+  - verify_completeness
+verifier: structural
+artifact_schema: summary.md

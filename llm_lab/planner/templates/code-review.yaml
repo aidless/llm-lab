@@ -1,0 +1,20 @@
+template_id: code-review
+intent_keywords:
+  - code review
+  - review code
+  - review my code
+  - review this
+  - code audit
+  - audit code
+  - pull request review
+  - pr review
+  - review my pr
+steps:
+  - analyze_code
+  - check_bugs
+  - check_security
+  - check_performance
+  - check_style
+  - summarize_findings
+verifier: structural
+artifact_schema: review.md

@@ -1,0 +1,17 @@
+template_id: compare-ab
+intent_keywords:
+  - compare
+  - vs
+  - versus
+  - contrast
+  - side by side
+  - A/B
+  - which is better
+steps:
+  - eval_model_a
+  - eval_model_b
+  - align_by_prompt
+  - delta_metrics
+  - cross_model_check
+verifier: cross_model
+artifact_schema: compare.json

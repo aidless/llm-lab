@@ -1,0 +1,13 @@
+services:
+  llm-lab:
+    build: .
+    ports:
+      - "8123:8123"
+    env_file:
+      - .env
+    volumes:
+      - llm-lab-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  llm-lab-data:

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>llm-lab</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e4e6ef; min-height: 100vh; overflow-x: hidden; }
+  .container { max-width: 1060px; margin: 0 auto; padding: 24px 16px; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.5px; }
+  .subtitle { color: #888; margin-bottom: 24px; font-size: 14px; }
+
+  button { padding: 10px 24px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #4a6cf7; color: #fff; }
+  button:hover { background: #5f7ef8; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { background: #2d3140; color: #ccc; }
+  .btn-secondary:hover { background: #3a3f52; }
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+  .btn-danger { background: #dc2626; }
+  .btn-danger:hover { background: #ef4444; }
+
+  textarea, input[type="text"] { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2d3140; background: #1a1d27; color: #e4e6ef; font-size: 14px; font-family: inherit; outline: none; transition: border 0.15s; }
+  textarea:focus, input[type="text"]:focus { border-color: #4a6cf7; }
+  textarea { resize: vertical; min-height: 80px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: #aaa; margin-bottom: 6px; margin-top: 14px; }
+  .row { display: flex; gap: 12px; }
+  .row > * { flex: 1; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab { padding: 8px 16px; border-radius: 8px; cursor: pointer; background: #1a1d27; border: 1px solid transparent; font-size: 13px; color: #aaa; transition: all 0.15s; white-space: nowrap; }
+  .tab:hover { background: #262a37; color: #fff; }
+  .tab.active { background: #2b2f3f; border-color: #4a6cf7; color: #fff; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .result { margin-top: 16px; padding: 16px; border-radius: 8px; background: #1a1d27; border: 1px solid #2d3140; white-space: pre-wrap; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.5; overflow-x: auto; display: none; max-height: 600px; overflow-y: auto; }
+  .result.visible { display: block; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 6px; }
+  .badge-pass { background: #1a3a2a; color: #4ade80; }
+  .badge-fail { background: #3a1a1a; color: #f87171; }
+  .badge-partial { background: #3a2a1a; color: #fbbf24; }
+  .badge-tie { background: #1a1a3a; color: #818cf8; }
+
+  .stats { display: flex; gap: 12px; margin: 12px 0; flex-wrap: wrap; }
+  .stat { padding: 10px 14px; border-radius: 6px; background: #14161f; border: 1px solid #2d3140; font-size: 12px; min-width: 100px; }
+  .stat strong { display: block; font-size: 18px; color: #fff; }
+  .error { color: #f87171; }
+
+  .history-item { padding: 10px 14px; border-radius: 6px; background: #14161f; border: 1px solid #2d3140; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .history-item:hover { border-color: #4a6cf7; }
+  .history-item .meta { font-size: 12px; color: #888; }
+
+  .step-card { padding: 10px 12px; border-radius: 6px; background: #14161f; border: 1px solid #262a37; margin-bottom: 8px; }
+  .step-card .step-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .step-card .step-output { font-size: 12px; color: #aaa; max-height: 80px; overflow-y: auto; word-break: break-all; }
+
+  .progress-bar { margin: 12px 0; height: 6px; background: #1a1d27; border-radius: 3px; overflow: hidden; display: none; }
+  .progress-bar .fill { height: 100%; width: 0%; background: linear-gradient(90deg, #4a6cf7, #818cf8); border-radius: 3px; transition: width 0.4s ease; }
+
+  .cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .cmp-card { padding: 12px; border-radius: 8px; background: #14161f; border: 1px solid #2d3140; }
+  .cmp-card h3 { font-size: 14px; margin-bottom: 8px; }
+  .cmp-winner { border-color: #4ade80; }
+  .cmp-loser { border-color: #f87171; }
+  .cmp-tie { border-color: #818cf8; }
+
+  .template-item { padding: 10px 12px; border-radius: 6px; background: #14161f; border: 1px solid #2d3140; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+  .template-item .source { font-size: 11px; color: #888; }
+  .template-item .keywords { font-size: 11px; color: #4a6cf7; }
+  .export-links { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .export-links a { color: #4a6cf7; text-decoration: none; font-size: 13px; }
+  .export-links a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>llm-lab</h1>
+  <div class="subtitle">local-first LLM eval pipeline</div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('submit')">Submit</div>
+    <div class="tab" onclick="switchTab('async')">Async</div>
+    <div class="tab" onclick="switchTab('compare')">A/B Compare</div>
+    <div class="tab" onclick="switchTab('batch')">Batch</div>
+    <div class="tab" onclick="switchTab('templates')">Templates</div>
+    <div class="tab" onclick="switchTab('history')">History</div>
+    <div class="tab" onclick="switchTab('export')">Export</div>
+  </div>
+
+  <!-- Submit (sync) -->
+  <div id="panel-submit" class="panel active">
+    <label for="goal">Goal</label>
+    <textarea id="goal" placeholder="e.g. summarize the key ideas in reinforcement learning"></textarea>
+    <label for="model">Model (optional)</label>
+    <input type="text" id="model" placeholder="default from LLM_MODEL">
+    <button onclick="submitTask()">Run</button>
+    <div id="result-submit" class="result"></div>
+  </div>
+
+  <!-- Async task with progress -->
+  <div id="panel-async" class="panel">
+    <label for="goal-async">Goal</label>
+    <textarea id="goal-async" placeholder="e.g. evaluate model performance on summarization"></textarea>
+    <label for="model-async">Model (optional)</label>
+    <input type="text" id="model-async" placeholder="default from LLM_MODEL">
+    <button onclick="submitAsync()">Run Async</button>
+    <div class="progress-bar" id="async-progress"><div class="fill" id="async-fill"></div></div>
+    <div id="task-id-display" style="font-size:12px;color:#888;margin-top:8px"></div>
+    <div id="result-async" class="result"></div>
+  </div>
+
+  <!-- A/B Compare with visual winner card -->
+  <div id="panel-compare" class="panel">
+    <label for="goal-cmp">Goal</label>
+    <textarea id="goal-cmp" placeholder="e.g. translate this to French: Hello world"></textarea>
+    <div class="row">
+      <div>
+        <label for="model-a">Model A</label>
+        <input type="text" id="model-a" placeholder="gpt-4o">
+      </div>
+      <div>
+        <label for="model-b">Model B</label>
+        <input type="text" id="model-b" placeholder="gpt-4o-mini">
+      </div>
+    </div>
+    <button onclick="compareModels()">Compare</button>
+    <button onclick="compareModelsAsync()" class="btn-secondary">Compare Async</button>
+    <div class="progress-bar" id="compare-progress" style="display:none"><div class="fill" id="compare-fill"></div></div>
+    <div id="result-compare" class="result"></div>
+  </div>
+
+  <!-- Batch -->
+  <div id="panel-batch" class="panel">
+    <label for="goal-batch">Goal</label>
+    <textarea id="goal-batch" placeholder="e.g. benchmark mathematical reasoning accuracy"></textarea>
+    <label for="models-batch">Models (comma-separated)</label>
+    <input type="text" id="models-batch" placeholder="gpt-4o,gpt-4o-mini,claude-3-haiku">
+    <button onclick="runBatch()">Batch Run</button>
+    <button onclick="runBatchAsync()" class="btn-secondary">Batch Async</button>
+    <div class="progress-bar" id="batch-progress" style="display:none"><div class="fill" id="batch-fill"></div></div>
+    <div id="result-batch" class="result"></div>
+  </div>
+
+  <!-- Templates -->
+  <div id="panel-templates" class="panel">
+    <button onclick="loadTemplates()" class="btn-secondary btn-sm">Refresh Templates</button>
+    <div id="templates-list" style="margin-top:12px"></div>
+    <label style="margin-top:20px">Create Custom Template</label>
+    <input type="text" id="tmpl-id" placeholder="template-id (e.g. my-custom-eval)">
+    <input type="text" id="tmpl-keywords" placeholder="keywords (comma-sep, e.g. classify, label, categorize)" style="margin-top:6px">
+    <input type="text" id="tmpl-steps" placeholder="steps (comma-sep, e.g. load_data, call_model, verify)" style="margin-top:6px">
+    <input type="text" id="tmpl-verifier" placeholder="verifier (default: structural)" style="margin-top:6px">
+    <button onclick="createTemplate()" class="btn-sm">Create Template</button>
+    <div id="result-templates" class="result"></div>
+  </div>
+
+  <!-- History -->
+  <div id="panel-history" class="panel">
+    <button onclick="loadHistory()" class="btn-secondary btn-sm">Refresh</button>
+    <div id="history-list" style="margin-top:12px"></div>
+    <div id="result-history" class="result"></div>
+  </div>
+
+  <!-- Export -->
+  <div id="panel-export" class="panel">
+    <p style="margin-bottom:12px; color:#888">Export all evaluation data.</p>
+    <div class="export-links">
+      <a href="/export/csv" target="_blank">Download all as CSV</a>
+    </div>
+    <label for="export-id" style="margin-top:16px">Export single run (JSON)</label>
+    <div class="row">
+      <input type="text" id="export-id" placeholder="intent_id">
+      <button onclick="exportSingle()" class="btn-secondary btn-sm">Export</button>
+    </div>
+    <label for="export-runs" style="margin-top:16px">Export run A/B (intent IDs)</label>
+    <div class="row">
+      <input type="text" id="export-a" placeholder="run A intent_id" style="flex:2">
+      <input type="text" id="export-b" placeholder="run B intent_id" style="flex:2">
+      <button onclick="exportComparison()" class="btn-secondary btn-sm">View Report</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.tab[onclick*="'${name}'"]`).classList.add('active');
+  document.getElementById(`panel-${name}`).classList.add('active');
+}
+
+function showResult(container, data) {
+  const el = document.getElementById(container);
+  el.classList.add('visible');
+  el.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+  el.scrollTop = 0;
+}
+
+function renderCompareResult(container, data) {
+  const el = document.getElementById(container);
+  el.classList.add('visible');
+  const a = data.model_a, b = data.model_b;
+  const winnerClass = data.summary.winner === 'a' ? 'cmp-winner' : data.summary.winner === 'b' ? 'cmp-loser' : 'cmp-tie';
+  const winnerLabel = data.summary.winner === 'a' ? 'A Wins' : data.summary.winner === 'b' ? 'B Wins' : 'Tie';
+  el.innerHTML = `<div class="stats">
+    <div class="stat" style="color:#aaa">Winner <strong style="color:${data.summary.winner === 'a' ? '#4ade80' : data.summary.winner === 'b' ? '#f87171' : '#818cf8'}">${winnerLabel}</strong></div>
+    <div class="stat">Cost Δ <strong>${data.summary.cost_delta >= 0 ? '+' : ''}${data.summary.cost_delta.toFixed(6)}</strong></div>
+    <div class="stat">Token Δ <strong>${data.summary.token_delta >= 0 ? '+' : ''}${data.summary.token_delta}</strong></div>
+  </div>
+  <div class="cmp-grid">
+    <div class="cmp-card ${data.summary.winner === 'a' ? 'cmp-winner' : data.summary.winner === 'b' ? 'cmp-loser' : ''}">
+      <h3>${a.model} <span class="badge ${a.all_passed ? 'badge-pass' : 'badge-fail'}">${a.all_passed ? 'PASS' : 'FAIL'}</span></h3>
+      <div style="font-size:12px;color:#888">${a.total_tokens} tok · $${a.total_cost_usd.toFixed(6)}</div>
+      ${a.steps ? a.steps.map((s, i) => `<div class="step-card"><div class="step-title">${i+1}. ${s.action}</div><div class="step-output">${s.output || ''}</div></div>`).join('') : ''}
+    </div>
+    <div class="cmp-card ${data.summary.winner === 'b' ? 'cmp-winner' : data.summary.winner === 'a' ? 'cmp-loser' : ''}">
+      <h3>${b.model} <span class="badge ${b.all_passed ? 'badge-pass' : 'badge-fail'}">${b.all_passed ? 'PASS' : 'FAIL'}</span></h3>
+      <div style="font-size:12px;color:#888">${b.total_tokens} tok · $${b.total_cost_usd.toFixed(6)}</div>
+      ${b.steps ? b.steps.map((s, i) => `<div class="step-card"><div class="step-title">${i+1}. ${s.action}</div><div class="step-output">${s.output || ''}</div></div>`).join('') : ''}
+    </div>
+  </div>`;
+}
+
+function renderBatchResult(container, data) {
+  const el = document.getElementById(container);
+  el.classList.add('visible');
+  if (!data.models || data.models.length === 0) { el.textContent = 'No results.'; return; }
+  const rows = data.models.map(m => `<div class="cmp-card" style="margin-bottom:8px">
+    <h3>${m.model} <span class="badge ${m.all_passed ? 'badge-pass' : 'badge-fail'}">${m.all_passed ? 'PASS' : 'FAIL'}</span></h3>
+    <div style="font-size:12px;color:#888">${m.total_tokens} tok · $${m.total_cost_usd.toFixed(6)} · ${m.plan_template || 'none'}</div>
+  </div>`).join('');
+  el.innerHTML = `<div class="stats"><div class="stat">Models <strong>${data.count}</strong></div></div>${rows}`;
+}
+
+function renderTemplates(container, templates) {
+  const el = document.getElementById(container);
+  if (!templates || templates.length === 0) { el.innerHTML = '<p style="color:#888">No templates.</p>'; return; }
+  el.innerHTML = templates.map(t => `<div class="template-item">
+    <div><strong>${t.template_id}</strong> <span class="keywords">${(t.intent_keywords || []).join(', ')}</span></div>
+    <div><span class="source">${t._source}</span></div>
+  </div>`).join('');
+}
+
+async function submitTask() {
+  const btn = document.querySelector('#panel-submit button');
+  btn.disabled = true; btn.textContent = 'Running...';
+  try {
+    const resp = await fetch('/submit', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ goal: document.getElementById('goal').value, preferred_model: document.getElementById('model').value || null }),
+    });
+    const data = await resp.json();
+    document.getElementById('result-submit').textContent = JSON.stringify(data, null, 2);
+    document.querySelector('#panel-submit .result').classList.add('visible');
+  } catch(e) { showResult('result-submit', 'Error: ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Run'; }
+}
+
+async function submitAsync() {
+  const btn = document.querySelector('#panel-async button');
+  btn.disabled = true; btn.textContent = 'Queuing...';
+  const bar = document.getElementById('async-progress');
+  const fill = document.getElementById('async-fill');
+  bar.style.display = 'block'; fill.style.width = '10%';
+  try {
+    const resp = await fetch('/submit/async', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ goal: document.getElementById('goal-async').value, preferred_model: document.getElementById('model-async').value || null }),
+    });
+    const { task_id } = await resp.json();
+    document.getElementById('task-id-display').textContent = 'Task: ' + task_id;
+    fill.style.width = '30%';
+    // poll
+    let done = false;
+    while (!done) {
+      await new Promise(r => setTimeout(r, 800));
+      const s = await fetch('/status/' + task_id);
+      const st = await s.json();
+      if (st.status === 'running') { fill.style.width = '60%'; }
+      else if (st.status === 'done') {
+        fill.style.width = '100%';
+        document.getElementById('result-async').textContent = JSON.stringify(st.result, null, 2);
+        document.querySelector('#panel-async .result').classList.add('visible');
+        done = true;
+      } else if (st.status === 'error') {
+        showResult('result-async', 'Error: ' + (st.error || 'unknown'));
+        done = true;
+      }
+    }
+  } catch(e) { showResult('result-async', 'Error: ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Run Async'; setTimeout(() => { bar.style.display = 'none'; }, 2000); }
+}
+
+async function compareModels() {
+  const btn = document.querySelector('#panel-compare button');
+  btn.disabled = true; btn.textContent = 'Comparing...';
+  try {
+    const resp = await fetch('/compare', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        goal: document.getElementById('goal-cmp').value,
+        preferred_model: document.getElementById('model-a').value || null,
+        preferred_model_2: document.getElementById('model-b').value || null,
+      }),
+    });
+    const data = await resp.json();
+    renderCompareResult('result-compare', data);
+  } catch(e) { showResult('result-compare', 'Error: ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Compare'; }
+}
+
+async function compareModelsAsync() {
+  const btn = document.querySelector('#panel-compare button:nth-child(2)');
+  btn.disabled = true; btn.textContent = 'Queuing...';
+  const bar = document.getElementById('compare-progress');
+  const fill = document.getElementById('compare-fill');
+  bar.style.display = 'block'; fill.style.width = '10%';
+  try {
+    const resp = await fetch('/compare/async', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        goal: document.getElementById('goal-cmp').value,
+        preferred_model: document.getElementById('model-a').value || null,
+        preferred_model_2: document.getElementById('model-b').value || null,
+      }),
+    });
+    const { task_id } = await resp.json();
+    fill.style.width = '30%';
+    let done = false;
+    while (!done) {
+      await new Promise(r => setTimeout(r, 800));
+      const st = await (await fetch('/status/' + task_id)).json();
+      if (st.status === 'running') { fill.style.width = '60%'; }
+      else if (st.status === 'done') {
+        fill.style.width = '100%';
+        renderCompareResult('result-compare', st.result);
+        done = true;
+      } else if (st.status === 'error') {
+        showResult('result-compare', 'Error: ' + (st.error || 'unknown'));
+        done = true;
+      }
+    }
+  } catch(e) { showResult('result-compare', 'Error: ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Compare Async'; setTimeout(() => { bar.style.display = 'none'; }, 2000); }
+}
+
+async function runBatch() {
+  const btn = document.querySelector('#panel-batch button');
+  btn.disabled = true; btn.textContent = 'Running...';
+  try {
+    const models = document.getElementById('models-batch').value.split(',').map(s => s.trim()).filter(Boolean);
+    const resp = await fetch('/batch', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ goal: document.getElementById('goal-batch').value, models }),
+    });
+    const data = await resp.json();
+    renderBatchResult('result-batch', data);
+  } catch(e) { showResult('result-batch', 'Error: ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Batch Run'; }
+}
+
+async function runBatchAsync() {
+  const btn = document.querySelector('#panel-batch button:nth-child(2)');
+  btn.disabled = true; btn.textContent = 'Queuing...';
+  const bar = document.getElementById('batch-progress');
+  const fill = document.getElementById('batch-fill');
+  bar.style.display = 'block'; fill.style.width = '10%';
+  try {
+    const models = document.getElementById('models-batch').value.split(',').map(s => s.trim()).filter(Boolean);
+    const resp = await fetch('/batch/async', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ goal: document.getElementById('goal-batch').value, models }),
+    });
+    const { task_id } = await resp.json();
+    fill.style.width = '30%';
+    let done = false;
+    while (!done) {
+      await new Promise(r => setTimeout(r, 800));
+      const st = await (await fetch('/status/' + task_id)).json();
+      if (st.status === 'running') { fill.style.width = '60%'; }
+      else if (st.status === 'done') {
+        fill.style.width = '100%';
+        renderBatchResult('result-batch', st.result);
+        done = true;
+      } else if (st.status === 'error') {
+        showResult('result-batch', 'Error: ' + (st.error || 'unknown'));
+        done = true;
+      }
+    }
+  } catch(e) { showResult('result-batch', 'Error: ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Batch Async'; setTimeout(() => { bar.style.display = 'none'; }, 2000); }
+}
+
+async function loadTemplates() {
+  try {
+    const resp = await fetch('/templates');
+    const data = await resp.json();
+    renderTemplates('templates-list', data.templates);
+  } catch(e) { document.getElementById('templates-list').textContent = 'Error: ' + e.message; }
+}
+
+async function createTemplate() {
+  const payload = {
+    template_id: document.getElementById('tmpl-id').value,
+    intent_keywords: document.getElementById('tmpl-keywords').value.split(',').map(s => s.trim()).filter(Boolean),
+    steps: document.getElementById('tmpl-steps').value.split(',').map(s => s.trim()).filter(Boolean),
+    verifier: document.getElementById('tmpl-verifier').value || 'structural',
+  };
+  if (!payload.template_id || payload.intent_keywords.length === 0 || payload.steps.length === 0) {
+    showResult('result-templates', 'Error: template_id, keywords, and steps are required');
+    return;
+  }
+  try {
+    const resp = await fetch('/templates', {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload),
+    });
+    const data = await resp.json();
+    showResult('result-templates', data);
+    loadTemplates();
+  } catch(e) { showResult('result-templates', 'Error: ' + e.message); }
+}
+
+async function loadHistory() {
+  try {
+    const resp = await fetch('/history?limit=20');
+    const data = await resp.json();
+    const list = document.getElementById('history-list');
+    if (!data.runs || data.runs.length === 0) { list.innerHTML = '<p style="color:#888">No runs yet.</p>'; return; }
+    list.innerHTML = data.runs.map(r => `<div class="history-item" onclick="showHistoryDetail('${r.intent_id}')">
+      <span>${r.intent_id}</span>
+      <span class="meta">${r.action} &middot; ${r.model || ''}</span>
+    </div>`).join('');
+  } catch(e) { document.getElementById('history-list').textContent = 'Error: ' + e.message; }
+}
+
+async function showHistoryDetail(id) {
+  try {
+    const resp = await fetch(`/export/json/${id}`);
+    const data = await resp.json();
+    showResult('result-history', data);
+  } catch(e) { showResult('result-history', 'Error: ' + e.message); }
+}
+
+function exportSingle() {
+  const id = document.getElementById('export-id').value;
+  if (!id) return;
+  window.open(`/export/json/${id}`, '_blank');
+}
+
+function exportComparison() {
+  const a = document.getElementById('export-a').value;
+  const b = document.getElementById('export-b').value;
+  if (!a || !b) return;
+  window.open('/compare/report/' + a + '/' + b, '_blank');
+}
+</script>
+</body>
+</html>

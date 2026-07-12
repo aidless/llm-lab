@@ -1,0 +1,17 @@
+template_id: eval-model
+intent_keywords:
+  - evaluate
+  - benchmark
+  - test
+  - run on
+  - score
+  - accuracy
+  - performance
+steps:
+  - load_prompt_set
+  - call_model
+  - collect_outputs
+  - run_verifier
+  - aggregate_metrics
+verifier: structural
+artifact_schema: metrics.json

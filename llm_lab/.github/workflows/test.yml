@@ -1,0 +1,38 @@
+name: test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv pip install --system .[dev]
+
+      - name: Lint (ruff)
+        run: ruff check --output-format=github
+
+      - name: Format check (ruff)
+        run: ruff format --check
+
+      - name: Type check (mypy)
+        run: mypy . --ignore-missing-imports
+
+      - name: Run tests with coverage
+        run: python -m pytest tests/ -v --tb=short --timeout=120 --cov=llm_lab --cov-report=term-missing --cov-fail-under=95
+        env:
+          LLM_PROVIDER: openai
