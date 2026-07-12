@@ -1,6 +1,7 @@
 import glob
 import os
 import re
+import uuid
 from typing import Any
 
 import yaml
@@ -91,10 +92,11 @@ def _match_template(goal: str) -> dict[str, Any] | None:
     return None
 
 
-def _llm_fallback(goal: str, model: str | None = None) -> Plan:
+def _llm_fallback(goal: str, model: str | None = None, intent_id: str | None = None) -> Plan:
     try:
         import json
 
+        from llm_lab import tracer
         from llm_lab.worker import call_llm
 
         prompt = (
@@ -103,6 +105,17 @@ def _llm_fallback(goal: str, model: str | None = None) -> Plan:
             f"Goal: {goal}\n\nReturn ONLY valid JSON."
         )
         result = call_llm(prompt, model=model)
+        trace_id = intent_id or uuid.uuid4().hex[:12]
+        tracer.trace_call_sync(
+            trace_id,
+            0,
+            result.get("model", model or ""),
+            prompt,
+            result["output"],
+            result.get("token_usage", {}),
+            result.get("cost_usd", 0.0),
+            "pass",
+        )
         steps_data = json.loads(result["output"])
         steps = [Step(action=s["action"], prompt=s.get("prompt", "")) for s in steps_data]
     except Exception:
@@ -110,7 +123,7 @@ def _llm_fallback(goal: str, model: str | None = None) -> Plan:
     return Plan(template_id=None, steps=steps)
 
 
-def plan(goal: str, preferred_model: str | None = None) -> Plan:
+def plan(goal: str, preferred_model: str | None = None, intent_id: str | None = None) -> Plan:
     tmpl = _match_template(goal)
 
     if tmpl is not None:
@@ -126,7 +139,7 @@ def plan(goal: str, preferred_model: str | None = None) -> Plan:
         metrics = CustomMetrics(**m) if m else None
         return Plan(template_id=tmpl["template_id"], steps=steps, metrics=metrics)
 
-    return _llm_fallback(goal, preferred_model)
+    return _llm_fallback(goal, preferred_model, intent_id)
 
 
 def get_template_def(template_id: str) -> dict[str, Any] | None:

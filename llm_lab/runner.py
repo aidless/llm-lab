@@ -33,7 +33,7 @@ def run_plan(goal: str, model: str | None = None, verifier_name: str = "deepeval
     model = model or os.getenv("LLM_MODEL", "gpt-4o")
     intent_id = uuid.uuid4().hex[:12]
 
-    p = build_plan(goal, model)
+    p = build_plan(goal, model, intent_id)
 
     all_passed = True
     total_tokens = 0
