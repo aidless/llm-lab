@@ -1,6 +1,7 @@
 """Tests for settings.py — Settings via pydantic-settings."""
 
 import pytest
+
 from llm_lab.settings import Settings, get_settings
 
 # pydantic-settings 2.14.2 gives env vars priority over constructor args when
@@ -183,8 +184,9 @@ class TestPresets:
         assert resolve_preset(None) is None
 
     def test_resolve_preset_unknown_raises(self):
-        from llm_lab.settings import resolve_preset
         import pytest
+
+        from llm_lab.settings import resolve_preset
         with pytest.raises(KeyError, match="unknown preset"):
             resolve_preset("nonexistent")
 

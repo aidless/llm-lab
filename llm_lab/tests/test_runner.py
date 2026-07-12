@@ -61,7 +61,6 @@ _NON_MATCHING_GOAL = "custom analysis of dataset XYZ123"
 
 def test_compare_b_wins(mock_llm, mock_verifier):
     from llm_lab.runner import compare
-
     from llm_lab.tests.helpers import make_verdict
 
     mock_verifier.return_value.verify.side_effect = [
@@ -74,7 +73,6 @@ def test_compare_b_wins(mock_llm, mock_verifier):
 
 def test_compare_both_fail_tie(mock_llm, mock_verifier):
     from llm_lab.runner import compare
-
     from llm_lab.tests.helpers import make_verdict
 
     mock_verifier.return_value.verify.side_effect = [
@@ -144,7 +142,6 @@ def test_batch_parallel_respects_max_workers(mock_llm, mock_verifier):
 
 def test_batch_parallel_sorts_by_all_passed(mock_llm, mock_verifier):
     from llm_lab.runner import batch_parallel
-
     from llm_lab.tests.helpers import make_verdict
 
     mock_verifier.return_value.verify.side_effect = [

@@ -140,14 +140,13 @@ def test_get_template_def_found():
 
 
 def test_delete_custom_template_success():
+    import os
+
     from llm_lab.planner.engine import (
         _CUSTOM_TEMPLATES_DIR,
         delete_custom_template,
-        reload_templates,
         save_custom_template,
     )
-
-    import os
 
     os.makedirs(_CUSTOM_TEMPLATES_DIR, exist_ok=True)
     tid = "_test_delete_me_"
@@ -212,9 +211,9 @@ def test_match_template_no_keywords_falls_back():
 
 def test_plan_with_metrics_no_template():
     """When fallback LLM response includes metrics, Plan.metrics is None."""
-    from llm_lab.planner.engine import plan
-
     from unittest.mock import patch
+
+    from llm_lab.planner.engine import plan
 
     with patch("llm_lab.worker.call_llm") as mock_call:
         mock_call.return_value = {
@@ -234,14 +233,14 @@ def test_plan_from_template_without_metrics():
 
 def test_plan_from_custom_template_with_metrics():
     """Save a custom template with metrics, then verify Plan.metrics is parsed."""
+    import os
+
     from llm_lab.planner.engine import (
         _CUSTOM_TEMPLATES_DIR,
         delete_custom_template,
         plan,
         save_custom_template,
     )
-
-    import os
 
     tid = "_test_metrics_tmpl_"
     try:
@@ -269,14 +268,14 @@ def test_plan_from_custom_template_with_metrics():
 
 def test_plan_from_custom_template_with_empty_metrics():
     """Save a custom template with empty metrics → Plan.metics is None or has None values."""
+    import os
+
     from llm_lab.planner.engine import (
         _CUSTOM_TEMPLATES_DIR,
         delete_custom_template,
         plan,
         save_custom_template,
     )
-
-    import os
 
     tid = "_test_empty_metrics_"
     try:

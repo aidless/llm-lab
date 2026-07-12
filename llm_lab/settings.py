@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 from functools import lru_cache
-from typing import Any
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
@@ -70,9 +69,9 @@ class Settings(BaseSettings):
         return self.llm_base_url
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    return Settings()  # type: ignore[call-arg]
 
 
 # ── Model Presets ───────────────────────────────────────────────────────

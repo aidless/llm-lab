@@ -29,6 +29,8 @@ def export_xlsx(rows: list[dict[str, Any]]) -> bytes:
 
     wb = openpyxl.Workbook()
     ws = wb.active
+    if ws is None:
+        ws = wb.create_sheet("Events")
     ws.title = "Events"
     ws.append(CSV_COLUMNS)
     for r in rows:

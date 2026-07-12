@@ -1,16 +1,19 @@
 import json
 import logging
 import os
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from llm_lab.models import Verdict
+
+if TYPE_CHECKING:
+    from tiktoken import Encoding
 
 log = logging.getLogger(__name__)
 
 try:
     import tiktoken
 
-    _ENC = tiktoken.get_encoding("cl100k_base")
+    _ENC: Encoding | None = tiktoken.get_encoding("cl100k_base")
 except Exception:  # pragma: no cover - tiktoken optional at import time
     _ENC = None
 
@@ -26,7 +29,7 @@ def count_tokens(text: str) -> int:
 
 class StructuralVerifier:
     def verify(
-        self, output: str, expected_keywords: list[str] | None = None, schema_type: str | None = None, **kwargs: Any
+        self, output: str, expected_keywords: list[str] | None = None, schema_type: str | None = None, **kwargs: Any,  # noqa: ARG002
     ) -> Verdict:
         if not output or not output.strip():
             return Verdict(label="fail", reason="output is empty")
@@ -53,7 +56,7 @@ class KeywordVerifier:
         self,
         output: str,
         expected_keywords: list[str] | None = None,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ARG002
     ) -> Verdict:
         keywords = self._keywords or list(expected_keywords or [])
         if not keywords:
@@ -77,7 +80,7 @@ class SchemaVerifier:
         self,
         output: str,
         required_fields: list[str] | None = None,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ARG002
     ) -> Verdict:
         fields = self._fields or list(required_fields or [])
         if not fields:

@@ -3,7 +3,9 @@ from typing import Any
 
 from openai import OpenAI, OpenAIError
 
-from llm_lab.pricing import _LOCAL_PROVIDERS, _PRICE_PER_1K, estimate_cost as _estimate_cost
+from llm_lab.pricing import _LOCAL_PROVIDERS
+from llm_lab.pricing import estimate_cost as _estimate_cost
+
 _LOCAL_DEFAULTS = {
     "ollama": {"base_url": "http://localhost:11434/v1", "model": "deepseek-r1:7b"},
     "llamacpp": {"base_url": "http://localhost:8080/v1", "model": "llama-3.1-8b-instruct"},
@@ -112,7 +114,7 @@ def _call_gemini(
     max_tokens: int = 4096,
 ) -> dict[str, Any]:
     try:
-        import google.generativeai as genai
+        import google.generativeai as genai  # type: ignore[import-untyped]
     except ImportError:
         return {
             "output": "[gemini] SDK not installed. Run: pip install google-genai",

@@ -380,9 +380,10 @@ class TestCheckCustomMetrics:
         assert v.label == "pass"
         assert v.reason == "custom metrics passed"
 
-    def test_uses_tokenizer_not_word_count(self, monkeypatch):
-        from llm_lab import verifier as verifier_mod
+    def test_uses_tokenizer_not_word_count(self, monkeypatch):  # noqa: ARG002
         from unittest.mock import patch
+
+        from llm_lab import verifier as verifier_mod
 
         # Force a tokenizer count that diverges from the word count to prove
         # the metric counts tokens, not whitespace-separated words.

@@ -416,7 +416,7 @@ def test_watch_breaks_on_keyboard_interrupt(monkeypatch):
     monkeypatch.setattr(_real_time, "sleep", _breaking_sleep)
 
     from llm_lab import runner as _runner
-    monkeypatch.setattr(_runner, "run_plan", lambda goal=None, model=None, verifier=None: {
+    monkeypatch.setattr(_runner, "run_plan", lambda _goal=None, model=None, _verifier=None: {
         "intent_id": "watch-test", "all_passed": True, "model": model or "gpt-4o",
         "plan_template": None, "steps_detail": [],
         "total_tokens": 0, "total_cost_usd": 0.0,
@@ -452,7 +452,7 @@ def test_watch_detects_change_and_runs_plan(monkeypatch):
     monkeypatch.setattr(_real_time, "sleep", _controlled_sleep)
 
     from llm_lab import runner as _runner
-    monkeypatch.setattr(_runner, "run_plan", lambda goal=None, model=None, verifier=None: {
+    monkeypatch.setattr(_runner, "run_plan", lambda _goal=None, model=None, _verifier=None: {
         "intent_id": "watch-change-test", "all_passed": True, "model": model or "gpt-4o",
         "plan_template": None, "steps_detail": [],
         "total_tokens": 0, "total_cost_usd": 0.0,
@@ -619,7 +619,7 @@ def test_run_with_preset_overrides_model(monkeypatch):
 
 def test_run_with_preset_json_output(monkeypatch):
     from llm_lab import runner as _runner
-    monkeypatch.setattr(_runner, "run_plan", lambda goal=None, model=None, verifier=None: {
+    monkeypatch.setattr(_runner, "run_plan", lambda _goal=None, model=None, _verifier=None: {
         "intent_id": "preset-json", "all_passed": True, "model": model,
         "plan_template": None, "steps_detail": [],
         "total_tokens": 0, "total_cost_usd": 0.0,

@@ -83,7 +83,7 @@ async def _run_task(
             await tracer.trace_call(
                 task_id,
                 1,
-                model,
+                model or "",
                 goal,
                 json.dumps(result),
                 {"prompt_tokens": tokens, "completion_tokens": 0, "total_tokens": tokens},
@@ -124,7 +124,7 @@ async def submit(req: IntentRequest):
         await tracer.trace_call(
             result["run_id"],
             1,
-            model,
+            model or "",
             result["goal"],
             json.dumps(result),
             {"prompt_tokens": result["total_tokens"], "completion_tokens": 0, "total_tokens": result["total_tokens"]},
@@ -168,7 +168,7 @@ async def compare(req: IntentRequest):
         await tracer.trace_call(
             intent_id,
             1,
-            model_a,
+            model_a or "",
             result["goal"],
             json.dumps(result),
             {"prompt_tokens": tokens, "completion_tokens": 0, "total_tokens": tokens},

@@ -1,6 +1,7 @@
 """llm-lab CLI — run evals and comparisons from the terminal."""
 
 import asyncio
+import contextlib
 import json
 import time
 from pathlib import Path
@@ -86,8 +87,9 @@ def run(
         from llm_lab.settings import resolve_preset
 
         cfg = resolve_preset(preset)
-        model = model or cfg["model"]
-        verifier = cfg["verifier"]
+        if cfg:
+            model = model or cfg["model"]
+            verifier = cfg["verifier"]
 
     if dry_run:
         console.print("[yellow]DRY-RUN:[/yellow] would call")
@@ -102,7 +104,7 @@ def run(
         result = run_plan(goal, model, verifier)
 
     # Persist the run so `report`/`diff`/`history` can read an accurate verdict.
-    try:
+    with contextlib.suppress(Exception):
         asyncio.run(
             trace_call(
                 intent_id=result["run_id"],
@@ -115,8 +117,6 @@ def run(
                 verdict="pass" if result["all_passed"] else "fail",
             )
         )
-    except Exception:
-        pass
 
     if json_output:
         console.print(json.dumps(result, indent=2, ensure_ascii=False))
