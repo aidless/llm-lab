@@ -3,16 +3,16 @@ import hmac
 import html
 import json
 import os
+import pathlib
 import uuid
 from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
 
 load_dotenv(override=False)
 
-from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, Request, status  # noqa: E402
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Path, Query, Request, status  # noqa: E402
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 
@@ -27,7 +27,12 @@ from llm_lab.planner import _TEMPLATE_ID_RE, delete_custom_template, list_templa
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
-_HTML_DIR = Path(__file__).parent / "templates"
+_HTML_DIR = pathlib.Path(__file__).parent / "templates"
+
+# Path params that identify runs/tasks are restricted to a safe character set
+# (alphanumerics, hyphen, underscore) so they can never carry markup or path
+# metacharacters into downstream HTML/templates.
+_ID_RE = r"^[A-Za-z0-9_-]{1,100}$"
 
 
 # ── Auth ─────────────────────────────────────────────────────────────────────
@@ -222,7 +227,7 @@ async def remove_template(template_id: str, _: Any = API_KEY_DEP):
 
 
 @app.get("/status/{task_id}")
-async def get_task_status(task_id: str, _: Any = API_KEY_DEP) -> dict[str, Any]:
+async def get_task_status(task_id: str = Path(..., pattern=_ID_RE), _: Any = API_KEY_DEP) -> dict[str, Any]:
     task = await db.get_task(task_id)
     if not task:
         raise HTTPException(status_code=404, detail="task_id not found")
@@ -233,17 +238,17 @@ async def get_task_status(task_id: str, _: Any = API_KEY_DEP) -> dict[str, Any]:
 
 
 @app.get("/compare/report/{id_a}/{id_b}", response_class=HTMLResponse)
-async def compare_report(id_a: str, id_b: str, _: Any = API_KEY_DEP):
+async def compare_report(id_a: str = Path(..., pattern=_ID_RE), id_b: str = Path(..., pattern=_ID_RE), _: Any = API_KEY_DEP):
     events_a = await _try("read trace A", tracer.get_trace(id_a))
     events_b = await _try("read trace B", tracer.get_trace(id_b))
     if not events_a or not events_b:
         raise HTTPException(status_code=404, detail="one or both runs not found")
     return HTMLResponse(
         content=_COMPARE_REPORT_HTML.format(
-            id_a=id_a,
-            id_b=id_b,
-            json_a=html.escape(json.dumps(events_a, indent=2, ensure_ascii=False)),
-            json_b=html.escape(json.dumps(events_b, indent=2, ensure_ascii=False)),
+            id_a=html.escape(id_a),
+            id_b=html.escape(id_b),
+            json_a=html.escape(json.dumps(events_a, ensure_ascii=False, indent=2)),
+            json_b=html.escape(json.dumps(events_b, ensure_ascii=False, indent=2)),
         )
     )
 
@@ -252,7 +257,7 @@ async def compare_report(id_a: str, id_b: str, _: Any = API_KEY_DEP):
 
 
 @app.get("/result/{intent_id}")
-async def get_result(intent_id: str, _: Any = API_KEY_DEP) -> dict[str, Any]:
+async def get_result(intent_id: str = Path(..., pattern=_ID_RE), _: Any = API_KEY_DEP) -> dict[str, Any]:
     summary = await _try("read result", tracer.get_summary(intent_id))
     if summary["events"] == 0:
         raise HTTPException(status_code=404, detail="intent_id not found")
@@ -260,7 +265,7 @@ async def get_result(intent_id: str, _: Any = API_KEY_DEP) -> dict[str, Any]:
 
 
 @app.get("/trace/{intent_id}")
-async def get_trace(intent_id: str, _: Any = API_KEY_DEP) -> Any:
+async def get_trace(intent_id: str = Path(..., pattern=_ID_RE), _: Any = API_KEY_DEP) -> Any:
     events = await _try("read trace", tracer.get_trace(intent_id))
     if not events:
         raise HTTPException(status_code=404, detail="intent_id not found")
@@ -271,7 +276,7 @@ async def get_trace(intent_id: str, _: Any = API_KEY_DEP) -> Any:
 
 
 @app.get("/export/json/{intent_id}")
-async def export_json_endpoint(intent_id: str, _: Any = API_KEY_DEP) -> PlainTextResponse:
+async def export_json_endpoint(intent_id: str = Path(..., pattern=_ID_RE), _: Any = API_KEY_DEP) -> PlainTextResponse:
     events = await _try("read trace", tracer.get_trace(intent_id))
     if not events:
         raise HTTPException(status_code=404, detail="intent_id not found")
@@ -295,7 +300,7 @@ async def export_csv_endpoint(_: Any = API_KEY_DEP) -> PlainTextResponse:
 
 
 @app.get("/export/xlsx/{intent_id}")
-async def export_xlsx_by_intent(intent_id: str, _: Any = API_KEY_DEP) -> Response:
+async def export_xlsx_by_intent(intent_id: str = Path(..., pattern=_ID_RE), _: Any = API_KEY_DEP) -> Response:
     events = await _try("read trace", tracer.get_trace(intent_id))
     if not events:
         raise HTTPException(status_code=404, detail="intent_id not found")

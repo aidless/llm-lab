@@ -61,3 +61,16 @@ def test_security_headers_present():
     assert resp.headers.get("X-Content-Type-Options") == "nosniff"
     assert resp.headers.get("X-Frame-Options") == "DENY"
     assert resp.headers.get("Referrer-Policy") == "no-referrer"
+
+
+def test_invalid_path_id_rejected(client):
+    # Path params carrying disallowed chars (whitespace, angle brackets, etc.)
+    # are rejected by the route regex before reaching any handler/template.
+    headers = {"X-API-Key": "test-secret"}
+    assert client.get("/result/with%20space", headers=headers).status_code == 422
+    assert client.get("/trace/with%20space", headers=headers).status_code == 422
+    assert client.get("/status/with%20space", headers=headers).status_code == 422
+    assert client.get("/compare/report/a%20b/c", headers=headers).status_code == 422
+    # A clean uuid-shaped id still passes validation (lookup then 404).
+    uid = "11111111-2222-3333-4444-555555555555"
+    assert client.get(f"/result/{uid}", headers=headers).status_code == 404
