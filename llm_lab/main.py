@@ -2,16 +2,15 @@ import asyncio
 import json
 import os
 import uuid
-import warnings
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
-from fastapi import BackgroundTasks, FastAPI, HTTPException, Query  # noqa: E402
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, status  # noqa: E402
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 
@@ -22,11 +21,40 @@ from llm_lab import (  # noqa: E402
 )
 from llm_lab import runner as core  # noqa: E402
 from llm_lab.models import BatchRequest, BatchResult, CompareResult, IntentRequest, RunResult, TemplateDef  # noqa: E402
-from llm_lab.planner import delete_custom_template, list_templates, save_custom_template  # noqa: E402
+from llm_lab.planner import _TEMPLATE_ID_RE, delete_custom_template, list_templates, save_custom_template  # noqa: E402
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 _HTML_DIR = Path(__file__).parent / "templates"
+
+
+# ── Auth ─────────────────────────────────────────────────────────────────────
+# Optional API-key gate. When LLM_LAB_API_KEY is set, every mutating endpoint
+# requires a matching ``X-API-Key`` header (or ``Authorization: Bearer <key>``).
+# When unset (default for local/dev), the gate is a no-op so existing usage and
+# tests are unaffected.
+
+_API_KEY = os.getenv("LLM_LAB_API_KEY")
+
+
+async def require_api_key(
+    x_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
+) -> None:
+    if not _API_KEY:
+        return
+    provided = x_api_key
+    if not provided and authorization and authorization.lower().startswith("bearer "):
+        provided = authorization.split(" ", 1)[1].strip()
+    if provided != _API_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API key",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+API_KEY_DEP = Depends(require_api_key)
 
 
 def _load_html(name: str) -> str:
@@ -62,36 +90,6 @@ async def _run_task(
         else:
             result = await asyncio.to_thread(core.run_plan, goal, model)
         await _store_task(task_id, "done", result=result)
-        try:
-            if mode == "compare":
-                verdict = (
-                    "pass"
-                    if result.get("model_a", {}).get("all_passed")
-                    and result.get("model_b", {}).get("all_passed")
-                    else "fail"
-                )
-                cost = result.get("model_a", {}).get("total_cost_usd", 0.0)
-                tokens = result.get("model_a", {}).get("total_tokens", 0)
-            elif mode == "batch":
-                verdict = "pass" if all(m.get("all_passed", False) for m in result.get("models", [])) else "fail"
-                cost = sum(m.get("total_cost_usd", 0.0) for m in result.get("models", []))
-                tokens = sum(m.get("total_tokens", 0) for m in result.get("models", []))
-            else:
-                verdict = "pass" if result.get("all_passed") else "fail"
-                cost = result.get("total_cost_usd", 0.0)
-                tokens = result.get("total_tokens", 0)
-            await tracer.trace_call(
-                task_id,
-                1,
-                model or "",
-                goal,
-                json.dumps(result),
-                {"prompt_tokens": tokens, "completion_tokens": 0, "total_tokens": tokens},
-                cost,
-                verdict,
-            )
-        except Exception as exc:
-            warnings.warn(f"tracer.trace_call failed: {exc}", stacklevel=2)
     except Exception as exc:
         await _store_task(task_id, "error", error=str(exc))
 
@@ -117,22 +115,9 @@ if os.path.isdir("static"):
 
 
 @app.post("/submit", response_model=RunResult)
-async def submit(req: IntentRequest):
+async def submit(req: IntentRequest, _: Any = API_KEY_DEP):
     model = req.preferred_model or os.getenv("LLM_MODEL", "gpt-4o")
-    result = core.run_plan(req.goal, model)
-    try:
-        await tracer.trace_call(
-            result["run_id"],
-            1,
-            model or "",
-            result["goal"],
-            json.dumps(result),
-            {"prompt_tokens": result["total_tokens"], "completion_tokens": 0, "total_tokens": result["total_tokens"]},
-            result["total_cost_usd"],
-            "pass" if result["all_passed"] else "fail",
-        )
-    except Exception as exc:
-        warnings.warn(f"tracer.trace_call failed: {exc}", stacklevel=2)
+    result = await asyncio.to_thread(core.run_plan, req.goal, model)
     return result
 
 
@@ -140,7 +125,7 @@ async def submit(req: IntentRequest):
 
 
 @app.post("/submit/async")
-async def submit_async(req: IntentRequest, background_tasks: BackgroundTasks):
+async def submit_async(req: IntentRequest, background_tasks: BackgroundTasks, _: Any = API_KEY_DEP):
     task_id = uuid.uuid4().hex[:12]
     await db.save_task(task_id, {"status": "queued", "result": None, "error": None})
     model = req.preferred_model or os.getenv("LLM_MODEL", "gpt-4o")
@@ -152,31 +137,11 @@ async def submit_async(req: IntentRequest, background_tasks: BackgroundTasks):
 
 
 @app.post("/compare", response_model=CompareResult)
-async def compare(req: IntentRequest):
+async def compare(req: IntentRequest, _: Any = API_KEY_DEP):
     model_a = req.preferred_model or os.getenv("LLM_MODEL", "gpt-4o")
     model_b = req.preferred_model_2 or os.getenv("LLM_MODEL_2", "gpt-4o-mini")
-    result = core.compare(req.goal, model_a, model_b)
+    result = await asyncio.to_thread(core.compare, req.goal, model_a, model_b)
     intent_id = db._sha16(req.goal)
-    verdict = (
-        "pass"
-        if result["model_a"]["all_passed"] and result["model_b"]["all_passed"]
-        else "fail"
-    )
-    cost = result["model_a"]["total_cost_usd"]
-    tokens = result["model_a"]["total_tokens"]
-    try:
-        await tracer.trace_call(
-            intent_id,
-            1,
-            model_a or "",
-            result["goal"],
-            json.dumps(result),
-            {"prompt_tokens": tokens, "completion_tokens": 0, "total_tokens": tokens},
-            cost,
-            verdict,
-        )
-    except Exception as exc:
-        warnings.warn(f"tracer.trace_call failed: {exc}", stacklevel=2)
     result["intent_id"] = intent_id
     return result
 
@@ -185,7 +150,7 @@ async def compare(req: IntentRequest):
 
 
 @app.post("/compare/async")
-async def compare_async(req: IntentRequest, background_tasks: BackgroundTasks):
+async def compare_async(req: IntentRequest, background_tasks: BackgroundTasks, _: Any = API_KEY_DEP):
     task_id = uuid.uuid4().hex[:12]
     await db.save_task(task_id, {"status": "queued", "result": None, "error": None})
     model_a = req.preferred_model or os.getenv("LLM_MODEL", "gpt-4o")
@@ -198,31 +163,15 @@ async def compare_async(req: IntentRequest, background_tasks: BackgroundTasks):
 
 
 @app.post("/batch", response_model=BatchResult)
-async def batch_run(req: BatchRequest):
-    result = core.batch(req.goal, req.models)
+async def batch_run(req: BatchRequest, _: Any = API_KEY_DEP):
+    result = await asyncio.to_thread(core.batch, req.goal, req.models)
     intent_id = db._sha16(req.goal)
-    verdict = "pass" if all(m.get("all_passed", False) for m in result["models"]) else "fail"
-    cost = sum(m.get("total_cost_usd", 0.0) for m in result["models"])
-    tokens = sum(m.get("total_tokens", 0) for m in result["models"])
-    try:
-        await tracer.trace_call(
-            intent_id,
-            1,
-            ",".join(req.models),
-            result["goal"],
-            json.dumps(result),
-            {"prompt_tokens": tokens, "completion_tokens": 0, "total_tokens": tokens},
-            cost,
-            verdict,
-        )
-    except Exception as exc:
-        warnings.warn(f"tracer.trace_call failed: {exc}", stacklevel=2)
     result["intent_id"] = intent_id
     return result
 
 
 @app.post("/batch/async")
-async def batch_async(req: BatchRequest, background_tasks: BackgroundTasks):
+async def batch_async(req: BatchRequest, background_tasks: BackgroundTasks, _: Any = API_KEY_DEP):
     task_id = uuid.uuid4().hex[:12]
     await db.save_task(task_id, {"status": "queued", "result": None, "error": None})
     background_tasks.add_task(_run_task, task_id, req.goal, ",".join(req.models), "batch")
@@ -238,7 +187,7 @@ async def get_templates() -> dict[str, Any]:
 
 
 @app.post("/templates")
-async def create_template(tmpl: TemplateDef):
+async def create_template(tmpl: TemplateDef, _: Any = API_KEY_DEP):
     for existing in list_templates():
         if existing["template_id"] == tmpl.template_id and existing["_source"] == "builtin":
             raise HTTPException(status_code=409, detail=f"builtin template '{tmpl.template_id}' cannot be overwritten")
@@ -247,11 +196,16 @@ async def create_template(tmpl: TemplateDef):
 
 
 @app.delete("/templates/{template_id}")
-async def remove_template(template_id: str):
+async def remove_template(template_id: str, _: Any = API_KEY_DEP):
+    if not _TEMPLATE_ID_RE.match(template_id):
+        raise HTTPException(status_code=400, detail="invalid template_id")
     for tmpl in list_templates():
         if tmpl["template_id"] == template_id and tmpl["_source"] == "builtin":
             raise HTTPException(status_code=403, detail="cannot delete builtin template")
-    ok = delete_custom_template(template_id)
+    try:
+        ok = delete_custom_template(template_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="invalid template_id") from None
     if not ok:
         raise HTTPException(status_code=404, detail="template not found")
     return {"status": "deleted", "template_id": template_id}

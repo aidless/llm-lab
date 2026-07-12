@@ -168,6 +168,23 @@ def test_create_duplicate_builtin_errors(client):
     assert resp.status_code == 409
 
 
+def test_create_template_rejects_path_traversal(client):
+    """P0-1: malformed template_id must be rejected at the API boundary."""
+    payload = {
+        "template_id": "../../escape",
+        "intent_keywords": ["test"],
+        "steps": ["step1"],
+    }
+    resp = client.post("/templates", json=payload)
+    assert resp.status_code == 422
+
+
+def test_delete_template_rejects_path_traversal(client):
+    """P0-1: deleting with a malformed id must be rejected at the boundary."""
+    resp = client.delete("/templates/....")
+    assert resp.status_code == 400
+
+
 def test_get_status_not_found(client):
     resp = client.get("/status/nonexistent")
     assert resp.status_code == 404

@@ -1,6 +1,8 @@
 import hashlib
 import json
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Any
 
@@ -37,8 +39,20 @@ def _sha16(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
+@asynccontextmanager
+async def _connect() -> AsyncIterator[aiosqlite.Connection]:
+    db = await aiosqlite.connect(DB_PATH)
+    db.row_factory = aiosqlite.Row
+    await db.execute("PRAGMA journal_mode=WAL")
+    await db.execute("PRAGMA busy_timeout=5000")
+    try:
+        yield db
+    finally:
+        await db.close()
+
+
 async def init_db() -> None:
-    async with aiosqlite.connect(DB_PATH) as db:
+    async with _connect() as db:
         db.row_factory = aiosqlite.Row
         await db.executescript(_CREATE_SQL)
         # Migrate existing databases that predate the `verdict` column.
@@ -62,7 +76,7 @@ async def append_event(
     verdict: str | None = None,
 ) -> None:
     ts = datetime.now(tz=timezone.utc).isoformat()
-    async with aiosqlite.connect(DB_PATH) as db:
+    async with _connect() as db:
         await db.execute(
             """INSERT INTO event_log
                (intent_id, seq, timestamp, action, model, detail, input_hash, output_hash, token_usage, cost_usd, verdict)
@@ -85,7 +99,7 @@ async def append_event(
 
 
 async def get_events(intent_id: str) -> list[dict[str, Any]]:
-    async with aiosqlite.connect(DB_PATH) as db:
+    async with _connect() as db:
         db.row_factory = aiosqlite.Row
         cursor = await db.execute("SELECT * FROM event_log WHERE intent_id = ? ORDER BY seq", (intent_id,))
         rows = await cursor.fetchall()
@@ -93,7 +107,7 @@ async def get_events(intent_id: str) -> list[dict[str, Any]]:
 
 
 async def get_all_events() -> list[dict[str, Any]]:
-    async with aiosqlite.connect(DB_PATH) as db:
+    async with _connect() as db:
         db.row_factory = aiosqlite.Row
         cursor = await db.execute(
             "SELECT id, intent_id, seq, timestamp, action, model, detail, cost_usd "
@@ -104,7 +118,7 @@ async def get_all_events() -> list[dict[str, Any]]:
 
 
 async def list_intents(limit: int = 20) -> list[dict[str, Any]]:
-    async with aiosqlite.connect(DB_PATH) as db:
+    async with _connect() as db:
         db.row_factory = aiosqlite.Row
         cursor = await db.execute(
             "SELECT intent_id, action, model, MIN(timestamp) as timestamp "
@@ -158,7 +172,7 @@ async def get_run_info(intent_id: str) -> dict[str, Any]:
 
 async def save_task(task_id: str, payload: dict[str, Any]) -> None:
     ts = datetime.now(tz=timezone.utc).isoformat()
-    async with aiosqlite.connect(DB_PATH) as db:
+    async with _connect() as db:
         await db.execute(
             """INSERT INTO tasks (task_id, status, payload, updated_at)
                VALUES (?, ?, ?, ?)
@@ -172,7 +186,7 @@ async def save_task(task_id: str, payload: dict[str, Any]) -> None:
 
 
 async def get_task(task_id: str) -> dict[str, Any] | None:
-    async with aiosqlite.connect(DB_PATH) as db:
+    async with _connect() as db:
         db.row_factory = aiosqlite.Row
         cursor = await db.execute("SELECT payload FROM tasks WHERE task_id = ?", (task_id,))
         row = await cursor.fetchone()
@@ -185,6 +199,6 @@ async def get_task(task_id: str) -> dict[str, Any] | None:
 
 
 async def delete_task(task_id: str) -> None:
-    async with aiosqlite.connect(DB_PATH) as db:
+    async with _connect() as db:
         await db.execute("DELETE FROM tasks WHERE task_id = ?", (task_id,))
         await db.commit()

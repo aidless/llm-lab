@@ -7,9 +7,10 @@ from typing import Any
 
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 from llm_lab import settings as app_settings  # noqa: E402
+from llm_lab import tracer  # noqa: E402
 from llm_lab import verifier as vrf  # noqa: E402
 from llm_lab import worker as wrk  # noqa: E402
 from llm_lab.planner import plan as build_plan  # noqa: E402
@@ -37,7 +38,7 @@ def run_plan(goal: str, model: str | None = None, verifier_name: str = "deepeval
     all_passed = True
     total_tokens = 0
     total_cost = 0.0
-    steps_detail = []
+    steps_detail: list[dict[str, Any]] = []
 
     actual_verifier = _resolve_verifier(verifier_name)
 
@@ -59,6 +60,18 @@ def run_plan(goal: str, model: str | None = None, verifier_name: str = "deepeval
         mv = vrf.check_custom_metrics(result["output"], p.metrics)
         if mv and mv.label == "fail":
             all_passed = False
+
+        seq = len(steps_detail) + 1
+        tracer.trace_call_sync(
+            intent_id,
+            seq,
+            step.model,
+            step.prompt,
+            step.output,
+            tu,
+            result["cost_usd"],
+            v.label,
+        )
 
         steps_detail.append(
             {

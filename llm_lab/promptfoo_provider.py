@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import logging
 import os
 import sqlite3
 import time
@@ -58,8 +59,8 @@ def _cache_set(prompt: str, model: str, response: dict):
         )
         conn.commit()
         conn.close()
-    except Exception:
-        pass
+    except Exception as exc:
+        logging.warning("promptfoo cache write failed: %s", exc)
 
 
 def _read_provider_config() -> dict:
@@ -118,7 +119,7 @@ def call_llm(
                 "total_tokens": usage.total_tokens,
             }
             result = {
-                "output": choice.message.content,
+                "output": choice.message.content or "",
                 "model": model,
                 "finish_reason": choice.finish_reason,
                 "token_usage": tokens,

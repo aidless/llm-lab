@@ -165,6 +165,27 @@ def test_delete_custom_template_not_found():
     assert result is False
 
 
+def test_save_custom_template_rejects_path_traversal():
+    """P0-1: template_id must not allow writing outside the store dir."""
+    from llm_lab.planner.engine import save_custom_template
+
+    for bad in ("../../escape", "../x", "a/b", "/etc/passwd", "..\\win", "foo.."):
+        import pytest
+
+        with pytest.raises(ValueError, match="invalid template_id"):
+            save_custom_template(bad, {"template_id": bad, "steps": ["x"]})
+
+
+def test_delete_custom_template_rejects_path_traversal():
+    """P0-1: delete must not resolve outside the store dir."""
+    import pytest
+
+    from llm_lab.planner.engine import delete_custom_template
+
+    with pytest.raises(ValueError, match="invalid template_id"):
+        delete_custom_template("../../escape")
+
+
 # ── planner/engine.py LLM fallback edge cases ─────────────────────────────
 
 

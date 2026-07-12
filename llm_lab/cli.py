@@ -205,7 +205,7 @@ def serve(
     import uvicorn
 
     console.print(f"[green]Starting llm-lab server at http://{host}:{port}[/green]")
-    uvicorn.run("main:app", host=host, port=port, reload=reload)
+    uvicorn.run("llm_lab.main:app", host=host, port=port, reload=reload)
 
 
 # ── history ──────────────────────────────────────────────────────────────────

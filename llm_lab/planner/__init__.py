@@ -1,4 +1,5 @@
 from .engine import (
+    _TEMPLATE_ID_RE,
     delete_custom_template,
     get_template_def,
     list_templates,
@@ -14,4 +15,5 @@ __all__ = [
     "save_custom_template",
     "delete_custom_template",
     "reload_templates",
+    "_TEMPLATE_ID_RE",
 ]

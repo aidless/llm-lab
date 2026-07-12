@@ -1,5 +1,7 @@
 """Tracer: Langfuse-backed with local SQLite fallback."""
 
+import asyncio
+import logging
 import os
 from typing import Any
 
@@ -77,6 +79,53 @@ async def trace_call(
             cost_usd=cost_usd,
             verdict=verdict,
         )
+
+
+def _run(coro) -> None:
+    """Run a tracer coroutine regardless of an active event loop.
+
+    Inside the API server a run executes in a ``asyncio.to_thread`` worker
+    that has no running loop, so ``asyncio.run`` is correct. In any other
+    synchronous context the same applies. The fire-and-forget branch is only
+    reached if a loop is somehow active (e.g. future async refactor) and is
+    best-effort.
+    """
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+    if loop is not None and loop.is_running():
+        loop.create_task(coro)
+    else:
+        asyncio.run(coro)
+
+
+def trace_call_sync(
+    intent_id: str,
+    seq: int,
+    model: str,
+    prompt: str,
+    output: str,
+    token_usage: dict | None = None,
+    cost_usd: float | None = None,
+    verdict: str | None = None,
+) -> None:
+    """Synchronous wrapper around :func:`trace_call` for use from sync code paths."""
+    try:
+        _run(
+            trace_call(
+                intent_id,
+                seq,
+                model,
+                prompt,
+                output,
+                token_usage,
+                cost_usd,
+                verdict,
+            )
+        )
+    except Exception as exc:  # tracing must never break a run
+        logging.warning("tracer.trace_call_sync failed: %s", exc)
 
 
 async def trace_event(intent_id: str, seq: int, action: str, detail: str | None = None) -> None:

@@ -1,5 +1,6 @@
 import glob
 import os
+import re
 from typing import Any
 
 import yaml
@@ -42,9 +43,23 @@ def _template_store_path() -> str:
     return _CUSTOM_TEMPLATES_DIR
 
 
-def save_custom_template(template_id: str, data: dict[str, Any]) -> str:
+_TEMPLATE_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
+
+
+def _safe_template_path(template_id: str) -> str:
+    if not _TEMPLATE_ID_RE.match(template_id):
+        raise ValueError(f"invalid template_id: {template_id!r}")
     store = _template_store_path()
     fpath = os.path.join(store, f"{template_id}.yaml")
+    store_real = os.path.realpath(store)
+    fpath_real = os.path.realpath(fpath)
+    if os.path.commonpath([store_real, fpath_real]) != store_real:
+        raise ValueError(f"invalid template_id: {template_id!r}")
+    return fpath
+
+
+def save_custom_template(template_id: str, data: dict[str, Any]) -> str:
+    fpath = _safe_template_path(template_id)
     try:
         with open(fpath, "w", encoding="utf-8") as f:
             yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
@@ -55,8 +70,7 @@ def save_custom_template(template_id: str, data: dict[str, Any]) -> str:
 
 
 def delete_custom_template(template_id: str) -> bool:
-    store = _template_store_path()
-    fpath = os.path.join(store, f"{template_id}.yaml")
+    fpath = _safe_template_path(template_id)
     if os.path.isfile(fpath):
         os.remove(fpath)
         reload_templates()

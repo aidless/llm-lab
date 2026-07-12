@@ -114,7 +114,8 @@ def _call_gemini(
     max_tokens: int = 4096,
 ) -> dict[str, Any]:
     try:
-        import google.generativeai as genai  # type: ignore[import-untyped]
+        from google import genai
+        from google.genai import types
     except ImportError:
         return {
             "output": "[gemini] SDK not installed. Run: pip install google-genai",
@@ -125,26 +126,31 @@ def _call_gemini(
         }
     try:
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("LLM_API_KEY")
-        genai.configure(api_key=api_key)
-        gen_model = genai.GenerativeModel(
-            model_name=model,
-            generation_config=genai.types.GenerationConfig(
+        client = genai.Client(api_key=api_key)
+        resp = client.models.generate_content(
+            model=model,
+            contents=prompt,
+            config=types.GenerateContentConfig(
                 temperature=temperature,
                 max_output_tokens=max_tokens,
             ),
         )
-        resp = gen_model.generate_content(prompt)
         output = resp.text or ""
 
-        pt = getattr(resp.usage_metadata, "prompt_token_count", 0)
-        ct = getattr(resp.usage_metadata, "candidates_token_count", 0)
+        usage = resp.usage_metadata
+        pt = getattr(usage, "prompt_token_count", 0) or 0
+        ct = getattr(usage, "candidates_token_count", 0) or 0
         tokens = {
             "prompt_tokens": pt,
             "completion_tokens": ct,
             "total_tokens": pt + ct,
         }
         cost = _estimate_cost(model, pt, ct)
-        fr = "stop" if resp.candidates and resp.candidates[0].finish_reason == 1 else "other"
+        candidates = resp.candidates
+        if candidates and candidates[0].finish_reason is not None:
+            fr = "stop" if getattr(candidates[0].finish_reason, "name", "OTHER") == "STOP" else "other"
+        else:
+            fr = "other"
         return {
             "output": output,
             "model": model,
@@ -223,7 +229,7 @@ def call_llm(
     }
     cost = _estimate_cost(model, usage.prompt_tokens, usage.completion_tokens)
     return {
-        "output": choice.message.content,
+        "output": choice.message.content or "",
         "model": model,
         "finish_reason": choice.finish_reason,
         "token_usage": tokens,

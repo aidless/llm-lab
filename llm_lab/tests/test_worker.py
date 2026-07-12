@@ -201,19 +201,18 @@ def test_call_gemini_success(monkeypatch):
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
 
-    mock_genai = MagicMock()
-    mock_gen_model = MagicMock()
+    mock_client = MagicMock()
     mock_resp = MagicMock()
     mock_resp.text = "Gemini response"
     mock_resp.candidates = [MagicMock()]
-    mock_resp.candidates[0].finish_reason = 1
+    mock_resp.candidates[0].finish_reason = MagicMock()
+    mock_resp.candidates[0].finish_reason.name = "STOP"
     mock_resp.usage_metadata = MagicMock()
     mock_resp.usage_metadata.prompt_token_count = 15
     mock_resp.usage_metadata.candidates_token_count = 25
-    mock_gen_model.generate_content.return_value = mock_resp
-    mock_genai.GenerativeModel.return_value = mock_gen_model
+    mock_client.models.generate_content.return_value = mock_resp
 
-    with patch.dict("sys.modules", {"google.generativeai": mock_genai}):
+    with patch("google.genai.Client", return_value=mock_client):
         result = wrk._call_gemini("hello", "gemini-2.0-flash-001")
     assert result["output"] == "Gemini response"
     assert result["finish_reason"] == "stop"
@@ -224,12 +223,10 @@ def test_call_gemini_api_error(monkeypatch):
     from unittest.mock import MagicMock, patch
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
-    mock_genai = MagicMock()
-    mock_gen_model = MagicMock()
-    mock_gen_model.generate_content.side_effect = Exception("Gemini down")
-    mock_genai.GenerativeModel.return_value = mock_gen_model
+    mock_client = MagicMock()
+    mock_client.models.generate_content.side_effect = Exception("Gemini down")
 
-    with patch.dict("sys.modules", {"google.generativeai": mock_genai}):
+    with patch("google.genai.Client", return_value=mock_client):
         result = wrk._call_gemini("hello", "gemini-2.0-flash-001")
     assert "LLM call failed" in result["output"]
     assert result["finish_reason"] == "error"
@@ -241,8 +238,8 @@ def test_call_gemini_import_error(monkeypatch):
     original_import = builtins.__import__
 
     def _mock_import(name, *args, **kwargs):
-        if name == "google.generativeai":
-            raise ImportError("No module named google.generativeai")
+        if name == "google.genai" or name == "google.genai.types":
+            raise ImportError("No module named google.genai")
         return original_import(name, *args, **kwargs)
 
     monkeypatch.setattr(builtins, "__import__", _mock_import)
@@ -309,19 +306,18 @@ def test_call_llm_gemini(monkeypatch):
 
     monkeypatch.setenv("LLM_PROVIDER", "gemini")
 
-    mock_genai = MagicMock()
-    mock_gen_model = MagicMock()
+    mock_client = MagicMock()
     mock_resp = MagicMock()
     mock_resp.text = "Gemini response"
     mock_resp.candidates = [MagicMock()]
-    mock_resp.candidates[0].finish_reason = 1
+    mock_resp.candidates[0].finish_reason = MagicMock()
+    mock_resp.candidates[0].finish_reason.name = "STOP"
     mock_resp.usage_metadata = MagicMock()
     mock_resp.usage_metadata.prompt_token_count = 15
     mock_resp.usage_metadata.candidates_token_count = 25
-    mock_gen_model.generate_content.return_value = mock_resp
-    mock_genai.GenerativeModel.return_value = mock_gen_model
+    mock_client.models.generate_content.return_value = mock_resp
 
-    with patch.dict("sys.modules", {"google.generativeai": mock_genai}):
+    with patch("google.genai.Client", return_value=mock_client):
         result = wrk.call_llm("hello")
     assert result["output"] == "Gemini response"
     monkeypatch.delenv("LLM_PROVIDER", raising=False)

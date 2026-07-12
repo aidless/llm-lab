@@ -38,12 +38,16 @@ llm-lab serve
 |--------|------|
 | `cli.py` | Typer CLI: `run`, `compare`, `serve`, `history`, `export` |
 | `main.py` | FastAPI app with async submit, compare, batch, history endpoints |
-| `planner.py` | Generates eval plan for a goal, dispatches to LLM providers |
+| `planner/` | Eval-plan package (`engine.py`): generates plan for a goal, dispatches to LLM providers |
 | `verifier.py` | Checks outputs with heuristics + optional DeepEval semantic eval |
 | `tracer.py` | Records runs and traces to local SQLite or Langfuse |
 | `db.py` | SQLite layer: intents, events, history queries |
-| `providers.py` | Provider factory (openai, anthropic, gemini, ollama, etc.) |
+| `runner.py` | Run orchestration for single / compare / batch eval plans |
+| `worker.py` | LLM provider calls (OpenAI / Anthropic / Gemini) + background tasks |
 | `promptfoo_provider.py` | Provider wrapper using promptfoo for local model inference |
+| `settings.py` | Environment-based configuration and provider presets |
+| `pricing.py` | Token / cost pricing helpers |
+| `models.py` | Pydantic request / response models |
 
 ## CLI
 
@@ -115,24 +119,34 @@ mypy .
 llm_lab/
 ├── cli.py              # Typer CLI commands
 ├── main.py             # FastAPI application
-├── planner.py          # Eval plan generation & dispatch
-├── verifier.py         # Output verification
+├── db.py               # SQLite layer
 ├── tracer.py           # Run tracing (SQLite / Langfuse)
-├── db.py               # Database layer
-├── providers.py        # LLM provider factory
+├── runner.py           # Eval plan run orchestration
+├── worker.py           # LLM provider calls (OpenAI / Anthropic / Gemini)
+├── verifier.py         # Output verification
+├── settings.py         # Configuration & provider presets
+├── pricing.py          # Cost / pricing helpers
+├── models.py           # Pydantic models
 ├── promptfoo_provider.py  # promptfoo wrapper
-├── static/             # Static assets (web UI)
+├── planner/            # Eval-plan package
+│   ├── engine.py       # Plan generation & dispatch
+│   └── templates/      # Plan prompt templates
 ├── templates/          # HTML templates
 │   ├── ui.html         # Single-file web dashboard
 │   └── compare_report.html  # A/B compare report
-└── tests/              # Test suite (100% coverage)
-    ├── test_main.py
-    ├── test_cli.py
+├── static/             # Static assets (web UI)
+└── tests/              # Test suite (pytest, CI-gated)
+    ├── conftest.py
     ├── test_api.py
-    ├── test_planner.py
-    ├── test_verifier.py
-    ├── test_tracer.py
+    ├── test_cli.py
     ├── test_db.py
-    ├── test_providers.py
-    └── test_promptfoo_provider.py
+    ├── test_e2e_smoke.py
+    ├── test_export.py
+    ├── test_planner.py
+    ├── test_promptfoo_provider.py
+    ├── test_runner.py
+    ├── test_settings.py
+    ├── test_tracer.py
+    ├── test_verifier.py
+    └── test_worker.py
 ```

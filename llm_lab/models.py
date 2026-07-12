@@ -70,7 +70,7 @@ class BatchRequest(BaseModel):
 
 
 class TemplateDef(BaseModel):
-    template_id: str
+    template_id: str = Field(pattern=r"^[A-Za-z0-9_-]{1,64}$")
     intent_keywords: list[str]
     steps: list[str]
     verifier: str = "structural"

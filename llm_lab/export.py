@@ -1,9 +1,14 @@
 """Export utilities — JSON, CSV, XLSX, and HTML report."""
 
 import csv
+import html
 import io
 import json
 from typing import Any
+
+
+def _esc(v: object) -> str:
+    return html.escape(str(v), quote=True)
 
 CSV_COLUMNS = ["id", "intent_id", "seq", "timestamp", "action", "model", "detail", "cost_usd"]
 
@@ -45,14 +50,14 @@ def export_html(result: dict[str, Any]) -> str:
     rows_html = ""
     for i, s in enumerate(steps):
         v = s.get("verdict", {})
-        label = v.get("label", "—")
+        label = str(v.get("label", "—"))
         badge = {"pass": "pass", "fail": "fail", "partial": "partial"}.get(label, "—")
         rows_html += f"""<tr>
             <td>{i + 1}</td>
-            <td>{s.get('action', '—')}</td>
-            <td><span class="badge badge-{badge}">{label.upper()}</span></td>
-            <td>{s.get('tokens', '—')}</td>
-            <td>${s.get('cost', 0):.6f}</td>
+            <td>{_esc(s.get('action', '—'))}</td>
+            <td><span class="badge badge-{_esc(badge)}">{_esc(label.upper())}</span></td>
+            <td>{_esc(s.get('tokens', '—'))}</td>
+            <td>${_esc(s.get('cost', 0))}</td>
         </tr>"""
 
     passed = result.get("all_passed", False)
@@ -66,7 +71,7 @@ def export_html(result: dict[str, Any]) -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>llm-lab Report — {result.get('intent_id', 'unknown')}</title>
+<title>llm-lab Report — {_esc(result.get('intent_id', 'unknown'))}</title>
 <style>
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #1a1a1a; padding: 2rem; }}
@@ -93,32 +98,32 @@ def export_html(result: dict[str, Any]) -> str:
 <body>
 <div class="container">
   <h1>llm-lab Report</h1>
-  <div class="subtitle">Run {result.get('intent_id', '—')} &middot; {result.get('model', '—')}</div>
+  <div class="subtitle">Run {_esc(result.get('intent_id', '—'))} &middot; {_esc(result.get('model', '—'))}</div>
 
   <div class="summary">
     <div class="card">
       <label>Status</label>
-      <div class="value {status_class}">{status}</div>
+      <div class="value {status_class}">{_esc(status)}</div>
     </div>
     <div class="card">
       <label>Model</label>
-      <div class="value">{result.get('model', '—')}</div>
+      <div class="value">{_esc(result.get('model', '—'))}</div>
     </div>
     <div class="card">
       <label>Goal</label>
-      <div class="value" style="font-size:1rem">{result.get('goal', '—')}</div>
+      <div class="value" style="font-size:1rem">{_esc(result.get('goal', '—'))}</div>
     </div>
     <div class="card">
       <label>Steps</label>
-      <div class="value">{result.get('steps', 0)}</div>
+      <div class="value">{_esc(result.get('steps', 0))}</div>
     </div>
     <div class="card">
       <label>Tokens</label>
-      <div class="value">{result.get('total_tokens', 0)}</div>
+      <div class="value">{_esc(result.get('total_tokens', 0))}</div>
     </div>
     <div class="card">
       <label>Cost</label>
-      <div class="value">${result.get('total_cost_usd', 0):.6f}</div>
+      <div class="value">${_esc(result.get('total_cost_usd', 0))}</div>
     </div>
   </div>
 
@@ -127,7 +132,7 @@ def export_html(result: dict[str, Any]) -> str:
     <tbody>{rows_html}</tbody>
   </table>
 
-  <pre>{steps_json}</pre>
+  <pre>{_esc(steps_json)}</pre>
 </div>
 </body>
 </html>"""
