@@ -122,7 +122,8 @@ class RunResult(BaseModel):
 
 
 class CompareResult(BaseModel):
-    intent_id: str
+    intent_id_a: str
+    intent_id_b: str
     goal: str
     model_a: ModelResult
     model_b: ModelResult
@@ -130,7 +131,7 @@ class CompareResult(BaseModel):
 
 
 class BatchResult(BaseModel):
-    intent_id: str
+    intent_ids: list[str] = []
     goal: str
     models: list[ModelResult]
     count: int

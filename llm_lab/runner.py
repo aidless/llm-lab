@@ -116,7 +116,12 @@ def batch(goal: str, models: list[str], verifier_name: str = "deepeval") -> dict
             }
         )
     results.sort(key=lambda x: (-x["all_passed"], x["total_cost_usd"], x["total_tokens"]))
-    return {"goal": goal, "models": results, "count": len(results)}
+    return {
+        "goal": goal,
+        "models": results,
+        "count": len(results),
+        "intent_ids": [r.get("intent_id", "") for r in results],
+    }
 
 
 def batch_parallel(
@@ -167,6 +172,8 @@ def compare(goal: str, model_a: str | None = None, model_b: str | None = None) -
     result_b = run_plan(goal, model_b)
 
     return {
+        "intent_id_a": result_a["intent_id"],
+        "intent_id_b": result_b["intent_id"],
         "goal": goal,
         "model_a": {
             "model": result_a["model"],

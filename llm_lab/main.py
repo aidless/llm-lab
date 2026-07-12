@@ -1,4 +1,6 @@
 import asyncio
+import hmac
+import html
 import json
 import os
 import uuid
@@ -46,7 +48,7 @@ async def require_api_key(
     provided = x_api_key
     if not provided and authorization and authorization.lower().startswith("bearer "):
         provided = authorization.split(" ", 1)[1].strip()
-    if provided != _API_KEY:
+    if not hmac.compare_digest(provided or "", _API_KEY or ""):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or missing API key",
@@ -141,8 +143,6 @@ async def compare(req: IntentRequest, _: Any = API_KEY_DEP):
     model_a = req.preferred_model or os.getenv("LLM_MODEL", "gpt-4o")
     model_b = req.preferred_model_2 or os.getenv("LLM_MODEL_2", "gpt-4o-mini")
     result = await asyncio.to_thread(core.compare, req.goal, model_a, model_b)
-    intent_id = db._sha16(req.goal)
-    result["intent_id"] = intent_id
     return result
 
 
@@ -165,8 +165,6 @@ async def compare_async(req: IntentRequest, background_tasks: BackgroundTasks, _
 @app.post("/batch", response_model=BatchResult)
 async def batch_run(req: BatchRequest, _: Any = API_KEY_DEP):
     result = await asyncio.to_thread(core.batch, req.goal, req.models)
-    intent_id = db._sha16(req.goal)
-    result["intent_id"] = intent_id
     return result
 
 
@@ -226,7 +224,7 @@ async def get_task_status(task_id: str) -> dict[str, Any]:
 
 
 @app.get("/compare/report/{id_a}/{id_b}", response_class=HTMLResponse)
-async def compare_report(id_a: str, id_b: str):
+async def compare_report(id_a: str, id_b: str, _: Any = API_KEY_DEP):
     events_a = await _try("read trace A", tracer.get_trace(id_a))
     events_b = await _try("read trace B", tracer.get_trace(id_b))
     if not events_a or not events_b:
@@ -235,8 +233,8 @@ async def compare_report(id_a: str, id_b: str):
         content=_COMPARE_REPORT_HTML.format(
             id_a=id_a,
             id_b=id_b,
-            json_a=json.dumps(events_a, indent=2, ensure_ascii=False),
-            json_b=json.dumps(events_b, indent=2, ensure_ascii=False),
+            json_a=html.escape(json.dumps(events_a, indent=2, ensure_ascii=False)),
+            json_b=html.escape(json.dumps(events_b, indent=2, ensure_ascii=False)),
         )
     )
 
@@ -245,7 +243,7 @@ async def compare_report(id_a: str, id_b: str):
 
 
 @app.get("/result/{intent_id}")
-async def get_result(intent_id: str) -> dict[str, Any]:
+async def get_result(intent_id: str, _: Any = API_KEY_DEP) -> dict[str, Any]:
     summary = await _try("read result", tracer.get_summary(intent_id))
     if summary["events"] == 0:
         raise HTTPException(status_code=404, detail="intent_id not found")
@@ -253,7 +251,7 @@ async def get_result(intent_id: str) -> dict[str, Any]:
 
 
 @app.get("/trace/{intent_id}")
-async def get_trace(intent_id: str) -> Any:
+async def get_trace(intent_id: str, _: Any = API_KEY_DEP) -> Any:
     events = await _try("read trace", tracer.get_trace(intent_id))
     if not events:
         raise HTTPException(status_code=404, detail="intent_id not found")
@@ -264,7 +262,7 @@ async def get_trace(intent_id: str) -> Any:
 
 
 @app.get("/export/json/{intent_id}")
-async def export_json_endpoint(intent_id: str) -> PlainTextResponse:
+async def export_json_endpoint(intent_id: str, _: Any = API_KEY_DEP) -> PlainTextResponse:
     events = await _try("read trace", tracer.get_trace(intent_id))
     if not events:
         raise HTTPException(status_code=404, detail="intent_id not found")
@@ -276,7 +274,7 @@ async def export_json_endpoint(intent_id: str) -> PlainTextResponse:
 
 
 @app.get("/export/csv")
-async def export_csv_endpoint() -> PlainTextResponse:
+async def export_csv_endpoint(_: Any = API_KEY_DEP) -> PlainTextResponse:
     rows = await _try("read events", db.get_all_events())
     if not rows:
         raise HTTPException(status_code=404, detail="no data found")
@@ -288,7 +286,7 @@ async def export_csv_endpoint() -> PlainTextResponse:
 
 
 @app.get("/export/xlsx/{intent_id}")
-async def export_xlsx_by_intent(intent_id: str) -> Response:
+async def export_xlsx_by_intent(intent_id: str, _: Any = API_KEY_DEP) -> Response:
     events = await _try("read trace", tracer.get_trace(intent_id))
     if not events:
         raise HTTPException(status_code=404, detail="intent_id not found")
@@ -304,7 +302,7 @@ async def export_xlsx_by_intent(intent_id: str) -> Response:
 
 
 @app.get("/export/xlsx")
-async def export_xlsx_all() -> Response:
+async def export_xlsx_all(_: Any = API_KEY_DEP) -> Response:
     rows = await _try("read events", db.get_all_events())
     if not rows:
         raise HTTPException(status_code=404, detail="no data found")
@@ -323,7 +321,7 @@ async def export_xlsx_all() -> Response:
 
 
 @app.get("/history")
-async def list_history(limit: int = Query(20, ge=1, le=200)) -> dict[str, Any]:
+async def list_history(limit: int = Query(20, ge=1, le=200), _: Any = API_KEY_DEP) -> dict[str, Any]:
     rows = await _try("list intents", db.list_intents(limit))
     return {"runs": rows}
 
