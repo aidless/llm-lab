@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 load_dotenv(override=False)
 
-from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, status  # noqa: E402
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, Request, status  # noqa: E402
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 
@@ -109,6 +109,15 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(title="llm-lab M0", version="0.1.0", lifespan=lifespan)
 
 
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    resp = await call_next(request)
+    resp.headers.setdefault("X-Content-Type-Options", "nosniff")
+    resp.headers.setdefault("X-Frame-Options", "DENY")
+    resp.headers.setdefault("Referrer-Policy", "no-referrer")
+    return resp
+
+
 if os.path.isdir("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -180,7 +189,7 @@ async def batch_async(req: BatchRequest, background_tasks: BackgroundTasks, _: A
 
 
 @app.get("/templates")
-async def get_templates() -> dict[str, Any]:
+async def get_templates(_: Any = API_KEY_DEP) -> dict[str, Any]:
     return {"templates": list_templates()}
 
 
@@ -213,7 +222,7 @@ async def remove_template(template_id: str, _: Any = API_KEY_DEP):
 
 
 @app.get("/status/{task_id}")
-async def get_task_status(task_id: str) -> dict[str, Any]:
+async def get_task_status(task_id: str, _: Any = API_KEY_DEP) -> dict[str, Any]:
     task = await db.get_task(task_id)
     if not task:
         raise HTTPException(status_code=404, detail="task_id not found")
