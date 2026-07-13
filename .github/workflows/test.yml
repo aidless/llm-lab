@@ -22,6 +22,14 @@ jobs:
   test:
     name: test (${{ matrix.os }} / py${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
+    # The codecov step on 3.11 / ubuntu posts a comment back to the PR
+    # when running on a pull_request event. That requires
+    # `pull-requests: read` on the job. Other steps in this job only
+    # need `contents: read` (the workflow-level default), which is a
+    # subset of this so they're unaffected.
+    permissions:
+      contents: read
+      pull-requests: read
     strategy:
       fail-fast: false
       matrix:
@@ -64,12 +72,6 @@ jobs:
 
       - name: Upload coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        # The codecov comment-posting step needs PR write; grant it
-        # only for this job, leaving the rest of the workflow at
-        # the read-only default.
-        permissions:
-          contents: read
-          pull-requests: read
         uses: codecov/codecov-action@v4
         with:
           files: llm_lab/coverage.xml
