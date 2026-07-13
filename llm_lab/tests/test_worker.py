@@ -53,7 +53,15 @@ def test_build_client_openai_defaults(monkeypatch):
     # directly and popped at the end; if the assertion raised (or a
     # sibling test ran first and set LLM_PROVIDER), the cleanup never
     # fired and the next test saw the wrong default provider.
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    #
+    # NOTE: ``_build_client`` reads ``LLM_API_KEY``, not
+    # ``OPENAI_API_KEY`` -- the latter is consumed by the underlying
+    # openai SDK, not by our provider dispatcher. The original test
+    # was broken for the same reason: it set the wrong env var and
+    # only passed when a previous test happened to leak LLM_API_KEY
+    # into the environment. (That's why it failed in CI but passed
+    # locally.)
+    monkeypatch.setenv("LLM_API_KEY", "sk-test")
     monkeypatch.delenv("LLM_PROVIDER", raising=False)
     _, provider = wrk._build_client()
     assert provider == "openai"
@@ -83,17 +91,17 @@ def test_local_default_model_names():
     os.environ.pop("LLM_PROVIDER", None)
 
 
-def test_second_provider_index():
-    os.environ["OPENAI_API_KEY"] = "sk-test"
-    os.environ["LLM_API_KEY_2"] = "sk-test-2"
-    os.environ["LLM_BASE_URL_2"] = "http://localhost:9999/v1"
-    os.environ["LLM_MODEL_2"] = "test-model"
+def test_second_provider_index(monkeypatch):
+    # See test_build_client_openai_defaults for the LLM_API_KEY vs
+    # OPENAI_API_KEY gotcha. We also need to explicitly unset
+    # LLM_PROVIDER so the test isn't influenced by a previous test.
+    monkeypatch.setenv("LLM_API_KEY", "sk-test")
+    monkeypatch.setenv("LLM_API_KEY_2", "sk-test-2")
+    monkeypatch.setenv("LLM_BASE_URL_2", "http://localhost:9999/v1")
+    monkeypatch.setenv("LLM_MODEL_2", "test-model")
+    monkeypatch.delenv("LLM_PROVIDER", raising=False)
     client, _ = wrk._build_client(provider_index=1)
     assert str(client.base_url).rstrip("/") == "http://localhost:9999/v1"
-    os.environ.pop("OPENAI_API_KEY", None)
-    os.environ.pop("LLM_API_KEY_2", None)
-    os.environ.pop("LLM_BASE_URL_2", None)
-    os.environ.pop("LLM_MODEL_2", None)
 
 
 def test_provider_promptfoo_is_local():
