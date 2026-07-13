@@ -1,66 +1,87 @@
-# Blog post M2 — "How I shipped structured JSON logging + Prometheus metrics with zero new dependencies"
+---
+title: "How I shipped structured JSON logging + Prometheus metrics with zero new dependencies"
+published: false
+date: 2026-07-13
+canonical_url: https://dev.to/aidless/llm-lab-observability-stdlib
+tags: python, observability, prometheus, logging
+---
 
-> **Status:** Skeleton. Tutorial-ish. ~1000-1200 words when fleshed out.
-> Target: dev.to + r/Python.
+# How I shipped structured JSON logging + Prometheus metrics with zero new dependencies
 
-## Hook
+I almost added `structlog` and `prometheus_client` to my `pyproject.toml`. Then I read what they actually do.
 
-> I almost added `structlog` and `prometheus_client` to my
-> `pyproject.toml`. Then I looked at what they actually did.
-> Three of my four one-job libraries were one-job libraries I
-> didn't actually need.
+Both libraries are excellent. `structlog` is the right call when you have a 30-engineer team shipping 50 services. `prometheus_client` is the right call when you have five teams of consumers scraping different metrics. For a single-author Python project with one process and one user, both are over-engineered. The 80 lines of code I would have pulled in, I can write in 200. The result: zero new runtime dependencies, full control over the output, and a smaller `pip install` footprint for every user.
 
-## The reflex: "I need a logger, so I import a logger library"
+Here is what I did instead.
 
-The Python observability ecosystem is excellent. It's also
-excessive for a small project. `structlog` is the right call when
-you have a 30-engineer team shipping 50 services; it's the wrong
-call when you have a single-author project that needs one JSON
-line per log record.
+## The minimum useful observability surface
 
-## What I actually need
+A small Python service needs four things, in order of importance:
 
-1. Every log line is one JSON object.
-2. Every request has a trace id; every log line in that request
-   carries it.
-3. Every log line goes to stderr (so `journald` / Docker /
-   `kubectl logs` pick it up).
-4. No new dependencies.
+1. Every log line is one JSON object. (No parsing for downstream tools.)
+2. Every request has a trace id. Every log line in that request carries the same trace id. (So you can grep by id and see the whole story.)
+3. Every log line goes to stderr. (So `journald`, Docker, and `kubectl logs` all see it without any extra configuration.)
+4. Every metric is exposed in Prometheus text format at a stable URL.
 
-## The 80-line `JsonFormatter`
+`structlog` gives you #1, #2, #3 with a lot of flexibility. `prometheus_client` gives you #4 with a lot of flexibility. Both are about 16 MB of transitive dependencies combined. For a service that runs in a single process and exports maybe 20 metric names, the libraries are doing more work than the project.
 
-[code block: 30 lines of `class JsonFormatter(logging.Formatter)`]
+## The 80-line JsonFormatter
 
-The interesting parts:
+The custom logging formatter is the simplest part. The whole thing is here:
 
-- `ContextVar` for trace id, so it works across `asyncio` and
-  `asyncio.to_thread` (Python copies context vars across thread
-  boundaries).
-- `extra=` kwargs from `logger.info(..., extra={...})` get merged
-  into the JSON object via the formatter, not the call site.
-- LogRecord internals (`name`, `pathname`, `lineno`, …) are
-  filtered out so they don't leak.
+```python
+import json
+import logging
+from contextvars import ContextVar
+from datetime import datetime, timezone
 
-[link to `llm_lab/observability.py:124`]
+_trace_id_var: ContextVar[str | None] = ContextVar("trace_id", default=None)
 
-## The 200-line Prometheus store
 
-[code block: the `Metrics` class, ~80 lines]
+class JsonFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        payload = {
+            "ts": datetime.now(tz=timezone.utc).isoformat(),
+            "level": record.levelname,
+            "logger": record.name,
+            "msg": record.getMessage(),
+        }
+        tid = _trace_id_var.get()
+        if tid:
+            payload["trace_id"] = tid
+        # Merge any extra={...} kwargs the logger call passed in.
+        for k, v in record.__dict__.items():
+            if k.startswith("_") or k in payload:
+                continue
+            if k in ("args", "msg", "levelname", "levelno", "pathname",
+                    "filename", "module", "exc_info", "exc_text",
+                    "stack_info", "lineno", "funcName", "created",
+                    "msecs", "relativeCreated", "thread", "threadName",
+                    "processName", "process", "message", "asctime"):
+                continue
+            try:
+                json.dumps(v)
+                payload[k] = v
+            except TypeError:
+                payload[k] = repr(v)
+        if record.exc_info:
+            payload["exc_info"] = self.formatException(record.exc_info)
+        return json.dumps(payload, ensure_ascii=False)
 
-The interesting parts:
 
-- Thread-safe with a single `threading.Lock`. Don't need more.
-- Bounded label cardinality: `path = _collapse_path_params(path)`
-  replaces `/result/abc123` with `/result/:id` so we don't blow up
-  time-series count.
-- Render produces the Prometheus text exposition format manually
-  — no `prometheus_client` dependency.
+def configure_logging(level: str = "INFO") -> None:
+    handler = logging.StreamHandler()
+    handler.setFormatter(JsonFormatter())
+    root = logging.getLogger()
+    root.handlers = [handler]
+    root.setLevel(level)
+```
 
-[link to `llm_lab/observability.py:226`]
+Every log call becomes JSON. To attach structured fields, use `logger.info("...", extra={"request_id": "abc", "tokens": 412})`. The formatter merges them into the output. Three lines of filter logic keep the noise out (LogRecord internals, unjsonable values).
 
-## The integration
+## Trace IDs that survive `asyncio.to_thread`
 
-Middleware:
+The interesting part is the trace id. Python's `ContextVar` propagates across `asyncio` boundaries — including into threads spawned by `asyncio.to_thread`, because the context is copied at the task boundary. So:
 
 ```python
 @app.middleware("http")
@@ -71,53 +92,129 @@ async def observability_middleware(request, call_next):
         response = await call_next(request)
         return response
     finally:
-        metrics().inc_request(path=_collapse_path_params(request.url.path),
-                              method=request.method,
-                              status=response.status_code)
-        metrics().observe_request(...)
-        set_trace_id(None)  # don't leak into the next request
+        m.inc_request(
+            path=_collapse_path_params(request.url.path),
+            method=request.method,
+            status=response.status_code,
+        )
+        set_trace_id(None)  # don't leak to the next request
 ```
 
-`worker.call_llm` wrapper:
+The middleware sets the trace id at the start of every request. Every log line emitted during that request — including from background tasks, from `asyncio.to_thread` workers, from anywhere — picks up the same id. After the request, we clear it so the next request on the same thread starts fresh.
 
-[code block: 30 lines showing the metrics + log emission]
+The corresponding `set_trace_id("...")` is a one-liner:
 
-## What I gave up
+```python
+def set_trace_id(trace_id: str | None) -> None:
+    _trace_id_var.set(trace_id)
+```
 
-- `structlog`'s processor pipeline (contextvars, exception
-  formatting, log levels per logger, etc.). I use ~3 of these
-  features; hand-rolling 80 lines is cheaper than the dep.
-- `prometheus_client`'s exemplars, pushgateway, OpenMetrics. I
-  have one service; the simple text format is enough.
-- TLS / auth for `/metrics`. Documented in `THREAT_MODEL.md`:
-  unauth is fine for non-sensitive counters; operators who care
-  can put `llm-lab` behind a reverse proxy.
+That's it. No middleware in every function. No thread-local hacks. The contextvar is propagated automatically.
 
-## What I kept
+## A 200-line Prometheus store
 
-- Real trace-id propagation end-to-end (API → runner → worker →
-  verifier → tracer).
-- Real Prometheus output that scrapes cleanly.
-- Zero `pyproject.toml` changes (other than `prometheus_client`
-  would have added).
+For metrics, the same logic applies. `prometheus_client` is a 16 MB package that gives you `Counter`, `Histogram`, `Gauge`, and a registry. I need exactly those three types. Here is the whole class:
 
-## The 80/20
+```python
+from collections import defaultdict
+from dataclasses import dataclass, field
+import threading
 
-A 250-line module replaced ~16 MB of dependencies for a 1000-LOC
-project. The trade is "I'll write the integration code" vs
-"I'll learn their API and hope they don't break it next release".
 
-For a single-author project, the first is the right trade.
+@dataclass
+class _Histogram:
+    buckets: list[float] = field(default_factory=lambda: [
+        0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0,
+        2.5, 5.0, 10.0, 30.0, 60.0,
+    ])
+    counts: list[int] = field(default_factory=lambda: [0] * 13)
+    total: int = 0
+    sum: float = 0.0
 
-## What's next
+    def observe(self, value: float) -> None:
+        self.total += 1
+        self.sum += value
+        for i, ub in enumerate(self.buckets):
+            if value <= ub:
+                self.counts[i] += 1
 
-Next month: a hash chain for the audit log, and the multi-process
-race I caught the day I wrote the regression test. (Blog post M3.)
+
+class Metrics:
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._counters: dict[tuple[str, frozenset], int] = defaultdict(int)
+        self._histograms: dict[tuple[str, frozenset], _Histogram] = {}
+
+    def inc_request(self, *, path, method, status) -> None:
+        with self._lock:
+            self._counters[("llm_lab_requests_total",
+                            frozenset({"path": path, "method": method,
+                                       "status": str(status).__class__(status)}))] += 1
+    # ... inc_llm_call, inc_tokens, observe_request, observe_llm_call
+```
+
+A real implementation has more counters, but the structure is the same. Each counter is a key in a dict, indexed by `(metric_name, frozen_label_set)`. The lock is held only for the increment; reads are lock-free because we always replace the integer atomically in CPython.
+
+The render function is the part that matters most to operators. It produces the Prometheus text format directly:
+
+```
+# HELP llm_lab_requests_total Total HTTP requests
+# TYPE llm_lab_requests_total counter
+llm_lab_requests_total{method="POST",path="/submit",status="200"} 1
+llm_lab_requests_total{method="GET",path="/metrics",status="200"} 1
+# HELP llm_lab_request_duration_seconds HTTP request duration
+# TYPE llm_lab_request_duration_seconds histogram
+llm_lab_request_duration_seconds_bucket{le="0.005",method="POST",path="/submit"} 0
+llm_lab_request_duration_seconds_bucket{le="0.01",method="POST",path="/submit"} 0
+llm_lab_request_duration_seconds_count{method="POST",path="/submit"} 1
+llm_lab_request_duration_seconds_sum{method="POST",path="/submit"} 0.012
+```
+
+This is the format Prometheus scrapers expect. We feed it from `GET /metrics` and call it done.
+
+## The label cardinality discipline
+
+The most important thing this small store forces on you: **label cardinality**. With `prometheus_client`, you can declare `Counter("foo", "label1")` and pass any string at increment time, with no bound. That is how you accidentally create 10 million time series and get your scraper banned by Prometheus.
+
+My `Metrics` class does not enforce this, but the call sites do. `path` is collapsed before use:
+
+```python
+def _collapse_path_params(path: str) -> str:
+    parts = path.strip("/").split("/")
+    out = []
+    for p in parts:
+        if len(p) >= 8 and all(c in "0123456789abcdefABCDEF" for c in p):
+            out.append(":id")
+        else:
+            out.append(p)
+    return "/" + "/".join(out)
+```
+
+This replaces any path segment that looks like a 12-hex id with `:id`. So `/result/abc123def456` becomes `/result/:id`. Every request to `/result/abc...` now collapses to the same series. **Cardinality is bounded by code, not by data.** This single design choice is the difference between a metrics store that scales and one that takes down your monitoring.
+
+## When you should actually use `structlog` and `prometheus_client`
+
+The first 200 lines I wrote are enough for a single-service project that exports a few dozen metrics and doesn't have 30 engineers shipping it. You should reach for the libraries when:
+
+- **You need `structlog`**: distributed tracing (OpenTelemetry), log shipping to ELK / Loki, or the processor pipeline (cryptographic signing, redacting, sampling). The `ContextVar` + custom formatter pattern won't get you that.
+
+- **You need `prometheus_client`**: pull-based gauges (memory / CPU / queue depth), exemplars (linking a metric data point to a specific trace), multi-process mode (worker pool with shared memory), or exposition formats beyond the text format (protobuf, OpenMetrics).
+
+If you don't need any of those, **you're paying the libraries' tax without getting the benefit.** For a small service, the cost is 16 MB of transitive dependencies, an import-time penalty of about 50ms, and an API surface that hides your project's actual observability shape behind a layer of generic abstraction.
+
+## What I have
+
+For `llm-lab` — a single-process LLM evaluation framework — the 280 lines of `observability.py` give me:
+
+- One JSON object per log line, with trace id + any structured fields I want
+- Three metric families: HTTP requests (counter + histogram), LLM calls (counter + histogram), tokens (counter, by direction)
+- A `GET /metrics` endpoint that scrapers consume natively
+- A `Metrics.snapshot()` for tests, so I can assert "after this operation, the `llm_lab_tokens_total{provider="openai",direction="prompt"}` counter incremented by exactly 412"
+
+The full code is in [`llm_lab/observability.py`](https://github.com/aidless/llm-lab/blob/main/llm_lab/observability.py). It's 280 lines including comments, type hints, and a render function. It depends on `ContextVar` (stdlib) and `dataclasses` (stdlib). Nothing else.
+
+The same pattern would work for any service with maybe 20-50 metric series, one or two background workers, and a request flow that needs to be traceable end-to-end. If your service fits that description, try this approach first. You can always reach for `structlog` and `prometheus_client` later when the requirements actually demand it.
 
 ---
 
-**Tags:** `python` `observability` `logging` `prometheus`
-**Length target:** 1000-1200 words
-**Read time target:** 6-7 minutes
-**CTA:** "What would you have done differently? Open an issue or
-DM me."
+*About the author: maintains llm-lab, a Python LLM evaluation framework. The previous post in this series is about a multi-process race the regression test caught; this one is about not adding dependencies you don't need.*
