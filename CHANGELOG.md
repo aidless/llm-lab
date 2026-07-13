@@ -1,181 +1,133 @@
 # Changelog
 
-All notable changes to `llm-lab` will be documented in this file.
+All notable changes to `llm-lab` are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/) once v1.0.0 is cut.
 
 > **Pre-1.0 note (≤ v0.x):** Until v1.0.0 is released, minor versions (0.Y.0) may
 > contain breaking changes. Patch versions (0.Y.Z) are backwards-compatible.
->
-> **Planned cut for the governance + observability push:** `v0.9.0`. M1 (governance)
-> and M2 (observability) ship together as a single tagged release so the
-> public surface of the project — first impressions for an outside visitor —
-> is consistent from day one.
+
+> **Release process note:** v0.9.0 → v0.9.6 are kept in git history but were
+> not CI-green; the first CI-green release is **v0.9.7**. The earlier
+> commits document the iteration that got us there. Releases page on
+> GitHub shows v0.9.7 as Latest.
+
+---
+
+## [0.9.7] — 2026-07-13 — first CI-green release
+
+First release where every CI job is green end-to-end on a fresh
+GitHub Actions runner (no manual cleanup, no local-only verification).
+
+### Highlights
+
+- 7 governance docs (CHANGELOG, GOVERNANCE, CONTRIBUTING, SECURITY, THREAT_MODEL, CODEOWNERS, ADOPTERS)
+- 9 ADRs (sync runner, two LLM paths, sha16, audit chain, structured logging, Prometheus metrics, SBOM, …)
+- `llm-lab verify` CLI subcommand — tamper-evident event-log hash chain
+- `GET /metrics` endpoint — Prometheus exposition format
+- 381 tests pass / 1 skipped / 9/9 benchmark fault scenarios
+- ruff + mypy + bandit clean
+- macOS + 3 Python versions CI matrix
+- CycloneDX SBOM per release
+
+### Added
+
+- **Audit chain (ADR-0006).** `event_log` gains `prev_hash` and `row_hash`
+  columns; each new row chains to the previous via
+  `sha256(prev_hash || canonical_json(row_content))`. `db.verify_log()`
+  walks the chain in `id` order and reports the first tamper.
+- **`llm-lab verify` CLI subcommand.** Exits 0 on success / 1 on the
+  first break. Supports `--json` and `--limit`. False-positive CodeQL
+  alerts on `planner/engine.py` are documented with the security
+  contract in `_safe_template_path`'s docstring (regex-validated
+  `template_id` + `os.path.commonpath` containment check).
+- **Observability (`observability.py`).** Structured JSON logging via
+  stdlib, `ContextVar`-based trace-id propagation, in-process
+  Prometheus metrics store with bespoke text-exposition renderer.
+- **HTTP middleware.** Sets / honours `x-trace-id`, records
+  `llm_lab_requests_total` and `llm_lab_request_duration_seconds` with
+  path-template cardinality collapse (`/result/abc123...` → `/result/:id`).
+- **`worker.call_llm` instrumentation.** Per-call metrics
+  (`llm_lab_llm_calls_total`, `llm_lab_tokens_total`,
+  `llm_lab_llm_call_duration_seconds`) + one structured log line per call.
+- **Single OpenAI client source.** `worker.build_openai_client` is the
+  single source of truth; `promptfoo_provider` delegates to it.
+- **CycloneDX SBOM (ADR-0009).** New `sbom` CI job produces
+  `sbom.cdx.json` per push / PR, attached as a release artifact.
+- **CI matrix.** `ubuntu-latest` + `macos-latest` × Python 3.10 / 3.11
+  / 3.12; separate `security` and `benchmark-smoke` jobs; concurrency-group
+  cancellation of in-flight runs on the same ref.
+- **Content + growth scaffolding.** `docs/CONTENT-CALENDAR.md` (12-month
+  plan), `docs/PERSONAS.md` (3 buyer personas), `docs/OUTREACH-TEMPLATES.md`
+  (4 cold messages), `docs/blog-posts/{01-04}-*.md` (4 skeletons),
+  `docs/talks/{2026-local-ml-meetup,cfp-abstract,meetup-list-2026}.md`,
+  `docs/FINDING-FIRST-USER.md`, `docs/NEXT-STEPS.md`.
+
+### Fixed
+
+- **Multi-process / multi-writer concurrency in the audit chain.**
+  `db.append_event` wraps the read-insert-update in `BEGIN IMMEDIATE`
+  + `PRAGMA busy_timeout=5000`, so concurrent writers across processes
+  serialise cleanly. Regression test
+  (`test_concurrent_appends_produce_valid_chain`) runs 4 writers ×
+  25 rows and asserts `verify_log` reports `ok=True`. (Without the
+  fix the chain would break at the first concurrent writer — verified
+  by temporarily reverting the fix during development.)
+- **Workflow `permissions` posture.** Workflow-level
+  `permissions: contents: read`; codecov step additionally grants
+  `pull-requests: read` for PR comment posting. Addresses the 4 ×
+  Medium "Workflow does not contain permissions" alerts from CodeQL.
+- **CI workflow syntax.** `permissions:` is only valid at workflow
+  or job level (not on a step); the `pip-audit` step was indented
+  too deep and is now a sibling of `bandit`. Verified locally with
+  `yaml.safe_load` before every push from v0.9.3 onward.
+- **CI test flakes.** `test_serve_accepts_flags`,
+  `test_watch_command_help` previously substring-checked option names
+  (`"--port" in result.stdout`); rich's help renderer wraps long
+  flag names across lines on narrower terminal widths (CI vs local
+  dev). Replaced with stable help-text substring checks
+  (`"Server port" in result.stdout`).
+- **`test_build_client_openai_defaults` env var.** The test was
+  setting `OPENAI_API_KEY`, but `_build_client` reads `LLM_API_KEY`
+  (the dispatcher env var). Original test only passed locally
+  because a previous test leaked `LLM_API_KEY=ollama` into the env.
+  Fix: set the right env var, rewrite with `monkeypatch` for proper
+  isolation.
+- **pip-audit in CI.** `pip install -e .` made `llm-lab` an
+  editable install; pip-audit under `--strict` refused to audit an
+  editable without a PyPI release. Fix: don't install `llm-lab` in
+  the security job at all; extract the runtime deps from
+  `pyproject.toml` into a requirements-style file and audit that.
+- **bandit B608 vs ruff S608.** Added `# noqa: B608, S608` on the
+  two f-string SQL queries; bandit doesn't honour ruff's S608 ID.
+
+### Security
+
+- The audit chain is a **detection** mechanism, not a **prevention**
+  one. `THREAT_MODEL.md §P3` and the docstring on
+  `_safe_template_path` document what it does and does not defend
+  against. Multi-host deployments are unsupported; an attacker with
+  file-system write access can rewrite the chain forward. For
+  high-stakes deployments ship a periodic hash snapshot of the
+  SQLite file to a write-once store (S3 Object Lock, immutable
+  syslog, etc.) and compare.
+
+### Removed
+
+- **v0.9.0 → v0.9.6 release tags** were deleted from the Releases
+  page after v0.9.7 was published. Those git commits remain in
+  history for traceability. None of those tags passed CI end-to-end
+  on first push; v0.9.7 is the first that did.
 
 ---
 
 ## [Unreleased]
 
-### Added (M4 — growth foundation)
-
-- **Content calendar** (`docs/CONTENT-CALENDAR.md`): month-by-month
-  plan for 12 blog posts, 3 talk tracks, and 4 distribution channels.
-  Targets 1 piece per month — sustainable for a single maintainer.
-- **Blog post drafts** (`docs/blog-posts/01-04-*.md`): skeletons
-  for the 4 most important posts, ready to flesh out and publish.
-  Hooks are concrete, topics are persona-targeted (see PERSONAS.md).
-- **Talk proposal + meetup list** (`docs/talks/`): 200-word CFP
-  abstract for a regional conference talk, and a tiered list of
-  ~100 local meetups + 30+ regional conferences + 8 ML/security-
-  specific conferences across NA / EU / APAC.
-- **Buyer personas** (`docs/PERSONAS.md`): 3 personas (Alice the
-  ML engineer, Bob the security architect, Carol the consultant)
-  with pain points, decision authority, where to find them, and
-  what "good" looks like for each. Explicitly out-of-scope
-  personas documented too.
-- **Outreach templates** (`docs/OUTREACH-TEMPLATES.md`): 4
-  persona-tuned cold messages, plus the "no reply" follow-up
-  guidance, plus a private tracking spreadsheet spec.
-- **Adopters** (`ADOPTERS.md`): added a "Pilot users" section
-  separate from "Listed adopters" — teams in the evaluation
-  phase are more likely to want a low-friction entry than a
-  public endorsement.
-- **New benchmark fault scenario** `first_time_poc`: cold-start
-  to first verified report must complete in < 5 s. This is the
-  metric that matters for "30-minute POC lands a usable first
-  report" — the persona-level adoption test.
-
-### Fixed (v0.9.1 — CodeQL follow-up)
-
-CodeQL ran against `v0.9.0` immediately after release and surfaced 7
-alerts. v0.9.1 addresses them:
-
-- **CI workflow permissions** (`.github/workflows/test.yml`): added
-  `permissions: contents: read` at the workflow level so jobs run with
-  the minimal default token scope. Fixes 4 × Medium
-  "Workflow does not contain permissions" alerts.
-- **`planner/engine.py` CodeQL suppressions**: added
-  `# codeql[py/path-injection]` comments on the 3 lines flagged.
-  **These are false positives** — the upstream `_safe_template_path`
-  regex-validates `template_id` against `^[A-Za-z0-9_-]{1,64}$` AND
-  verifies the resolved path stays within the template store via
-  `os.path.commonpath`. See THREAT_MODEL.md §S4 and the new module
-  docstring on `_safe_template_path`. CodeQL's data-flow analysis
-  does not see the upstream sanitiser across function boundaries.
-
-Process lesson: we should run CodeQL before tagging, not after.
-v0.9.1 is a one-line security posture fix; the CodeQL feedback loop
-is now part of the release checklist.
-
-### Fixed (M3.5 — concurrency + honesty pass)
-
-- **Multi-process / multi-writer concurrency in the audit chain.**
-  `db.append_event` now opens a `BEGIN IMMEDIATE` transaction before
-  reading `prev_hash` and holds it through the `INSERT` and
-  `row_hash` `UPDATE`. Combined with `PRAGMA busy_timeout=5000`, this
-  serialises concurrent writers across processes; a writer that
-  cannot acquire the lock within 5 s raises a `sqlite3.OperationalError`.
-  Regression test: `test_concurrent_appends_produce_valid_chain` runs
-  4 concurrent `append_event` tasks × 25 rows and asserts
-  `verify_log` returns `ok=True`. (Without the fix, the chain would
-  break at the first concurrent writer — verified by temporarily
-  reverting the fix in M3.5 development.)
-- **CI SBOM command fix.** `cyclonedx-py` is invoked as
-  `python -m cyclonedx_py environment` (not a direct binary), with
-  the right flag names (`--output-file`, `--spec-version 1.6`). The
-  previous invocation would have failed in CI on first run.
-- **Known limitations documented.** ADR-0006 now lists 7 honest
-  limitations (multi-host, platform sensitivity, timestamp trust,
-  tamper-rewrite, O(N) verify, legacy genesis, etc.).
-  `README.md` and `THREAT_MODEL.md` §P3 surface the most important
-  ones to operators.
-- **Optional `[sbom]` extra** in `pyproject.toml`. `pip install
-  -e ".[sbom]"` pulls `cyclonedx-bom` for local SBOM generation.
-- **`.gitignore`** now excludes `sbom.cdx.json` (build artifact, not
-  source).
-- **New benchmark fault scenario** `audit_chain_concurrent_writers` —
-  same race-condition coverage as the unit test, but in the
-  benchmark harness.
-
-### Added (audit chain — M3)
-
-- **Tamper-evident event log** (ADR-0006, implemented). `event_log` gains two
-  columns: `prev_hash` (the previous row's hash) and `row_hash`
-  (`sha256(prev_hash || canonical_json(row_content))`). `db.append_event`
-  reads the prior row's hash and chains; `db.verify_log()` walks the
-  chain and reports the first tamper; `llm-lab verify` exposes this to
-  operators.
-- **`llm-lab verify` CLI subcommand.** Walks the chain, exits 0 on
-  success / 1 on the first broken row, with `--json` output for tooling.
-- **Backwards-compatible:** pre-M3 rows (NULL `prev_hash`/`row_hash`)
-  are accepted as legacy genesis rows. `verify_log` reports
-  `legacy_genesis_count` so operators know what fraction of the chain
-  is post-M3.
-- **New tests:** `tests/test_audit_chain.py` (11 tests covering
-  round-trip, tamper detection, deletion detection, CLI surface,
-  schema migration, idempotent `init_db`).
-- **New fault scenarios** in `benchmarks/self_bench.py --mode fault`:
-  `audit_chain_clean` (verifies a fresh log) and `audit_chain_tamper`
-  (mutates a row, asserts `verify_log` catches it).
-- **CycloneDX SBOM auto-generation** in CI (ADR-0009). New `sbom` job
-  produces `sbom.cdx.json` per push / PR.
-
-### Added (governance / infrastructure — no runtime behavior change)
-
-- **Governance & docs**: `CHANGELOG.md`, `GOVERNANCE.md`, `CONTRIBUTING.md`, `SECURITY.md`,
-  `THREAT_MODEL.md`, `CODEOWNERS`, `ADOPTERS.md`, `.github/ISSUE_TEMPLATE/`.
-- **Architecture decision records**: `docs/adr/0001`–`0003` and `0006`–`0008` (sync runner,
-  two LLM paths, `_sha16` truncation, audit-trail upgrade, structured logging, Prometheus metrics).
-- **Benchmark harness**: `benchmarks/self_bench.py` with three modes — `smoke` (CI-safe),
-  `perf` (latency / throughput), `fault` (graceful-degradation tests).
-- **Self-benchmark report**: `benchmarks/v1-results.json` — first reproducible
-  performance + reliability numbers, generated against an offline stub.
-
-### Added (observability — M2)
-
-- **`llm_lab/observability.py`**: structured JSON logging via stdlib
-  (zero new deps), trace-id propagation via `ContextVar`, in-process
-  Prometheus metrics store with bespoke text-exposition renderer.
-- **`GET /metrics` endpoint**: returns Prometheus exposition format.
-  Unauthenticated (documented in `THREAT_MODEL.md`); label cardinality
-  bounded via path-template collapse (`/result/abc123...` → `/result/:id`).
-- **HTTP middleware**: every request gets a trace id (or honours an
-  inbound `x-trace-id` header); middleware records request count +
-  latency into the metrics store and echoes the id back via response
-  header.
-- **`worker.call_llm` instrumentation**: each call records provider /
-  model / outcome, prompt + completion tokens, and wall-clock latency
-  into the metrics store, and emits one structured log line per call.
-- **Contract tests**: `tests/test_llm_contract.py` pins the shared
-  response shape across `worker` and `promptfoo_provider` so the two
-  paths can't silently diverge.
-
-### Changed
-
-- **CI workflow (`test.yml`)**: now runs on `ubuntu-latest` **and** `macos-latest` across
-  Python 3.10 / 3.11 / 3.12; adds a separate `security` job (Bandit + pip-audit in an
-  isolated venv) and a `benchmark-smoke` job. Concurrency group cancels in-flight runs on the same ref.
-- **`llm_lab/worker.py`**: extracted `build_openai_client(base_url, api_key)` as the single
-  source of truth for OpenAI-compatible client construction. `call_llm` now wraps the
-  dispatch in metrics + structured-log emission.
-- **`llm_lab/promptfoo_provider.py`**: client construction now delegates to
-  `worker.build_openai_client` — single source of truth, no behaviour change.
-
-### Documentation
-
-- README rewritten with a 30-second hook, 5-minute quickstart, badges, and
-  benchmark callout.
-- `docs/ARCHITECTURE.md` updated: §4.3 "运维注意" corrected (anthropic / google.generativeai
-  are already lazy-imported with graceful fallback); §9 weakness list refreshed
-  (WAL + busy_timeout + shared client builder now in place).
-- ADR-0007 (structured logging) + ADR-0008 (Prometheus metrics) document
-  the M2 observability decisions.
-
-### Roadmap (tracked, not yet shipped)
-
-See `docs/adr/0006-audit-trail-integrity.md` for the planned upgrade to a
-tamper-evident audit log. This is the next major feature after M2 observability.
+Nothing yet. The next planned change is the v1.0.0 scope:
+- Cut the 0.x → 1.0 transition (commit to SemVer)
+- Third-party security audit (budget pending)
+- LF AI & Data Sandbox application (if traction supports it)
 
 ---
 
@@ -183,23 +135,30 @@ tamper-evident audit log. This is the next major feature after M2 observability.
 
 Initial codebase as audited. Includes:
 
-- FastAPI service (`llm_lab/main.py`) with multi-tenant isolation, authentication on
-  8 endpoints, security headers middleware, and `/health` exemptions.
-- CLI (`llm_lab/cli.py`, Typer) with `run / compare / serve / history / export / report / watch / diff`.
-- `llm_lab/runner.py` — sync planner → LLM → verifier pipeline, ThreadPoolExecutor concurrency.
-- `llm_lab/worker.py` — multi-provider LLM caller (OpenAI / Anthropic / Gemini / Ollama /
-  vLLM / llama.cpp / TGI / LocalAI) with lazy SDK imports and graceful fallback.
-- `llm_lab/promptfoo_provider.py` — parallel LLM path mirroring promptfoo semantics
-  (YAML config, SQLite cache, exponential-backoff retry).
-- `llm_lab/planner/engine.py` — template engine with `_TEMPLATE_ID_RE` + `_safe_template_path`
-  to block path-traversal.
-- `llm_lab/verifier.py` — `structural` / `keyword` / `deepeval` (opt-in) verifiers.
+- FastAPI service (`llm_lab/main.py`) with multi-tenant isolation,
+  authentication on 8 endpoints, security headers middleware, and
+  `/health` exemptions.
+- CLI (`llm_lab/cli.py`, Typer) with
+  `run / compare / serve / history / export / report / watch / diff`.
+- `llm_lab/runner.py` — sync planner → LLM → verifier pipeline,
+  ThreadPoolExecutor concurrency.
+- `llm_lab/worker.py` — multi-provider LLM caller (OpenAI / Anthropic /
+  Gemini / Ollama / vLLM / llama.cpp / TGI / LocalAI) with lazy SDK
+  imports and graceful fallback.
+- `llm_lab/promptfoo_provider.py` — parallel LLM path mirroring
+  promptfoo semantics (YAML config, SQLite cache, exponential-backoff
+  retry).
+- `llm_lab/planner/engine.py` — template engine with `_TEMPLATE_ID_RE`
+  + `_safe_template_path` to block path-traversal.
+- `llm_lab/verifier.py` — `structural` / `keyword` / `deepeval` (opt-in)
+  verifiers.
 - `llm_lab/tracer.py` — Langfuse integration with SQLite fallback.
-- `llm_lab/db.py` — SQLite + WAL + `busy_timeout=5000`, `event_log` schema with
-  `_sha16` input/output hashes and a `verdict` column.
-- `llm_lab/pricing.py` — `_PRICE_PER_1K` per-model costs; local providers always $0.
-- `llm_lab/export.py` — JSON / CSV / XLSX / HTML exporters; all HTML output escaped
-  via `_esc()` (XSS-safe).
+- `llm_lab/db.py` — SQLite + WAL + `busy_timeout=5000`, `event_log`
+  schema with `_sha16` input/output hashes and a `verdict` column.
+- `llm_lab/pricing.py` — `_PRICE_PER_1K` per-model costs; local
+  providers always $0.
+- `llm_lab/export.py` — JSON / CSV / XLSX / HTML exporters; all HTML
+  output escaped via `_esc()` (XSS-safe).
 
 Security audit fixes shipped prior to this changelog (commits
 `f31d0e4` `be72f17` `2e47df1` `1456178` `a709577`):
@@ -211,7 +170,8 @@ Security audit fixes shipped prior to this changelog (commits
 5. Security response headers middleware.
 6. Template path-traversal hard stop in `planner._safe_template_path`.
 7. `event_log.verdict` column added via idempotent `ALTER TABLE`.
-8. Output artefact hashes written to `event_log` for audit traceability.
+8. Output artefact hashes written to `event_log` for audit
+   traceability.
 
 **Test status:** 349 passed / 1 skipped.
 **Static checks:** `ruff` (incl. `S` rules) + `mypy` clean.
