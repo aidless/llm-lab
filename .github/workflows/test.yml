@@ -105,14 +105,14 @@ jobs:
         working-directory: llm_lab
         run: . ../.audit-venv/bin/activate && bandit -r llm_lab -ll -q
 
-        - name: pip-audit (dependency CVE scan)
-          working-directory: llm_lab
-          # --skip-editable excludes the locally installed `llm-lab` package
-          # itself from the audit (it has no PyPI release yet so pip-audit
-          # cannot resolve it). Editable deps are not security-checked here;
-          # Dependabot (configured separately) handles the source repo
-          # for vulnerability notifications.
-          run: . ../.audit-venv/bin/activate && pip-audit --strict --skip-editable
+      - name: pip-audit (dependency CVE scan)
+        working-directory: llm_lab
+        # --skip-editable excludes the locally installed `llm-lab` package
+        # itself from the audit (it has no PyPI release yet so pip-audit
+        # cannot resolve it). Editable deps are not security-checked here;
+        # Dependabot (configured separately) handles the source repo
+        # for vulnerability notifications.
+        run: . ../.audit-venv/bin/activate && pip-audit --strict --skip-editable
 
   benchmark-smoke:
     name: benchmark smoke
