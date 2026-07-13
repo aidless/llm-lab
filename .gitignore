@@ -24,6 +24,10 @@ llm_lab.db
 .coverage
 .coverage.*
 
+# Build artifacts (not source)
+sbom.cdx.json
+sbom.*.json
+
 # IDE
 .vscode/
 .idea/

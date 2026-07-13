@@ -1,10 +1,24 @@
+import logging
 import os
 from typing import Any
 
 from openai import OpenAI, OpenAIError
 
+from llm_lab.observability import metrics as _metrics
+from llm_lab.observability import timed as _timed
 from llm_lab.pricing import _LOCAL_PROVIDERS
 from llm_lab.pricing import estimate_cost as _estimate_cost
+
+_log = logging.getLogger(__name__)
+
+
+def build_openai_client(base_url: str, api_key: str = "ollama") -> OpenAI:
+    """Construct an OpenAI-compatible client.
+
+    Centralised so the main pipeline (here) and the promptfoo provider
+    build clients identically — single source of truth for client setup.
+    """
+    return OpenAI(api_key=api_key, base_url=base_url)
 
 _LOCAL_DEFAULTS = {
     "ollama": {"base_url": "http://localhost:11434/v1", "model": "deepseek-r1:7b"},
@@ -39,13 +53,13 @@ def _build_client(provider_index: int = 0) -> tuple[OpenAI, str]:
         provider_cfg = _LOCAL_DEFAULTS.get(provider, _LOCAL_DEFAULTS["ollama"])
         base_url = os.getenv(f"LLM_BASE_URL{suffix}") or provider_cfg["base_url"]
         api_key = os.getenv(f"LLM_API_KEY{suffix}") or "ollama"
-        return OpenAI(api_key=api_key, base_url=base_url), provider
+        return build_openai_client(base_url, api_key), provider
 
     api_key_raw = os.getenv(f"LLM_API_KEY{suffix}")
     api_key2 = api_key_raw if api_key_raw else os.getenv("LLM_API_KEY", "")
     base_url_raw = os.getenv(f"LLM_BASE_URL{suffix}")
     base_url2 = base_url_raw if base_url_raw else os.getenv("LLM_BASE_URL", "https://api.openai.com/v1")
-    return OpenAI(api_key=api_key2, base_url=base_url2), provider
+    return build_openai_client(base_url2, api_key2), provider
 
 
 def _get_default_model(provider: str) -> str:
@@ -176,6 +190,67 @@ def call_llm(
     max_tokens: int = 4096,
 ) -> dict[str, Any]:
     provider = _resolve_provider()
+    effective_model = model or os.getenv("LLM_MODEL") or _get_default_model(provider)
+    m = _metrics()
+
+    with _timed() as t:
+        result = _call_llm_dispatch(
+            prompt=prompt,
+            provider=provider,
+            model=effective_model,
+            provider_index=provider_index,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+
+    # Record metrics. Be defensive against partial provider dicts (e.g.
+    # test mocks, future provider paths that don't set every key) — fall
+    # back to the resolved-effective-model so we never crash on labels.
+    elapsed = t["elapsed"]
+    result_model = result.get("model") or effective_model
+    m.observe_llm_call(provider=provider, model=result_model, seconds=elapsed)
+    finish_reason = result.get("finish_reason", "stop")
+    outcome = "error" if finish_reason == "error" else "ok"
+    m.inc_llm_call(provider=provider, model=result_model, outcome=outcome)
+    tu = result.get("token_usage") or {}
+    m.inc_tokens(
+        provider=provider,
+        model=result_model,
+        direction="prompt",
+        count=int(tu.get("prompt_tokens") or 0),
+    )
+    m.inc_tokens(
+        provider=provider,
+        model=result_model,
+        direction="completion",
+        count=int(tu.get("completion_tokens") or 0),
+    )
+
+    # Emit a structured log line. ``extra=`` is consumed by
+    # llm_lab.observability.JsonFormatter.
+    _log.info(
+        "llm call complete",
+        extra={
+            "provider": provider,
+            "model": result_model,
+            "tokens": int(tu.get("total_tokens") or 0),
+            "cost_usd": float(result.get("cost_usd") or 0.0),
+            "finish_reason": finish_reason,
+            "duration_seconds": round(elapsed, 6),
+        },
+    )
+    return result
+
+
+def _call_llm_dispatch(
+    *,
+    prompt: str,
+    provider: str,
+    model: str,
+    provider_index: int,
+    temperature: float,
+    max_tokens: int,
+) -> dict[str, Any]:
 
     if provider == "promptfoo":
         from llm_lab import promptfoo_provider

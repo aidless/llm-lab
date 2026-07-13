@@ -7,10 +7,10 @@ import os
 import sqlite3
 import time
 from pathlib import Path
-
-from openai import OpenAI
+from typing import Any
 
 from llm_lab.pricing import estimate_cost as _estimate_cost
+from llm_lab.worker import build_openai_client
 
 _CACHE_DB = Path(os.getenv("PROMPTFOO_CACHE", str(Path(__file__).parent / ".promptfoo_cache.db")))
 _MAX_RETRIES_DEFAULT = 3
@@ -76,10 +76,10 @@ def _read_provider_config() -> dict:
         return {}
 
 
-def _build_client_from_config(cfg: dict):
-    api_key = cfg.get("api_key") or os.getenv("LLM_API_KEY", "ollama")
-    base_url = cfg.get("base_url") or os.getenv("LLM_BASE_URL", "http://localhost:11434/v1")
-    return OpenAI(api_key=api_key, base_url=base_url)
+def _build_client_from_config(cfg: dict[str, Any]):
+    api_key: str = str(cfg.get("api_key") or os.getenv("LLM_API_KEY", "ollama"))
+    base_url: str = str(cfg.get("base_url") or os.getenv("LLM_BASE_URL", "http://localhost:11434/v1"))
+    return build_openai_client(base_url, api_key)
 
 
 def call_llm(

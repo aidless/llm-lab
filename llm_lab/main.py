@@ -4,6 +4,7 @@ import html
 import json
 import os
 import pathlib
+import time
 import uuid
 from contextlib import asynccontextmanager
 from typing import Any
@@ -23,6 +24,13 @@ from llm_lab import (  # noqa: E402
 )
 from llm_lab import runner as core  # noqa: E402
 from llm_lab.models import BatchRequest, BatchResult, CompareResult, IntentRequest, RunResult, TemplateDef  # noqa: E402
+from llm_lab.observability import (  # noqa: E402
+    configure_logging,
+    metrics,
+    new_trace_id,
+    render_prometheus,
+    set_trace_id,
+)
 from llm_lab.planner import _TEMPLATE_ID_RE, delete_custom_template, list_templates, save_custom_template  # noqa: E402
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -106,6 +114,7 @@ async def _run_task(
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    configure_logging()
     await db.init_db()
     yield
     tracer.shutdown()
@@ -121,6 +130,77 @@ async def security_headers(request: Request, call_next):
     resp.headers.setdefault("X-Frame-Options", "DENY")
     resp.headers.setdefault("Referrer-Policy", "no-referrer")
     return resp
+
+
+@app.middleware("http")
+async def observability_middleware(request: Request, call_next):
+    """Set a per-request trace id, then record HTTP metrics + log line."""
+    # Honour inbound trace ids if a caller supplied one (e.g. from a
+    # test or upstream proxy); otherwise mint one.
+    inbound = request.headers.get("x-trace-id")
+    set_trace_id(inbound or new_trace_id())
+    t0 = time.perf_counter()
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        # Echo the trace id back so clients can correlate.
+        response.headers.setdefault("x-trace-id", current_trace_id_safe())
+        return response
+    finally:
+        elapsed = time.perf_counter() - t0
+        path = request.url.path
+        # Strip per-id path params so we don't blow up label cardinality
+        # (e.g. /status/abc123, /result/abc123 → /status/:id, /result/:id).
+        path = _collapse_path_params(path)
+        m = metrics()
+        m.inc_request(path=path, method=request.method, status=status_code)
+        m.observe_request(path=path, method=request.method, seconds=elapsed)
+        # Reset trace id so it doesn't leak into subsequent requests that
+        # happen to share the worker thread.
+        set_trace_id(None)
+
+
+def _collapse_path_params(path: str) -> str:
+    """Replace trailing path segments with ``:id`` for known id-shaped routes.
+
+    Keeps label cardinality bounded for Prometheus — without this, every
+    unique intent_id would create a new time series.
+    """
+    parts = path.strip("/").split("/")
+    if not parts or parts == [""]:
+        return "/"
+    # Anything that looks like a 12-hex id or 8+ hex token becomes :id.
+    out = []
+    for p in parts:
+        if len(p) >= 8 and all(c in "0123456789abcdefABCDEF" for c in p):
+            out.append(":id")
+        else:
+            out.append(p)
+    return "/" + "/".join(out)
+
+
+def current_trace_id_safe() -> str:
+    from llm_lab.observability import current_trace_id
+
+    return current_trace_id() or ""
+
+
+# ── Metrics endpoint ───────────────────────────────────────────────────────
+
+
+@app.get("/metrics", response_class=PlainTextResponse)
+async def metrics_endpoint() -> PlainTextResponse:
+    """Prometheus exposition format.
+
+    Intentionally **unauthenticated** — Prometheus scrapers can't easily
+    carry credentials and the data is non-sensitive (counters + histograms
+    over our own request volume). See THREAT_MODEL.md §"Assumptions" #4.
+    """
+    return PlainTextResponse(
+        content=render_prometheus(),
+        media_type="text/plain; version=0.0.4",
+    )
 
 
 if os.path.isdir("static"):

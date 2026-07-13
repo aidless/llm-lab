@@ -5,12 +5,21 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+
+# Cancel in-flight runs on the same PR/branch to save CI minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    name: test (${{ matrix.os }} / py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest]
         python-version: ["3.10", "3.11", "3.12"]
 
     defaults:
@@ -23,21 +32,128 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: llm_lab/pyproject.toml
 
-      - name: Install dependencies
+      - name: Install (core + dev + xlsx)
         run: |
-          pip install -e ".[dev]"
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,xlsx]"
 
       - name: Lint (ruff)
-        run: ruff check . --ignore N999
+        run: ruff check .
 
       - name: Type check (mypy)
-        run: mypy . --ignore-missing-imports
+        run: mypy .
 
-      - name: Test (pytest)
+      - name: Test (pytest + coverage)
+        env:
+          # Dummy keys keep providers from reaching real APIs; offline tests
+          # never exercise the network path.
+          OPENAI_API_KEY: sk-test
+          ANTHROPIC_API_KEY: sk-ant-test
+          GOOGLE_API_KEY: test
         run: |
-          # Set dummy API keys to prevent real API calls in CI
-          export OPENAI_API_KEY=sk-test
-          export ANTHROPIC_API_KEY=sk-ant-test
-          export GOOGLE_API_KEY=test
-          pytest --cov --cov-report=term-missing --timeout=30
+          pytest --cov --cov-report=xml --cov-report=term-missing --timeout=30 -q
+
+      - name: Upload coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          files: llm_lab/coverage.xml
+          fail_ci_if_error: false
+
+  security:
+    name: security scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Use a throwaway venv so `pip-audit --strict` only sees llm-lab's
+      # declared dependencies — never the host's global environment
+      # (which may carry unrelated editable installs).
+      - name: Create isolated venv
+        run: python -m venv .audit-venv
+
+      - name: Install (isolated)
+        working-directory: llm_lab
+        run: |
+          . ../.audit-venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install bandit pip-audit
+
+      - name: Bandit (code-level security lint)
+        working-directory: llm_lab
+        run: . ../.audit-venv/bin/activate && bandit -r llm_lab -ll -q
+
+      - name: pip-audit (dependency CVE scan)
+        working-directory: llm_lab
+        run: . ../.audit-venv/bin/activate && pip-audit --strict
+
+  benchmark-smoke:
+    name: benchmark smoke
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: llm_lab
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: llm_lab/pyproject.toml
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      # Smoke-only: confirms the script runs and emits JSON. Full benchmark
+      # requires a real LLM endpoint and is run on-demand, not on every PR.
+      - name: Run benchmarks/self_bench.py --mode smoke
+        env:
+          OPENAI_API_KEY: sk-test
+        run: |
+          python benchmarks/self_bench.py --mode smoke --output benchmarks/_ci_smoke.json
+
+      - name: Upload benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-smoke
+          path: llm_lab/benchmarks/_ci_smoke.json
+
+  sbom:
+    name: SBOM (CycloneDX)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: llm_lab/pyproject.toml
+
+      - name: Install + generate SBOM
+        working-directory: llm_lab
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" cyclonedx-bom
+          python -m cyclonedx_py environment \
+              --output-file sbom.cdx.json \
+              --spec-version 1.6 \
+              --output-format JSON \
+              --pyproject pyproject.toml
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: llm_lab/sbom.cdx.json

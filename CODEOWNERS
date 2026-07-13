@@ -1,0 +1,21 @@
+# CODEOWNERS — `llm-lab`
+# Each line is a file pattern followed by one or more owners.
+# Owners are pinged on PRs touching these paths.
+
+# Default: the maintainer reviews everything.
+*                    @llm-lab/maintainers
+
+# Security-sensitive modules — same maintainer, but a second-pass review is
+# required (see CONTRIBUTING.md "Security-sensitive changes").
+/llm_lab/main.py     @llm-lab/maintainers
+/llm_lab/db.py       @llm-lab/maintainers
+/llm_lab/planner/    @llm-lab/maintainers
+/llm_lab/export.py   @llm-lab/maintainers
+/SECURITY.md         @llm-lab/maintainers
+/THREAT_MODEL.md     @llm-lab/maintainers
+
+# ADRs — any new ADR or amendment is reviewed by the maintainer.
+/docs/adr/           @llm-lab/maintainers
+
+# When we have a second maintainer, the @llm-lab/maintainers team will expand.
+# For now, this is a single GitHub user (replace before going public).

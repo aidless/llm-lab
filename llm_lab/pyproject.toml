@@ -32,9 +32,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/llm-lab"
-Repository = "https://github.com/your-org/llm-lab"
-Issues = "https://github.com/your-org/llm-lab/issues"
+Homepage = "https://github.com/aidless/llm-lab"
+Repository = "https://github.com/aidless/llm-lab"
+Issues = "https://github.com/aidless/llm-lab/issues"
 
 [project.scripts]
 llm-lab = "llm_lab.cli:entry"
@@ -49,6 +49,11 @@ dev = [
 ]
 xlsx = [
     "openpyxl>=3.1",
+]
+sbom = [
+    # Used by the ``sbom`` CI job to generate a CycloneDX SBOM per
+    # push / PR. Build-time only; not a runtime dependency.
+    "cyclonedx-bom>=7.0",
 ]
 
 [tool.setuptools.packages.find]

@@ -423,6 +423,54 @@ def diff(
     console.print(table)
 
 
+# ── verify (audit-log hash chain) ──────────────────────────────────────────
+
+
+@app.command()
+def verify(
+    limit: int = typer.Option(None, "--limit", help="Only verify the first N rows"),
+    json_output: bool = typer.Option(False, "--json", "-j", help="Output raw JSON"),
+):
+    """Walk the event_log hash chain and report any tampering.
+
+    See ``docs/adr/0006-audit-trail-integrity.md`` for the chain design.
+    Exits 0 if every row's stored ``row_hash`` matches the recomputed one
+    *and* every row's ``prev_hash`` matches the previous row's ``row_hash``.
+    Exits 1 on the first mismatch, with the offending row's id.
+    """
+    from llm_lab import db as database
+
+    async def _run() -> dict[str, Any]:
+        await database.init_db()
+        return await database.verify_log(limit=limit)
+
+    report = asyncio.run(_run())
+
+    if json_output:
+        console.print(json.dumps(report, ensure_ascii=False, indent=2))
+    else:
+        if report["ok"]:
+            legacy = report.get("legacy_genesis_count", 0)
+            legacy_msg = f" ({legacy} legacy genesis rows skipped)" if legacy else ""
+            console.print(
+                f"[green]OK[/green] {report['rows_checked']} rows verified, chain intact{legacy_msg}"
+            )
+        else:
+            brk = report["first_break"]
+            if brk is None:
+                # Defensive: ok=False should always come with first_break.
+                # If it doesn't, surface that as a verification failure too.
+                console.print("[red]FAIL[/red] ok=False but no first_break reported")
+            else:
+                console.print(
+                    f"[red]FAIL[/red] at id={brk['id']} ({brk['kind']}):\n"
+                    f"  expected: {brk['expected']}\n"
+                    f"  found:    {brk['found']}"
+                )
+
+    raise typer.Exit(code=0 if report["ok"] else 1)
+
+
 # ── entry point ──────────────────────────────────────────────────────────────
 
 

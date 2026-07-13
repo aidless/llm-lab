@@ -1,0 +1,74 @@
+{
+  "mode": "all",
+  "started_at": "2026-07-13T04:57:31.154829+00:00",
+  "duration_seconds": 2.3178,
+  "python_version": "3.11.15",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "scenarios": [
+    {
+      "name": "perf",
+      "steps": 50,
+      "completed": 50,
+      "errors": [],
+      "wall_seconds": 0.2711,
+      "throughput_steps_per_sec": 184.45,
+      "latency_ms": {
+        "min": 5.04,
+        "p50": 5.4,
+        "p95": 5.67,
+        "max": 5.76
+      },
+      "tokens": {
+        "total": 1070
+      },
+      "cost_usd": 0.0,
+      "mode": "stub",
+      "pass": true
+    },
+    {
+      "name": "provider_timeout",
+      "pass": true,
+      "observation": "provider resolved; would attempt call"
+    },
+    {
+      "name": "missing_api_key",
+      "pass": true,
+      "observation": "imported worker without API key ¡ª no crash"
+    },
+    {
+      "name": "optional_sdk_or_key",
+      "pass": true,
+      "observation": "structured error dict returned: finish_reason='error'"
+    },
+    {
+      "name": "sqlite_lock",
+      "pass": true,
+      "observation": "ok: 6 concurrent appends completed"
+    },
+    {
+      "name": "audit_chain_clean",
+      "pass": true,
+      "observation": "ok: 3-row chain verifies intact"
+    },
+    {
+      "name": "audit_chain_tamper",
+      "pass": true,
+      "observation": "detect tamper at id=2 kind=row_hash"
+    },
+    {
+      "name": "audit_chain_concurrent_writers",
+      "pass": true,
+      "observation": "ok: 4 writers ¡Á 25 rows, chain verifies (100 rows)"
+    },
+    {
+      "name": "first_time_poc",
+      "pass": true,
+      "observation": "ok: cold start to verified report in 0.04s (1 rows)"
+    }
+  ],
+  "summary": {
+    "n_scenarios": 9,
+    "n_pass": 9,
+    "n_fail": 0
+  }
+}
