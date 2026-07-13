@@ -1,6 +1,6 @@
 ---
 title: "How I shipped structured JSON logging + Prometheus metrics with zero new dependencies"
-published: false
+published: true
 date: 2026-07-13
 canonical_url: https://dev.to/aidless/llm-lab-observability-stdlib
 tags: python, observability, prometheus, logging

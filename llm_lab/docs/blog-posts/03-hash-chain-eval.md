@@ -1,6 +1,6 @@
 ---
 title: "Adding a tamper-evident event log to an LLM evaluation framework (and the multi-process race my regression test caught)"
-published: false
+published: true
 date: 2026-07-13
 canonical_url: https://dev.to/aidless/llm-lab-audit-chain
 tags: python, sqlite, audit, security, testing
