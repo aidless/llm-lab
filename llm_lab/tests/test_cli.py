@@ -196,9 +196,16 @@ def test_export_to_file(monkeypatch):
 
 
 def test_serve_accepts_flags():
+    # Check for distinctive help content rather than the literal
+    # ``--port`` flag — terminal-width differences across CI runners
+    # can cause rich to wrap the option name across two lines, which
+    # breaks a substring check. ``Server port`` and ``Bind address``
+    # are stable across renderings because they come from the help
+    # text on the option, not the option name itself.
     result = _cli_runner.invoke(cli.app, ["serve", "--help"])
     assert result.exit_code == 0
-    assert "--port" in result.stdout
+    assert "Server port" in result.stdout
+    assert "Bind address" in result.stdout
 
 
 # ── cli.py uncovered-branch coverage ─────────────────────────────────────
@@ -533,10 +540,12 @@ def test_report_to_file(monkeypatch):
 
 
 def test_watch_command_help():
+    # See test_serve_accepts_flags for why we don't substring-check
+    # the option name itself.
     result = _cli_runner.invoke(cli.app, ["watch", "--help"])
     assert result.exit_code == 0
-    assert "--watch-dir" in result.stdout
-    assert "--interval" in result.stdout
+    assert "Directory to watch" in result.stdout
+    assert "Poll interval" in result.stdout
 
 
 # ── diff command ─────────────────────────────────────────────────────────────

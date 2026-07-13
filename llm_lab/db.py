@@ -238,7 +238,7 @@ async def append_event(
             # the row back so the hash matches what ``verify_log`` will
             # recompute (single source of truth: column �?hash).
             sel_cursor = await db.execute(
-                f"SELECT {_CHAIN_COLUMNS_CSV} FROM event_log WHERE id = ?",  # noqa: S608
+                f"SELECT {_CHAIN_COLUMNS_CSV} FROM event_log WHERE id = ?",  # noqa: B608, S608
                 (new_id,),
             )
             row = await sel_cursor.fetchone()
@@ -391,7 +391,7 @@ async def verify_log(*, limit: int | None = None) -> dict[str, Any]:
         cols_csv = ", ".join(_CHAIN_COLUMNS)
         # Column list is a module constant, not user input �?safe to interpolate.
         sql = (
-            f"SELECT id, prev_hash, row_hash, {cols_csv} FROM event_log "  # noqa: S608
+            f"SELECT id, prev_hash, row_hash, {cols_csv} FROM event_log "  # noqa: B608, S608
             "ORDER BY id ASC"
         )
         if limit:

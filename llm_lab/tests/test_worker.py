@@ -47,11 +47,16 @@ def test_build_client_local_defaults():
     os.environ.pop("LLM_PROVIDER", None)
 
 
-def test_build_client_openai_defaults():
-    os.environ["OPENAI_API_KEY"] = "sk-test"
+def test_build_client_openai_defaults(monkeypatch):
+    # Use monkeypatch so this test does not depend on env state from
+    # sibling tests or the host shell. Previous version used os.environ
+    # directly and popped at the end; if the assertion raised (or a
+    # sibling test ran first and set LLM_PROVIDER), the cleanup never
+    # fired and the next test saw the wrong default provider.
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.delenv("LLM_PROVIDER", raising=False)
     _, provider = wrk._build_client()
     assert provider == "openai"
-    os.environ.pop("OPENAI_API_KEY", None)
 
 
 def test_call_llm_local_without_server():
