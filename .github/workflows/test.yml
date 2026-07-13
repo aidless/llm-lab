@@ -12,6 +12,12 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Minimal default token scope. Jobs that need write access (none
+# today) must grant it explicitly. This is the GHAS-recommended
+# posture — addresses CodeQL "workflow does not contain permissions".
+permissions:
+  contents: read
+
 jobs:
   test:
     name: test (${{ matrix.os }} / py${{ matrix.python-version }})

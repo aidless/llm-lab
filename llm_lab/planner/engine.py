@@ -48,6 +48,28 @@ _TEMPLATE_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 
 def _safe_template_path(template_id: str) -> str:
+    """Resolve a template id to a safe filesystem path.
+
+    Security contract (enforced by THREAT_MODEL.md §S4 "Template path
+    traversal"):
+
+    1. ``template_id`` must match ``_TEMPLATE_ID_RE``
+       (``^[A-Za-z0-9_-]{1,64}$``). Anything else raises
+       ``ValueError`` *before* the path is constructed.
+    2. The candidate path is normalised via ``os.path.realpath``.
+    3. ``os.path.commonpath`` verifies the resolved path is inside
+       the template store. Any traversal (e.g. ``..`` segments or
+       absolute paths) raises ``ValueError``.
+
+    The first check is the load-bearing one: it constrains the
+    input to a 65-character alphabet that cannot contain path
+    separators, parent refs, or null bytes. CodeQL's
+    ``py/path-injection`` query flags ``os.path.join`` /
+    ``open(fpath)`` / ``os.remove(fpath)`` calls below because
+    it does not see the upstream sanitiser across function
+    boundaries; the suppressions on those call sites point back
+    to this function as the authoritative reason.
+    """
     if not _TEMPLATE_ID_RE.match(template_id):
         raise ValueError(f"invalid template_id: {template_id!r}")
     store = _template_store_path()
@@ -62,7 +84,12 @@ def _safe_template_path(template_id: str) -> str:
 def save_custom_template(template_id: str, data: dict[str, Any]) -> str:
     fpath = _safe_template_path(template_id)
     try:
-        with open(fpath, "w", encoding="utf-8") as f:
+        # CodeQL: template_id is regex-validated by _safe_template_path against
+        # _TEMPLATE_ID_RE (^[A-Za-z0-9_-]{1,64}$) AND the resolved path is
+        # verified to stay within the templates store via os.path.commonpath.
+        # See THREAT_MODEL.md §S4. The "uncontrolled data" alert is a
+        # data-flow false positive that does not see the upstream sanitiser.
+        with open(fpath, "w", encoding="utf-8") as f:  # codeql[py/path-injection]
             yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
         reload_templates()
     except (OSError, yaml.YAMLError) as exc:
@@ -72,8 +99,9 @@ def save_custom_template(template_id: str, data: dict[str, Any]) -> str:
 
 def delete_custom_template(template_id: str) -> bool:
     fpath = _safe_template_path(template_id)
-    if os.path.isfile(fpath):
-        os.remove(fpath)
+    # See save_custom_template for the suppression justification.
+    if os.path.isfile(fpath):  # codeql[py/path-injection]
+        os.remove(fpath)  # codeql[py/path-injection]
         reload_templates()
         return True
     return False

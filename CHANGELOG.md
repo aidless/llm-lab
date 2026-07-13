@@ -46,6 +46,28 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) once 
   metric that matters for "30-minute POC lands a usable first
   report" — the persona-level adoption test.
 
+### Fixed (v0.9.1 — CodeQL follow-up)
+
+CodeQL ran against `v0.9.0` immediately after release and surfaced 7
+alerts. v0.9.1 addresses them:
+
+- **CI workflow permissions** (`.github/workflows/test.yml`): added
+  `permissions: contents: read` at the workflow level so jobs run with
+  the minimal default token scope. Fixes 4 × Medium
+  "Workflow does not contain permissions" alerts.
+- **`planner/engine.py` CodeQL suppressions**: added
+  `# codeql[py/path-injection]` comments on the 3 lines flagged.
+  **These are false positives** — the upstream `_safe_template_path`
+  regex-validates `template_id` against `^[A-Za-z0-9_-]{1,64}$` AND
+  verifies the resolved path stays within the template store via
+  `os.path.commonpath`. See THREAT_MODEL.md §S4 and the new module
+  docstring on `_safe_template_path`. CodeQL's data-flow analysis
+  does not see the upstream sanitiser across function boundaries.
+
+Process lesson: we should run CodeQL before tagging, not after.
+v0.9.1 is a one-line security posture fix; the CodeQL feedback loop
+is now part of the release checklist.
+
 ### Fixed (M3.5 — concurrency + honesty pass)
 
 - **Multi-process / multi-writer concurrency in the audit chain.**
