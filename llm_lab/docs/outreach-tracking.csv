@@ -1,0 +1,29 @@
+name,archetype,date_sent,date_response,response,next_action,notes
+#,=== PER ARCHETYPE: 1 per week cap. Send 5 max first week.,===,===,===,===,===,===
+# Alice — ML engineer at 50-500 person SaaS (PERSONAS.md §P0-A),,,,,,
+,Bob — security architect at regulated company (PERSONAS.md §P0-B),,,,,,
+,Carol — independent ML consultant (PERSONAS.md §P1-C),,,,,,
+,Influencer — security blogger / ML newsletter (PERSONAS.md §D),,,,,,
+,Referral — friend-of-friend (PERSONAS.md §E),,,,,,
+# === Hook templates: pick ONE per outreach. Customize the bracketed [text].,===,===,===,===,===,===
+# A: [your comment on r/MachineLearning about prompt-versioning],,,,,,
+# B: [your blog post "[specific title]"],,,,,,
+# C: [your open-source project [specific name]],,,,,,
+# D: [your talk at [PyCon / MLConf / local meetup] on [topic]],,,,,,
+# E: [Referrer] mentioned you as someone who might be interested in [topic],,,,,,
+# === Tracking fields — fill in per row,===,===,===,===,===,===,===
+# date_sent: YYYY-MM-DD when message sent (your time zone),===,===,===,===,===,===
+# date_response: YYYY-MM-DD of any response (or blank),===,===,===,===,===,===
+# response: "yes" (willing to POC), "no" (rejected), "maybe" (will follow up), "ignore" (no reply),===,===,===,===,===,===
+# next_action: "follow up YYYY-MM-DD" or "no action",===,===,===,===,===,===
+# notes: hook used, response snippet, or context.,===,===,===,===,===,===
+# === Examples (delete before use),===,===,===,===,===,===
+# Jane Smith,Alice,2026-07-15,2026-07-17,yes,POC scheduled 7/22,Hook A: r/MachineLearning comment about prompt-versioning,===
+# John Lee,Bob,2026-07-16,2026-07-19,maybe,follow up 7/26,Hook C: published security blog,===
+# === Phase 0 trigger conditions (per MASTER-PLAN.md),===,===,===,===,===,===
+# - Need: 1+ "yes" response (response=yes) to enter Phase 1,===,===,===,===,===,===
+# - 0 "yes" after 30 days: re-evaluate wedge (PERSONAS.md),===,===,===,===,===,===
+# === Privacy,===,===,===,===,===,===
+# This is a PRIVATE sales tool. Do NOT commit it to the repo.,===,===,===,===,===,===
+# Keep locally. Per GOVERNANCE.md: outreach recipients did not consent,===,===,===,===,===,===
+# to being tracked in a public spreadsheet.,===,===,===,===,===,===

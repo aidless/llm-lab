@@ -72,40 +72,21 @@ review" post-mortem and archive.
 
 ## Phase 0 — Today (Day 0)
 
-**Status: in progress.** v0.9.7 + v0.9.8 (docs) are committed locally,
-not yet pushed.
+**Status: substantially complete.** v0.9.7-v0.9.10 (commits
+`07f207d` through `bafcc9e`) are pushed. v0.9.10 adds the dev.to
+body for the M2 post and the frontmatter flip to `published: true`.
 
-**You do (today):**
+**Done so far (7 tasks):**
 
-1. `git push origin main` (v0.9.8 commit `a1da7e4`).
-2. Open `llm_lab/docs/blog-posts/03-hash-chain-eval.md`, change
-   `published: false` to `published: true` in the frontmatter,
-   commit, push.
-3. Optional: post to dev.to using the frontmatter + body
-   (10 minutes). Tags: `python`, `llm`, `security`, `sqlite`.
-
-**You do (this week):**
-
-4. Post the Show HN body (in `docs/MARKETING-COPY.md` section 1)
-   with title `Show HN: llm-lab – LLM eval framework with
-   tamper-evident audit log`. URL: `https://github.com/aidless/llm-lab`.
-5. **Reply to every HN comment for 6 hours.** Don't argue; don't
-   sell; answer technical questions; admit limitations.
-
-**You do (this week, after HN):**
-
-6. Post the r/MachineLearning body (section 2 of MARKETING-COPY).
-7. Send **one** outreach email to one person you actually know who
-   matches an Alice / Bob / Carol archetype (section 4 of
-   MARKETING-COPY). **One only.** Not five. Wait for a response.
-
-**Exit criteria for Phase 0:**
-- 1 blog post live (dev.to)
-- 1 HN post submitted
-- 1 Reddit post submitted
-- 1 outreach email sent
-- 0 stars is **expected**, do not panic
-- 0 outreach responses is **expected**, do not panic
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 1 | `git push origin main` (v0.9.7 release) | done | commit `07f207d` |
+| 2 | `published: true` frontmatter on M2 + M3 | done | M2 published to dev.to; M3 still draft |
+| 3 | dev.to publish M2 post | **done** | [link](https://dev.to/aidless/how-i-shipped-structured-json-logging-prometheus-metrics-with-zero-new-dependencies-1fmj) — 1,083 words, 5 code blocks |
+| 4 | HN Show HN post | **TODO** | use `docs/MARKETING-COPY.md` §1 with dev.to URL not GitHub |
+| 5 | Reddit r/MachineLearning | **TODO** | §2; **wait 24-48h after HN** |
+| 6 | 1 outreach email | **TODO** | §4; pick one archetype, send to one person you know |
+| 7 | Real benchmark | **TODO** | need `OPENAI_API_KEY`, run `self_bench.py --real` |
 
 **Decision point at end of Phase 0:** do the messages read as
 written by a real person, or do they read as marketing copy? If

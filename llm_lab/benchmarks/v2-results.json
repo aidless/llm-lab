@@ -1,0 +1,15 @@
+{
+  "_comment": "PLACEHOLDER. v2-results.json is the real-provider benchmark report that backs the v0.10.0 release. v1-results.json above is the offline stub run (mode=all without --real). Run `python benchmarks/README.md` (or per benchmarks/README.md: `python llm_lab/benchmarks/self_bench.py --mode all --steps 50 --real --output llm_lab/benchmarks/v2-results.json`) with `OPENAI_API_KEY=sk-...` set. Use gpt-4o-mini (cheap) or claude-haiku-3.5. Expected cost: $0.10-$0.30. Replace this file with the real run output.",
+  "mode": null,
+  "started_at": null,
+  "duration_seconds": null,
+  "python_version": null,
+  "platform": null,
+  "scenarios": [],
+  "summary": {
+    "n_scenarios": 0,
+    "n_pass": 0,
+    "n_fail": 0,
+    "_note": "Waiting for `python llm_lab/benchmarks/self_bench.py --mode all --steps 50 --real` to be run. See benchmarks/README.md."
+  }
+}
