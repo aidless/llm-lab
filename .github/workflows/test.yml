@@ -107,12 +107,25 @@ jobs:
 
       - name: pip-audit (dependency CVE scan)
         working-directory: llm_lab
-        # --skip-editable excludes the locally installed `llm-lab` package
-        # itself from the audit (it has no PyPI release yet so pip-audit
-        # cannot resolve it). Editable deps are not security-checked here;
-        # Dependabot (configured separately) handles the source repo
-        # for vulnerability notifications.
-        run: . ../.audit-venv/bin/activate && pip-audit --strict --skip-editable
+        # Extract the runtime deps from pyproject.toml into a
+        # requirements-style file, install them, and audit. We do NOT
+        # install llm-lab itself (editable) into this venv because
+        # pip-audit fails on editable packages under --strict
+        # (the package has no PyPI release to look up). Dependabot
+        # (configured separately) handles the editable-source scanning
+        # for this repo.
+        run: |
+          . ../.audit-venv/bin/activate
+          python -c "
+          import tomllib, sys
+          data = tomllib.load(open('pyproject.toml', 'rb'))
+          for dep in data['project']['dependencies']:
+              # strip environment markers like '; python_version<...'
+              sys.stdout.write(dep.split(';', 1)[0].strip() + '\n')
+          " > /tmp/llm-lab-deps.txt
+          cat /tmp/llm-lab-deps.txt
+          pip install -r /tmp/llm-lab-deps.txt
+          pip-audit --strict -r /tmp/llm-lab-deps.txt
 
   benchmark-smoke:
     name: benchmark smoke
