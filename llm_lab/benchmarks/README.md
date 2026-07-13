@@ -17,8 +17,8 @@ The smoke scenario requires **no LLM credentials** and is what CI runs:
 
 ```bash
 cd F:\TMLR\llm_lab
-python llm_lab/benchmarks/self_bench.py --mode smoke \
-    --output /tmp/smoke.json
+python benchmarks/self_bench.py --mode all --steps 50 --real \
+    --output benchmarks/v2-results.json
 ```
 
 Takes about 2 seconds. Verifies the full benchmark pipeline including
@@ -106,8 +106,8 @@ Each run produces a new `v2-results.json`. To compare runs, save the
 output with a timestamp:
 
 ```bash
-python llm_lab/benchmarks/self_bench.py --mode all --steps 50 --real \
-    --output llm_lab/benchmarks/v2-results-$(date +%Y-%m-%d).json
+python benchmarks/self_bench.py --mode all --steps 50 --real \
+    --output benchmarks/v2-results-$(date +%Y-%m-%d).json
 ```
 
 ## What's NOT in `self_bench.py`
