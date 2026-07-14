@@ -274,11 +274,22 @@ def _call_llm_dispatch(
     model = model or os.getenv("LLM_MODEL") or _get_default_model(provider)
 
     try:
+        # Optional thinking-mode control. Some providers (notably
+        # DeepSeek v4) default to an internal reasoning pass that
+        # inflates both latency and token count. Setting
+        # ``DISABLE_LLM_THINKING=1`` forwards ``extra_body`` to the
+        # chat.completions endpoint asking the model to skip the
+        # thinking pass. Providers that do not recognise the key
+        # ignore it.
+        chat_kwargs: dict[str, Any] = {}
+        if os.getenv("DISABLE_LLM_THINKING", "").lower() in {"1", "true", "yes"}:
+            chat_kwargs["extra_body"] = {"thinking": {"type": "disabled"}}
         resp = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,
             max_tokens=max_tokens,
+            **chat_kwargs,
         )
     except OpenAIError as e:
         return {

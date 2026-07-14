@@ -1,4 +1,4 @@
-# Running real benchmarks for `llm-lab`
+# How to run real benchmarks (vs the offline stub)
 
 The `self_bench.py` harness runs three scenarios:
 
@@ -17,8 +17,8 @@ The smoke scenario requires **no LLM credentials** and is what CI runs:
 
 ```bash
 cd F:\TMLR\llm_lab
-python benchmarks/self_bench.py --mode all --steps 50 --real \
-    --output benchmarks/v2-results.json
+python benchmarks/self_bench.py --mode smoke \
+    --output /tmp/smoke.json
 ```
 
 Takes about 2 seconds. Verifies the full benchmark pipeline including
@@ -33,8 +33,8 @@ cost — the numbers that go in your README or blog post):
 export OPENAI_API_KEY=sk-...   # or ANTHROPIC_API_KEY, GEMINI_API_KEY
 
 cd F:\TMLR\llm_lab
-python llm_lab/benchmarks/self_bench.py --mode all --steps 50 --real \
-    --output llm_lab/benchmarks/v2-results.json
+python benchmarks/self_bench.py --mode all --steps 50 --real \
+    --output benchmarks/v2-results.json
 ```
 
 This runs `perf` (50 steps against your provider), `fault` (always
@@ -53,12 +53,28 @@ offline), and writes a complete report to `v2-results.json`.
 50 sequential `chat.completions.create` calls and measures wall-clock
 latency + token counts + cost.
 
+### Thinking-mode control
+
+Some providers (notably **DeepSeek v4**) default to an internal
+reasoning pass that inflates both latency and token count by 5-10x.
+The harness checks the `DISABLE_LLM_THINKING` env var:
+
+- **`DISABLE_LLM_THINKING=1`** → forwards `extra_body={thinking: {type: disabled}}`
+  to the chat-completions endpoint. The model skips the reasoning pass.
+- **unset** (default) → no `extra_body` sent, provider's default behaviour.
+
+For DeepSeek v4-flash the default is "thinking on" — set this to get
+realistic latency numbers. The current benchmark script does this for
+you.
+
 ### Cost expectations
 
 - **`gpt-4o-mini`** at `--steps 50`: ~$0.10 - $0.30
 - **`gpt-4o`** at `--steps 50`: ~$1.50 - $5.00
 - **`claude-haiku-3.5`** at `--steps 50`: ~$0.20 - $0.50
 - **`claude-opus`** at `--steps 50`: ~$3.00 - $15.00
+- **`deepseek-v4-flash`** at `--steps 50` (non-thinking): ~$0.05 - $0.20
+- **`deepseek-v4-flash`** at `--steps 50` (thinking on): ~$0.10 - $0.30
 
 > **Do not run with Opus for benchmark runs.** The numbers won't be
 > better; the cost will be. Use the cheapest model in the family.
