@@ -86,7 +86,7 @@ body for the M2 post and the frontmatter flip to `published: true`.
 | 4 | HN Show HN post | **TODO** | use `docs/MARKETING-COPY.md` §1 with dev.to URL not GitHub |
 | 5 | Reddit r/MachineLearning | **TODO** | §2; **wait 24-48h after HN** |
 | 6 | 1 outreach email | **TODO** | §4; pick one archetype, send to one person you know |
-| 7 | Real benchmark | **TODO** | need `OPENAI_API_KEY`, run `self_bench.py --real` |
+| 7 | Real benchmark | **done** (v0.9.14) | DeepSeek v4-flash, 50 steps, 280s, $0.062, p50 3.7s. README updated with both stub and real numbers. |
 
 **Decision point at end of Phase 0:** do the messages read as
 written by a real person, or do they read as marketing copy? If

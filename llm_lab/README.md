@@ -180,22 +180,53 @@ for the label semantics and cardinality controls.
 ## Self-benchmark numbers (reproducible)
 
 `llm-lab` benchmarks itself on every CI run (`--mode smoke`) and publishes
-full numbers in [`benchmarks/v1-results.json`](./llm_lab/benchmarks/v1-results.json).
+real-provider numbers in [`benchmarks/v2-results.json`](./llm_lab/benchmarks/v2-results.json)
+on every release.
 
-Latest stable run (Windows / Python 3.11 / stub LLM, 50 steps):
+### Stub run (offline, what CI runs)
+
+Windows / Python 3.11 / offline stub, 50 steps:
 
 | Metric | Value |
 | ------ | ----- |
-| Throughput (offline stub) | **187 steps/sec** |
+| Throughput | **187 steps/sec** |
 | p50 latency | **5.32 ms** |
 | p95 latency | **5.54 ms** |
-| Token accounting drift (stub vs real) | **0.0 USD** (local stub is free, as documented) |
-| Fault scenarios passing | **5 / 5** |
+| Cost | **$0.00** (local stub is free) |
+| Fault scenarios passing | **9 / 9** |
+
+### Real-provider run (DeepSeek v4-flash, non-thinking)
+
+Windows / Python 3.11 / DeepSeek v4-flash, 50 steps (`benchmarks/v2-results.json`):
+
+| Metric | Value | Notes |
+| ------ | ----- | ----- |
+| Throughput | **0.179 steps/sec** | real network, 50 sequential calls |
+| p50 latency | **3,756 ms** | including TLS, DeepSeek queue, model |
+| p95 latency | **17,597 ms** | tail latency from large-context responses |
+| Total tokens | **20,740** | input + output, all 50 calls |
+| Cost | **$0.062** | at DeepSeek v4-flash pricing (¥1/¥2 per 1M tokens) |
+| Fault scenarios passing | **9 / 9** | identical to stub run |
+
+> **Note on thinking mode:** the `DISABLE_LLM_THINKING=1` env var forwards
+> `extra_body={thinking: {type: disabled}}` to the chat-completions
+> endpoint. The numbers above are with that env var set. Without
+> it, DeepSeek v4-flash defaults to internal reasoning and the
+> numbers roughly **double** (50 steps in ~400s instead of ~280s,
+> 33k tokens instead of 21k). For benchmark runs, set the env var.
 
 Reproduce locally:
 
 ```bash
+# Stub run (no credentials, fast)
 python llm_lab/benchmarks/self_bench.py --mode all --steps 50 --output my-bench.json
+
+# Real-provider run (DeepSeek v4-flash example)
+export OPENAI_API_KEY=sk-...           # or set via $env: in PowerShell
+export LLM_BASE_URL=https://api.deepseek.com/v1
+export LLM_MODEL=deepseek-v4-flash
+export DISABLE_LLM_THINKING=1          # faster, cheaper
+python llm_lab/benchmarks/self_bench.py --mode all --steps 50 --real --output my-bench.json
 ```
 
 The fault scenarios cover: provider timeout, missing API key, optional-SDK-missing
