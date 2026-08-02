@@ -54,13 +54,13 @@ def test_build_client_openai_defaults(monkeypatch):
     # sibling test ran first and set LLM_PROVIDER), the cleanup never
     # fired and the next test saw the wrong default provider.
     #
-    # NOTE: ``_build_client`` reads ``LLM_API_KEY``, not
-    # ``OPENAI_API_KEY`` -- the latter is consumed by the underlying
-    # openai SDK, not by our provider dispatcher. The original test
-    # was broken for the same reason: it set the wrong env var and
-    # only passed when a previous test happened to leak LLM_API_KEY
-    # into the environment. (That's why it failed in CI but passed
-    # locally.)
+    # NOTE: ``_build_client`` reads ``LLM_API_KEY`` first and falls
+    # back to ``OPENAI_API_KEY`` when it is unset (the smoke test in
+    # test_real_provider_smoke.py gates on the latter, so the fallback
+    # makes that gate reach the client). The original test was broken
+    # for the same reason: it set the wrong env var and only passed
+    # when a previous test happened to leak LLM_API_KEY into the
+    # environment. (That's why it failed in CI but passed locally.)
     monkeypatch.setenv("LLM_API_KEY", "sk-test")
     monkeypatch.delenv("LLM_PROVIDER", raising=False)
     _, provider = wrk._build_client()
@@ -68,14 +68,20 @@ def test_build_client_openai_defaults(monkeypatch):
 
 
 def test_call_llm_local_without_server():
+    # Deterministic regardless of whether a local Ollama is running:
+    # point at an unreachable port so the error path always fires
+    # (the old version relied on no local server being up, which is
+    # false on dev machines that run Ollama).
     os.environ["LLM_PROVIDER"] = "ollama"
     os.environ["LLM_MODEL"] = "qwen2.5:7b"
+    os.environ["LLM_BASE_URL"] = "http://127.0.0.1:59999/v1"
     result = wrk.call_llm("hello")
     assert "LLM call failed" in result["output"]
     assert result["finish_reason"] == "error"
     assert result["cost_usd"] == 0.0
     os.environ.pop("LLM_PROVIDER", None)
     os.environ.pop("LLM_MODEL", None)
+    os.environ.pop("LLM_BASE_URL", None)
 
 
 def test_provider_resolve_case_insensitive():
@@ -102,6 +108,18 @@ def test_second_provider_index(monkeypatch):
     monkeypatch.delenv("LLM_PROVIDER", raising=False)
     client, _ = wrk._build_client(provider_index=1)
     assert str(client.base_url).rstrip("/") == "http://localhost:9999/v1"
+
+
+def test_build_client_openai_falls_back_to_openai_api_key(monkeypatch):
+    # With no LLM_API_KEY set, the openai provider must fall back to
+    # OPENAI_API_KEY so the smoke-test gate in
+    # test_real_provider_smoke.py reaches the client.
+    monkeypatch.delenv("LLM_PROVIDER", raising=False)
+    monkeypatch.delenv("LLM_API_KEY", raising=False)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-real")
+    client, provider = wrk._build_client()
+    assert provider == "openai"
+    assert client.api_key == "sk-real"
 
 
 def test_provider_promptfoo_is_local():

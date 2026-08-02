@@ -36,3 +36,4 @@ jobs:
         run: python -m pytest tests/ -v --tb=short --timeout=120 --cov=llm_lab --cov-report=term-missing --cov-fail-under=95
         env:
           LLM_PROVIDER: openai
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

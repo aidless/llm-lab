@@ -15,6 +15,21 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) once 
 
 ---
 
+## [Unreleased]
+
+### Changed
+
+- **Ollama backend timing (`selfevolve/self_modification.py`).** Default
+  HTTP timeout raised `30.0s → 120.0s` and `max_tokens` raised
+  `1024 → 2048` in `suggest_patch._run`, so CPU-hosted 3B models
+  (e.g. `llama3.2:3b-instruct-q8_0`) can complete real patch generation
+  instead of timing out at 30s. Verified: `agi_harness.py --ollama
+  --model llama3.2:3b-instruct-q8_0 --recursive` now yields LLM-generated
+  patches (`LLM patches: 3` in one 3-cycle run, 2 promoted each cycle
+  with tests passing); full suite still 106/106.
+
+---
+
 ## [0.9.7] — 2026-07-13 — first CI-green release
 
 First release where every CI job is green end-to-end on a fresh

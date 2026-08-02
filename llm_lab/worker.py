@@ -56,7 +56,11 @@ def _build_client(provider_index: int = 0) -> tuple[OpenAI, str]:
         return build_openai_client(base_url, api_key), provider
 
     api_key_raw = os.getenv(f"LLM_API_KEY{suffix}")
-    api_key2 = api_key_raw if api_key_raw else os.getenv("LLM_API_KEY", "")
+    api_key2 = (
+        api_key_raw
+        if api_key_raw
+        else (os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY") or "")
+    )
     base_url_raw = os.getenv(f"LLM_BASE_URL{suffix}")
     base_url2 = base_url_raw if base_url_raw else os.getenv("LLM_BASE_URL", "https://api.openai.com/v1")
     return build_openai_client(base_url2, api_key2), provider

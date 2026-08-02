@@ -63,8 +63,10 @@ jobs:
       - name: Test (pytest + coverage)
         env:
           # Dummy keys keep providers from reaching real APIs; offline tests
-          # never exercise the network path.
-          OPENAI_API_KEY: sk-test
+          # never exercise the network path. The real-provider smoke test
+          # skips on unset/dummy keys, so it only runs when a real
+          # OPENAI_API_KEY secret is configured.
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: sk-ant-test
           GOOGLE_API_KEY: test
         run: |
