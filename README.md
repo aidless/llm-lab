@@ -144,7 +144,7 @@ This project follows open-source governance best practices:
 - [SECURITY.md](SECURITY.md) — security policy
 - [THREAT_MODEL.md](THREAT_MODEL.md) — threat model
 - [CODEOWNERS](CODEOWNERS) — code ownership
-- 9 Architecture Decision Records in `llm_lab/docs/adr/`
+- 7 Architecture Decision Records in `llm_lab/docs/adr/` (0001–0003, 0006–0009; 0004/0005 reserved)
 
 ---
 
