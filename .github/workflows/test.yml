@@ -158,7 +158,7 @@ jobs:
           python benchmarks/self_bench.py --mode smoke --output benchmarks/_ci_smoke.json
 
       - name: Upload benchmark artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: benchmark-smoke
           path: llm_lab/benchmarks/_ci_smoke.json
@@ -187,7 +187,7 @@ jobs:
               --pyproject pyproject.toml
 
       - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sbom-cyclonedx
           path: llm_lab/sbom.cdx.json
