@@ -1,3 +1,4 @@
+import inspect
 import logging
 import os
 from typing import Any
@@ -10,6 +11,28 @@ from llm_lab.pricing import _LOCAL_PROVIDERS
 from llm_lab.pricing import estimate_cost as _estimate_cost
 
 _log = logging.getLogger(__name__)
+
+
+def _anthropic_create_kwargs(client: Any, *, model: str,
+                             messages: list[dict[str, str]],
+                             max_tokens: int,
+                             temperature: float) -> dict[str, Any]:
+    """Build messages.create kwargs compatible with old and new SDKs.
+
+    anthropic>=1.13 removed `temperature` from messages.create (server-side
+    default now); passing it raises TypeError at call time. Introspect once
+    per call (cheap vs the network round-trip) and only send what this
+    SDK version accepts.
+    """
+    try:
+        params = inspect.signature(client.messages.create).parameters
+    except (TypeError, ValueError):
+        params = {}  # type: ignore[assignment]  # introspection failed: send full kwargs
+    kwargs: dict[str, Any] = {"model": model, "messages": messages,
+                              "max_tokens": max_tokens}
+    if not params or "temperature" in params:
+        kwargs["temperature"] = temperature
+    return kwargs
 
 
 def build_openai_client(base_url: str, api_key: str = "ollama") -> OpenAI:
@@ -95,12 +118,12 @@ def _call_anthropic(
     try:
         api_key = os.getenv("ANTHROPIC_API_KEY") or os.getenv("LLM_API_KEY")
         client = Anthropic(api_key=api_key)
-        resp = client.messages.create(
-            model=model,
+        create_kwargs = _anthropic_create_kwargs(
+            client, model=model,
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=max_tokens,
-            temperature=temperature,
+            max_tokens=max_tokens, temperature=temperature,
         )
+        resp = client.messages.create(**create_kwargs)
         output = getattr(resp.content[0], "text", "") if resp.content else ""
         tokens = {
             "prompt_tokens": resp.usage.input_tokens,
