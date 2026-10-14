@@ -263,7 +263,7 @@ def phase_multi_agent() -> MultiAgentSociety:
     for source_name in society.agents:
         agent = society.agents[source_name]
         best_skill = None
-        best_sr = 0
+        best_sr: float = 0
         for skill in agent.skill_library.skills.values():
             if skill.success_rate > best_sr:
                 best_sr = skill.success_rate
@@ -386,7 +386,7 @@ def run_full_pipeline(quick: bool = False,
     n_cycles = 16 if quick else 24
     n_improve = 4 if quick else 6
 
-    results = {}
+    results: dict = {}
 
     t0 = time.time()
 

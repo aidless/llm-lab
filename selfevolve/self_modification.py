@@ -406,7 +406,7 @@ class CodeAnalyzer:
         lines = source.splitlines()
         findings = []
         for length in [5, 10]:
-            seen = {}
+            seen: dict[str, int] = {}
             for i in range(len(lines) - length + 1):
                 block = "\n".join(lines[i:i + length])
                 h = hashlib.md5(block.encode()).hexdigest()
@@ -551,16 +551,17 @@ class OllamaBackend:
         except SyntaxError:
             return None
         target = int(finding.get("lineno") or finding.get("lineno_a") or 1)
-        best: ast.FunctionDef | None = None
+        best: ast.FunctionDef | ast.AsyncFunctionDef | None = None
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if node.lineno <= target <= node.end_lineno:
+                if node.end_lineno is not None and node.lineno <= target <= node.end_lineno:
                     if best is None or node.lineno > best.lineno:
                         best = node
         if best is None:
             return None
         lines = old_code.splitlines()
-        start, end = best.lineno - 1, best.end_lineno
+        end_lineno = best.end_lineno if best.end_lineno is not None else best.lineno
+        start, end = best.lineno - 1, end_lineno
         pad = best.col_offset
         src = "\n".join(lines[start:end])
         if pad:
@@ -740,9 +741,9 @@ class RecursiveSelfImprover:
             if isinstance(findings, dict) and "error" not in findings:
                 for category, items in findings.items():
                     for item in items[:1]:  # top finding per category
-                        patch = self._patch_from_finding(fname, item)
-                        if patch:
-                            patches.append(patch)
+                        extra_patch = self._patch_from_finding(fname, item)
+                        if extra_patch:
+                            patches.append(extra_patch)
 
         # Phase 3: Test in sandbox
         results = []

@@ -107,7 +107,7 @@ class DebateArena:
 
         # If any position has >50%, consensus
         total = sum(vote_counts.values())
-        winner = max(vote_counts, key=vote_counts.get)
+        winner = max(vote_counts, key=lambda k: vote_counts[k])
         if vote_counts[winner] / total > 0.5:
             self.current_round.consensus = winner
             self.current_round.resolved = True
@@ -275,7 +275,7 @@ class MultiAgentSociety:
         best_skill_per_agent = {}
         for name, agent in self.agents.items():
             best = None
-            best_sr = 0
+            best_sr: float = 0
             for skill in agent.skill_library.skills.values():
                 if skill.success_rate > best_sr:
                     best_sr = skill.success_rate

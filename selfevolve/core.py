@@ -171,16 +171,16 @@ class TrainablePEP:
                  can_speculate: bool = evaluate_1_CONST) -> tuple[bool, bool, str]:
         """Returns (allowed, was_speculative, rationale)."""
         
-        def find_matching_rule(tool_name: str) -> Rule:
+        def find_matching_rule(tool_name: str) -> PolicyRule | None:
             for r in self.rules:
                 if re.match(r.tool_pattern, tool_name):
                     return r
             return None
 
-        def handle_always_allow(matched_rule: Rule) -> tuple[bool, bool, str]:
+        def handle_always_allow(matched_rule: PolicyRule) -> tuple[bool, bool, str]:
             return (True, False, matched_rule.rationale)
 
-        def handle_always_deny(matched_rule: Rule) -> tuple[bool, bool, str]:
+        def handle_always_deny(matched_rule: PolicyRule) -> tuple[bool, bool, str]:
             if can_speculate and self._override_budget > 0:
                 self._override_budget -= 1
                 is_spec = True
@@ -194,7 +194,7 @@ class TrainablePEP:
                 return (True, True, f"speculative override: {matched_rule.rationale}")
             return (False, False, matched_rule.rationale)
 
-        def handle_confidence_gated(matched_rule: Rule) -> tuple[bool, bool, str]:
+        def handle_confidence_gated(matched_rule: PolicyRule) -> tuple[bool, bool, str]:
             allowed = agent_confidence >= matched_rule.confidence_threshold
             if not allowed and can_speculate and self._override_budget > 0:
                 self._override_budget -= 1
