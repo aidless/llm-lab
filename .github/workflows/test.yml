@@ -87,7 +87,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       # Use a throwaway venv so `pip-audit --strict` only sees llm-lab's
       # declared dependencies — never the host's global environment
@@ -140,7 +140,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
           cache-dependency-path: llm_lab/pyproject.toml
 
@@ -171,7 +171,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
           cache-dependency-path: llm_lab/pyproject.toml
 
