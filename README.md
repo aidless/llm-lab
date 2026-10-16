@@ -65,7 +65,7 @@ Every run is traced, verified, and stored in a local tamper-evident audit log. Y
 
 ```bash
 # Install
-pip install -e ".[dev]"
+cd llm_lab && pip install -e ".[dev]"
 
 # Configure
 echo 'LLM_API_KEY=your-key' > .env  # loaded via python-dotenv; or export LLM_API_KEY

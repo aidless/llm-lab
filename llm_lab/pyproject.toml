@@ -57,8 +57,26 @@ sbom = [
     "cyclonedx-bom>=7.0",
 ]
 
-[tool.setuptools.packages.find]
-include = ["llm_lab*"]
+[tool.setuptools]
+# This pyproject.toml lives INSIDE the package directory (llm_lab/), so the
+# package root is this file's parent directory. Without package-dir pointing
+# up one level, editable installs map to nothing and `import llm_lab` fails
+# after a successful `pip install -e .` (found during the 2026-10-16 audit).
+package-dir = {"" = ".."}
+
+# Explicit list instead of [tool.setuptools.packages.find]: find's `where`
+# must be inside the project root, which is llm_lab/ here -- pointing it at
+# ".." is silently ignored and setuptools falls back to flat-layout
+# auto-discovery (which ships llm_lab/tests/ into the wheel).
+packages = ["llm_lab", "llm_lab.planner"]
+
+# With pyproject.toml metadata, include-package-data defaults to True, which
+# makes setuptools ship every git-tracked file under llm_lab/ as "package
+# data" -- that pulled the whole tests/ tree and benchmarks/ into the wheel.
+include-package-data = false
+
+[tool.setuptools.package-data]
+llm_lab = ["py.typed"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
