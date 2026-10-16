@@ -95,7 +95,11 @@ ignore_missing_imports = true
 python_version = "3.10"
 strict_optional = true
 warn_unused_ignores = true
-explicit_package_bases = true
+# explicit_package_bases must stay OFF: with the editable install mapping
+# llm_lab via the repo root (package-dir {"": ".."}), it would name files
+# twice ("observability" from the cwd base and "llm_lab.observability"
+# from the site-packages path) and fail every mypy invocation. The
+# default __init__.py-walk naming yields llm_lab.* consistently.
 
 [tool.ruff]
 target-version = "py310"
