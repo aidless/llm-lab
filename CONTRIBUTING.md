@@ -39,9 +39,10 @@ From the `llm_lab/` directory (where `pyproject.toml` lives):
 pytest --cov --cov-report=term-missing -q
 ```
 
-Expected: **349 passed / 1 skipped** on the current main. The one skipped test
-(`test_export.py::TestExportXlsx::test_requires_openpyxl_skip`) is conditional
-on `openpyxl` being absent.
+Expected: **488 passed / 2 skipped** with the dev extras installed (490
+collected). Counts shift with optional dependencies: without `openpyxl`,
+10 export tests skip instead (479 passed / 11 skipped). CI is the
+canonical count.
 
 ### Lint and type-check
 

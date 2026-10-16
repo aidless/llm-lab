@@ -68,7 +68,7 @@ Every run is traced, verified, and stored in a local tamper-evident audit log. Y
 pip install -e ".[dev]"
 
 # Configure
-cp .env.example .env  # Add your LLM_API_KEY
+echo 'LLM_API_KEY=your-key' > .env  # loaded via python-dotenv; or export LLM_API_KEY
 
 # Run
 llm-lab run "Summarize the key points of clean code"
@@ -105,7 +105,7 @@ docker-compose up -d  # Starts llm-lab + web UI on :8123
 - **🐳 Docker Ready**: Full docker-compose deployment
 - **📊 Observability**: Structured logging + Prometheus metrics (ADR-0008)
 - **🔒 Security**: Threat model, security policy, SBOM (CycloneDX), auth support
-- **🧪 Tests**: 18 test suites covering API, audit chain, auth, CLI, DB, e2e, export, LLM contract, observability, planner, runner, tracer, verifier, worker
+- **🧪 Tests**: 17 test suites covering API, audit chain, auth, CLI, DB, e2e, export, LLM contract, observability, planner, runner, tracer, verifier, worker
 
 ---
 
@@ -120,15 +120,15 @@ llm-lab/
 │   ├── tracer.py         # Audit trail
 │   ├── db.py             # SQLite storage
 │   ├── planner/          # Task planning + YAML templates
-│   ├── tests/            # 18 test suites
-│   └── docs/             # ADRs, blog posts, roadmap
+│   ├── tests/            # 17 test suites
+│   ├── docs/             # ADRs, blog posts, roadmap
+│   ├── Dockerfile        # Container build
+│   └── docker-compose.yml  # Full deployment
 ├── selfevolve/           # Self-evolution modules
 │   ├── core.py           # Evolution loop
 │   ├── multi_agent.py    # Multi-agent coordination
 │   └── self_modification.py  # Safe self-modification
 ├── agi_harness.py        # AGI harness integration
-├── Dockerfile            # Container build
-├── docker-compose.yml    # Full deployment
 └── .github/              # CI workflows, issue templates, PR template
 ```
 
