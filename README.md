@@ -4,7 +4,7 @@
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Tests](https://img.shields.io/badge/tests-18%20suites-brightgreen)
+![Tests](https://img.shields.io/badge/tests-488%20passing-brightgreen)
 
 ---
 
