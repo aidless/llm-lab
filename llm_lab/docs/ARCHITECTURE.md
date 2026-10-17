@@ -1,8 +1,8 @@
 # llm-lab 架构文档（Architecture）
 
 > 包路径：仓库根目录下的 `llm_lab/`
-> 测试命令：`cd llm_lab && python -m pytest -q`（干净 clone 下 `pip install -e ".[dev,xlsx]"` 后可直接运行）
-> 当前测试状态：**382 passed / 2 skipped**；`ruff`（含 `S` 安全规则）与 `mypy` 均通过。
+> 测试命令：仓库根 `python -m pytest -q`（干净 clone 下先 `cd llm_lab && pip install -e ".[dev,xlsx]"`）
+> 当前测试状态：**488 passed / 2 skipped**（全仓口径，与 README 徽章和 CI 一致；只跑 `llm_lab/` 子树时收集 384 项 = **382 passed / 2 skipped**）；`ruff`（含 `S` 安全规则）与 `mypy` 均通过。
 
 ---
 
@@ -299,7 +299,7 @@ sequenceDiagram
 ## 8. 测试与验证
 
 - `llm_lab/tests/` 覆盖：`test_api`、`test_auth`、`test_cli`、`test_db`、`test_e2e_smoke`、`test_export`、`test_planner`、`test_promptfoo_provider`、`test_runner`、`test_settings`、`test_tracer`、`test_verifier`、`test_worker`。
-- 运行：`cd llm_lab && python -m pytest -q`（先 `pip install -e ".[dev,xlsx]"`）→ **382 passed / 2 skipped**。
+- 运行：仓库根 `python -m pytest -q`（先 `cd llm_lab && pip install -e ".[dev,xlsx]"`）→ **488 passed / 2 skipped**（全仓）；只跑 `llm_lab/` 子树时为 **382 passed / 2 skipped**。
 - 静态检查：`ruff`（含 `S` 安全规则）与 `mypy` 均通过。
 
 ---
