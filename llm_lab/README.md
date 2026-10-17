@@ -5,17 +5,17 @@
 [![CodeQL](https://github.com/aidless/llm-lab/actions/workflows/codeql.yml/badge.svg)](https://github.com/aidless/llm-lab/security/code-scanning)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org)
-[![Tests](https://img.shields.io/badge/tests-381%20passed%20%C2%B7%201%20skipped-brightgreen)](./CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-488%20passed%20%C2%B7%202%20skipped-brightgreen)](./CHANGELOG.md)
 [![Ruff + Mypy + Bandit](https://img.shields.io/badge/lint-ruff%20%2B%20mypy%20%2B%20bandit-blue)](./CONTRIBUTING.md)
 
 > **The eval tool you can show your security team.**
 > LLM evaluation & orchestration for security-conscious teams — auditable,
 > air-gap-able, hardened by default, and Prometheus-observable.
 
-**Current status: v0.9.7 — first CI-green release.** 381 tests pass,
-ruff + mypy + bandit clean, macOS + 3 Python versions matrix, SBOM per
-release, CodeQL 0 open alerts. See [`CHANGELOG.md`](./CHANGELOG.md) for
-the journey from v0.1.0 → v0.9.7.
+**Current status: v0.9.7 — first CI-green release.** 488 tests pass
+(2 skipped; both need a real provider key), ruff + mypy + bandit clean,
+macOS + 3 Python versions matrix, SBOM per release, CodeQL 0 open alerts.
+See [`CHANGELOG.md`](./CHANGELOG.md) for the journey from v0.1.0 → v0.9.7.
 
 **Tamper-evident audit log.** Every `event_log` row carries a SHA-256 hash
 chained to its predecessor. Run `llm-lab verify` to detect any insertion,
@@ -43,7 +43,7 @@ Other eval tools optimise for **ergonomics**. `llm-lab` optimises for
 - ✅ **Graceful degradation** under provider outages, missing API keys, and
   SQLite lock contention — verified by
   [`benchmarks/self_bench.py --mode fault`](./llm_lab/benchmarks/self_bench.py).
-- ✅ **349 tests, ruff + mypy + bandit + pip-audit clean**.
+- ✅ **488 tests, ruff + mypy + bandit + pip-audit clean**.
 
 If your security team needs to know *why* your eval pipeline picked model B
 over model A, and *which prompt hashes* it ran, `llm-lab` gives you the answer.
