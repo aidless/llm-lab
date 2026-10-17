@@ -72,7 +72,7 @@ jobs:
         run: |
           pytest --cov --cov-report=xml --cov-report=term-missing --timeout=30 -q
 
-      - name: Test (repo-root suite: tests/test_selfevolve.py)
+      - name: "Test (repo-root suite: tests/test_selfevolve.py)"
         # The job default working directory is llm_lab/, so the step above
         # collects 384 items. The README badge claims 488, which is the
         # repo-root scope: it adds tests/test_selfevolve.py (106 stdlib-only
