@@ -223,9 +223,15 @@ def test_fallback_missing_prompt_key():
 
 
 def test_match_template_no_keywords_falls_back():
+    # Mock call_llm like every other fallback test in this file: without
+    # it plan() hits the real network (LLM fallback path) and the test
+    # takes ~6s + flakes offline. Non-JSON output exercises the
+    # "except → single call_llm step" branch.
     from llm_lab.planner.engine import plan
 
-    p = plan("a totally random unrelated string that nothing matches")
+    with patch("llm_lab.worker.call_llm") as mock_call:
+        mock_call.return_value = {"output": "not json at all {{{"}
+        p = plan("a totally random unrelated string that nothing matches")
     assert p.template_id is None
     assert len(p.steps) > 0
 

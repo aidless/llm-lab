@@ -26,7 +26,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) once 
   instead of timing out at 30s. Verified: `agi_harness.py --ollama
   --model llama3.2:3b-instruct-q8_0 --recursive` now yields LLM-generated
   patches (`LLM patches: 3` in one 3-cycle run, 2 promoted each cycle
-  with tests passing); full suite still 106/106.
+  with tests passing); full suite verified locally: 479 passed /
+  11 skipped (fresh run, Python 3.12).
 
 ---
 

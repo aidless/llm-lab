@@ -67,21 +67,30 @@ def test_build_client_openai_defaults(monkeypatch):
     assert provider == "openai"
 
 
-def test_call_llm_local_without_server():
-    # Deterministic regardless of whether a local Ollama is running:
-    # point at an unreachable port so the error path always fires
-    # (the old version relied on no local server being up, which is
-    # false on dev machines that run Ollama).
-    os.environ["LLM_PROVIDER"] = "ollama"
-    os.environ["LLM_MODEL"] = "qwen2.5:7b"
-    os.environ["LLM_BASE_URL"] = "http://127.0.0.1:59999/v1"
-    result = wrk.call_llm("hello")
+def test_call_llm_local_without_server(monkeypatch):
+    # Deterministic regardless of whether a local Ollama is running.
+    # Hermetic: the client raises openai.APIConnectionError (what a real
+    # refused connection surfaces as) instead of dialling a real socket
+    # (the old version burned ~8s in SDK retries). Also uses monkeypatch
+    # so env cleanup can't leak into sibling tests on failure.
+    from unittest.mock import patch
+
+    import httpx
+    from openai import APIConnectionError
+
+    monkeypatch.setenv("LLM_PROVIDER", "ollama")
+    monkeypatch.setenv("LLM_MODEL", "qwen2.5:7b")
+    monkeypatch.setenv("LLM_BASE_URL", "http://127.0.0.1:59999/v1")
+    err = APIConnectionError(
+        message="Connection refused",
+        request=httpx.Request("POST", "http://127.0.0.1:59999/v1"),
+    )
+    with patch.object(wrk, "build_openai_client") as mock_build:
+        mock_build.return_value.chat.completions.create.side_effect = err
+        result = wrk.call_llm("hello")
     assert "LLM call failed" in result["output"]
     assert result["finish_reason"] == "error"
     assert result["cost_usd"] == 0.0
-    os.environ.pop("LLM_PROVIDER", None)
-    os.environ.pop("LLM_MODEL", None)
-    os.environ.pop("LLM_BASE_URL", None)
 
 
 def test_provider_resolve_case_insensitive():
@@ -154,6 +163,8 @@ def test_promptfoo_provider_cache_miss():
 
 
 def test_promptfoo_provider_retries_on_no_server():
+    from unittest.mock import patch
+
     from llm_lab import promptfoo_provider
 
     os.environ["LLM_PROVIDER"] = "promptfoo"
@@ -162,7 +173,14 @@ def test_promptfoo_provider_retries_on_no_server():
     os.environ["PROMPTFOO_MAX_RETRIES"] = "1"
     os.environ["PROMPTFOO_BASE_DELAY"] = "0"
     unique_prompt = f"retry-test-{os.urandom(4).hex()}"
-    result = promptfoo_provider.call_llm(unique_prompt, max_tokens=1)
+    # Hermetic: create() raises immediately instead of a real dial (~14s
+    # in SDK retries before). The retry-exhausted error contract is
+    # unchanged.
+    with patch.object(
+        promptfoo_provider, "_build_client_from_config"
+    ) as mock_build:
+        mock_build.return_value.chat.completions.create.side_effect = ConnectionError("refused")
+        result = promptfoo_provider.call_llm(unique_prompt, max_tokens=1)
     assert result.get("finish_reason") == "error", f"Expected error, got: {result}"
     assert "retries" in result["output"]
     os.environ.pop("LLM_PROVIDER", None)

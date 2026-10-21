@@ -37,3 +37,20 @@ llm_lab/coverage.xml
 .DS_Store
 Thumbs.db
 llm_lab/coverage.xml
+# Local large data dirs (not source; keep out of git and opencode snapshots)
+Fusion/
+training/
+
+# --- added by WorkBuddy takeover 2026-10-21 ---
+.env.*
+!.env.example
+!.env.template
+node_modules/
+*.pyc
+*.log
+data/
+models/
+.regression_tmp/
+*.bak
+
+*.bak*

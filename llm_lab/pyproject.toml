@@ -81,8 +81,17 @@ llm_lab = ["py.typed"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
-filterwarnings = [
-    "ignore::starlette.exceptions.StarletteDeprecationWarning",
+# Match CI (test.yml runs `pytest --timeout=30`): a per-test ceiling so a
+# wedged network call can never hang a local run forever. Requires
+# pytest-timeout (in dev extras); without the plugin pytest only warns
+# about the unknown key, it does not fail.
+timeout = 30
+testpaths = ["tests"]
+norecursedirs = ["__pycache__", ".venv", ".audit-venv", "node_modules"]
+markers = [
+    "slow: failure-path tests that exercise retry/backoff timing",
+    "e2e: end-to-end tests requiring live local services (ollama, …)",
+    "real: tests requiring real provider API keys (skipped otherwise)",
 ]
 
 [tool.coverage.run]

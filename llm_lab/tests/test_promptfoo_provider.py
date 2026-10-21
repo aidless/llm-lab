@@ -149,7 +149,13 @@ def test_call_llm_fallback_on_error(monkeypatch):
     monkeypatch.setenv("LLM_API_KEY", "sk-test")
     monkeypatch.setenv("LLM_BASE_URL", "http://localhost:0/v1")
 
-    result = pf.call_llm("any prompt", model="gpt-4o")
+    # Hermetic: the client's create() raises immediately instead of
+    # dialling a real socket (the old version hit localhost:0 for real,
+    # ~14s per test via SDK retries). The retry loop + error contract
+    # under test are unchanged.
+    with patch.object(pf, "_build_client_from_config") as mock_build:
+        mock_build.return_value.chat.completions.create.side_effect = ConnectionError("refused")
+        result = pf.call_llm("any prompt", model="gpt-4o")
     assert result["finish_reason"] == "error"
     assert "[promptfoo" in result["output"]
 
@@ -159,7 +165,9 @@ def test_call_llm_uses_default_model(monkeypatch):
     monkeypatch.setenv("LLM_API_KEY", "sk-test")
     monkeypatch.setenv("LLM_BASE_URL", "http://localhost:0/v1")
 
-    result = pf.call_llm("test")
+    with patch.object(pf, "_build_client_from_config") as mock_build:
+        mock_build.return_value.chat.completions.create.side_effect = ConnectionError("refused")
+        result = pf.call_llm("test")
     assert result["model"] is not None
 
 
@@ -169,7 +177,9 @@ def test_call_llm_model_from_env(monkeypatch):
     monkeypatch.setenv("LLM_API_KEY", "sk-test")
     monkeypatch.setenv("LLM_BASE_URL", "http://localhost:0/v1")
 
-    result = pf.call_llm("test")
+    with patch.object(pf, "_build_client_from_config") as mock_build:
+        mock_build.return_value.chat.completions.create.side_effect = ConnectionError("refused")
+        result = pf.call_llm("test")
     assert result["model"] == "env-model"
 
 
@@ -213,7 +223,9 @@ def test_call_llm_provider_from_config(monkeypatch, tmp_path):
     monkeypatch.setenv("LLM_API_KEY", "sk-test")
     monkeypatch.setenv("LLM_BASE_URL", "http://localhost:0/v1")
 
-    result = pf.call_llm("test")
+    with patch.object(pf, "_build_client_from_config") as mock_build:
+        mock_build.return_value.chat.completions.create.side_effect = ConnectionError("refused")
+        result = pf.call_llm("test")
     assert result["provider"] == "custom:provider"
 
 
@@ -248,7 +260,12 @@ def test_call_with_retries_delay(monkeypatch):
     def _track_sleep(secs):
         sleep_calls.append(secs)
 
-    with patch.object(time_mod, "sleep", side_effect=_track_sleep):
+    # Hermetic: create() raises immediately, so only our own retry
+    # loop's sleep is observed (the old version also waited out the
+    # OpenAI SDK's internal retries against a real socket, ~25s).
+    with patch.object(time_mod, "sleep", side_effect=_track_sleep), \
+         patch.object(pf, "_build_client_from_config") as mock_build:
+        mock_build.return_value.chat.completions.create.side_effect = ConnectionError("refused")
         result = pf.call_llm("retry-test")
     assert len(sleep_calls) >= 1
     assert result["finish_reason"] == "error"

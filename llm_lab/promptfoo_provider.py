@@ -18,7 +18,11 @@ _BASE_DELAY_DEFAULT = 1.0
 
 
 def _cache_path() -> Path:
-    return _CACHE_DB
+    # Read the env dynamically (not frozen at import) so tests can point
+    # the cache at a tmp db via PROMPTFOO_CACHE — see the autouse
+    # _clean_cache_db fixture in tests/conftest.py. Default unchanged.
+    override = os.getenv("PROMPTFOO_CACHE")
+    return Path(override) if override else _CACHE_DB
 
 
 def _ensure_cache():
