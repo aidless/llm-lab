@@ -26,7 +26,7 @@
 ### Day 1（周一）：commit + tag
 
 ```bash
-cd F:\TMLR
+cd <llm-lab checkout>
 git add -A
 git commit -m "v0.9.0: governance push + observability + tamper-evident audit chain"
 git tag -a v0.9.0 -m "First formal release. See CHANGELOG.md and llm_lab/docs/RELEASE-v0.9.0.md."

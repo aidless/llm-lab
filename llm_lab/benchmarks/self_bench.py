@@ -44,7 +44,7 @@ from typing import Any
 # that contains __init__.py, cli.py, runner.py, ...). ``import llm_lab``
 # resolves to that directory — so its *parent* must be on sys.path.
 #
-#   F:\TMLR\
+#   <llm-lab workspace>
 #     llm_lab\           ← the package; ``import llm_lab`` lands here
 #       __init__.py
 #       cli.py

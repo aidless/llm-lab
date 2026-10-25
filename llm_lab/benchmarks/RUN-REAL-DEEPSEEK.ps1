@@ -10,5 +10,5 @@ $env:LLM_MODEL = "deepseek-v4-flash"
 # to the chat.completions endpoint).
 $env:DISABLE_LLM_THINKING = "1"
 
-cd F:\TMLR\llm_lab
+cd <llm-lab checkout>
 python benchmarks\self_bench.py --mode all --steps 50 --real --output benchmarks\v2-results.json
