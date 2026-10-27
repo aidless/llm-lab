@@ -10,6 +10,7 @@ from llm_lab.models import Verdict
 
 _lf = None
 _trace_cache: dict[str, Any] = {}
+_initialized_db_path: str | None = None
 
 
 def _get_lf() -> Any | None:
@@ -100,6 +101,15 @@ def _run(coro) -> None:
         asyncio.run(coro)
 
 
+def _ensure_local_db_sync() -> None:
+    """Create the local audit schema before the first trace is appended."""
+    global _initialized_db_path
+    if _initialized_db_path == _local_db.DB_PATH:
+        return
+    _run(_local_db.init_db())
+    _initialized_db_path = _local_db.DB_PATH
+
+
 def trace_call_sync(
     intent_id: str,
     seq: int,
@@ -112,6 +122,7 @@ def trace_call_sync(
 ) -> None:
     """Synchronous wrapper around :func:`trace_call` for use from sync code paths."""
     try:
+        _ensure_local_db_sync()
         _run(
             trace_call(
                 intent_id,

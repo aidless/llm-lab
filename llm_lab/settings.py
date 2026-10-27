@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     @property
     def is_local(self) -> bool:
         return self.llm_provider.lower().strip() in {
-            "ollama", "llamacpp", "vllm", "localai", "tgi", "promptfoo",
+            "offline", "ollama", "llamacpp", "vllm", "localai", "tgi", "promptfoo",
         }
 
     @property

@@ -43,6 +43,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate documentation links
+        working-directory: .
+        run: python3 tools/check_knowledge_links.py
+
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -74,10 +78,11 @@ jobs:
 
       - name: "Test (repo-root suite: tests/test_selfevolve.py)"
         # The job default working directory is llm_lab/, so the step above
-        # collects 384 items. The README badge claims 488, which is the
+        # collects 391 passing tests and 2 skips. The README badge claims 497,
+        # which is the
         # repo-root scope: it adds tests/test_selfevolve.py (106 stdlib-only
         # tests). That file had no CI coverage, so the badge counted tests no
-        # gate ever ran. This step closes the gap: 382 + 106 = 488 passed.
+        # gate ever ran. This step closes the gap: 391 + 106 = 497 passed.
         working-directory: .
         run: |
           python -m pytest tests/test_selfevolve.py -q --timeout=30

@@ -1,17 +1,18 @@
 """llm-lab CLI — run evals and comparisons from the terminal."""
 
 import asyncio
-import contextlib
 import json
+import os
 import time
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
 
 import typer
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+from llm_lab import __version__
 from llm_lab import export as export_mod
 
 app = typer.Typer(name="llm-lab", help="Local-first LLM eval pipeline", add_completion=False)
@@ -63,7 +64,7 @@ def _main(
     version: bool = typer.Option(False, "--version", help="Show version and exit", is_eager=True),
 ) -> None:
     if version:
-        console.print("llm-lab 0.1.0")
+        console.print(f"llm-lab {__version__}")
         raise typer.Exit()
     if ctx.invoked_subcommand is None and not version:
         console.print("[yellow]llm-lab[/yellow] – use [bold]llm-lab --help[/bold] for commands")
@@ -98,25 +99,9 @@ def run(
         )
         return
     from llm_lab.runner import run_plan
-    from llm_lab.tracer import trace_call
 
     with console.status("[bold green]Running plan..."):
         result = run_plan(goal, model, verifier)
-
-    # Persist the run so `report`/`diff`/`history` can read an accurate verdict.
-    with contextlib.suppress(Exception):
-        asyncio.run(
-            trace_call(
-                intent_id=result["run_id"],
-                seq=1,
-                model=result["model"],
-                prompt=result["goal"],
-                output=json.dumps(result, ensure_ascii=False),
-                token_usage={"total_tokens": result["total_tokens"]},
-                cost_usd=result["total_cost_usd"],
-                verdict="pass" if result["all_passed"] else "fail",
-            )
-        )
 
     if json_output:
         console.print(json.dumps(result, indent=2, ensure_ascii=False))
@@ -146,6 +131,86 @@ def _print_run_result(result: dict) -> None:
         )
     console.print(table)
     console.print(f"[dim]Total: {result['total_tokens']} tokens  |  ${result['total_cost_usd']:.6f}[/dim]")
+
+
+@app.command()
+def demo(
+    output_dir: Annotated[
+        Path,
+        typer.Option(
+            "--output-dir",
+            "-o",
+            help="Directory for the deterministic demo database, JSON and HTML report",
+        ),
+    ] = Path(".llm-lab-demo"),
+) -> None:
+    """Run the complete offline demo without an API key or network access."""
+    output = output_dir.expanduser().resolve()
+    output.mkdir(parents=True, exist_ok=True)
+
+    from llm_lab import db as database
+
+    env_names = ("LLM_PROVIDER", "LLM_MODEL", "LLM_LAB_DB_PATH", "DEEPEVAL_ENABLED")
+    previous_env = {name: os.environ.get(name) for name in env_names}
+    previous_db_path = database.DB_PATH
+    db_path = output / "audit.db"
+    os.environ.update(
+        {
+            "LLM_PROVIDER": "offline",
+            "LLM_MODEL": "offline-demo-v1",
+            "LLM_LAB_DB_PATH": str(db_path),
+            "DEEPEVAL_ENABLED": "0",
+        }
+    )
+
+    try:
+        from llm_lab.runner import run_plan
+
+        database.DB_PATH = str(db_path)
+        asyncio.run(database.init_db())
+
+        with console.status("[bold green]Running deterministic offline demo..."):
+            result = run_plan(
+                "evaluate offline demo: return a deterministic auditable answer",
+                "offline-demo-v1",
+                "structural",
+            )
+
+        result_path = output / "result.json"
+        report_path = output / "report.html"
+        result_path.write_text(
+            json.dumps(result, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        report_path.write_text(export_mod.export_html(result), encoding="utf-8")
+        verification = asyncio.run(database.verify_log())
+    finally:
+        database.DB_PATH = previous_db_path
+        for name, previous in previous_env.items():
+            if previous is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = previous
+
+    status = "PASS" if result["all_passed"] else "FAIL"
+    chain = "OK" if verification["ok"] else "BROKEN"
+    console.print(
+        Panel(
+            f"[bold]{status}[/bold]  |  model: [cyan]{result['model']}[/cyan]  "
+            f"|  verifier: [cyan]{result['verifier']}[/cyan]\n"
+            f"Audit chain: [green]{chain}[/green] "
+            f"({verification['rows_checked']} rows)\n\n"
+            f"DB: [cyan]{db_path}[/cyan]\n"
+            f"JSON: [cyan]{result_path}[/cyan]\n"
+            f"HTML: [cyan]{report_path}[/cyan]\n\n"
+            "[dim]Offline mode exercises planner -> output -> verifier -> audit. "
+            "It does not measure a real model's quality.[/dim]",
+            title="llm-lab offline demo",
+        )
+    )
+
+    if not result["all_passed"] or not verification["ok"]:
+        raise typer.Exit(code=1)
 
 
 # ── compare ──────────────────────────────────────────────────────────────────

@@ -15,7 +15,7 @@ _PRICE_PER_1K = {
     "gemini-2.0-pro-001": (0.0025, 0.01),
 }
 
-_LOCAL_PROVIDERS = {"ollama", "llamacpp", "vllm", "localai", "tgi", "promptfoo"}
+_LOCAL_PROVIDERS = {"offline", "ollama", "llamacpp", "vllm", "localai", "tgi", "promptfoo"}
 
 
 def estimate_cost(model: str, prompt_tokens: int, completion_tokens: int) -> float:

@@ -1,4 +1,5 @@
 """Tests for cli.py — Typer CLI app."""
+import asyncio
 import json
 import sys
 from pathlib import Path
@@ -7,7 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 from typer.testing import CliRunner
 
-from llm_lab import cli
+from llm_lab import __version__, cli
 
 _cli_runner = CliRunner()
 
@@ -15,7 +16,7 @@ _cli_runner = CliRunner()
 def test_version_displays():
     result = _cli_runner.invoke(cli.app, ["--version"])
     assert result.exit_code == 0
-    assert "0.1.0" in result.stdout
+    assert __version__ in result.stdout
 
 
 def test_no_command_shows_message():
@@ -27,8 +28,36 @@ def test_no_command_shows_message():
 def test_help_shows_commands():
     result = _cli_runner.invoke(cli.app, ["--help"])
     assert result.exit_code == 0
-    for cmd in ("run", "history", "export", "compare", "serve"):
+    for cmd in ("run", "history", "export", "compare", "serve", "demo"):
         assert cmd in result.stdout
+
+
+def test_offline_demo_writes_artifacts_and_valid_audit_chain(tmp_path):
+    from llm_lab import db as _local_db
+
+    result = _cli_runner.invoke(cli.app, ["demo", "--output-dir", str(tmp_path)])
+    assert result.exit_code == 0, result.stdout
+
+    payload = json.loads((tmp_path / "result.json").read_text(encoding="utf-8"))
+    assert payload["all_passed"] is True
+    assert payload["model"] == "offline-demo-v1"
+    assert payload["plan_template"] == "eval-model"
+    assert payload["total_cost_usd"] == 0.0
+    assert payload["steps"] == 5
+    assert all(step["verdict"]["label"] == "pass" for step in payload["steps_detail"])
+
+    report = (tmp_path / "report.html").read_text(encoding="utf-8")
+    assert payload["intent_id"] in report
+    assert "OFFLINE_DEMO_PASS" in report
+
+    old_db_path = _local_db.DB_PATH
+    try:
+        _local_db.DB_PATH = str(tmp_path / "audit.db")
+        verification = asyncio.run(_local_db.verify_log())
+    finally:
+        _local_db.DB_PATH = old_db_path
+    assert verification["ok"] is True
+    assert verification["rows_checked"] == 5
 
 
 def test_run_with_no_args_fails():

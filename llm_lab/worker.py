@@ -1,3 +1,4 @@
+import hashlib
 import inspect
 import logging
 import os
@@ -90,6 +91,8 @@ def _build_client(provider_index: int = 0) -> tuple[OpenAI, str]:
 
 
 def _get_default_model(provider: str) -> str:
+    if provider == "offline":
+        return "offline-demo-v1"
     if provider in _LOCAL_DEFAULTS:
         return _LOCAL_DEFAULTS[provider]["model"]
     if _is_anthropic(provider):
@@ -278,6 +281,30 @@ def _call_llm_dispatch(
     temperature: float,
     max_tokens: int,
 ) -> dict[str, Any]:
+
+    if provider == "offline":
+        # Deterministic, no-network provider for docs, CI and first-run demos.
+        # It exercises the planner/verifier/audit pipeline, not model quality.
+        from llm_lab.verifier import count_tokens
+
+        digest = hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:16]
+        output = (
+            f"OFFLINE_DEMO_PASS prompt_sha256={digest} "
+            "verification=deterministic route=offline"
+        )
+        prompt_tokens = count_tokens(prompt)
+        completion_tokens = count_tokens(output)
+        return {
+            "output": output,
+            "model": model or "offline-demo-v1",
+            "finish_reason": "stop",
+            "token_usage": {
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": prompt_tokens + completion_tokens,
+            },
+            "cost_usd": 0.0,
+        }
 
     if provider == "promptfoo":
         from llm_lab import promptfoo_provider

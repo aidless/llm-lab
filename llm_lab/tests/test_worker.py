@@ -14,6 +14,9 @@ def test_local_provider_detection():
     os.environ["LLM_PROVIDER"] = "ollama"
     assert wrk._is_local() is True
 
+    os.environ["LLM_PROVIDER"] = "offline"
+    assert wrk._is_local() is True
+
     os.environ["LLM_PROVIDER"] = "openai"
     assert wrk._is_local() is False
 
@@ -28,6 +31,28 @@ def test_local_cost_is_zero():
     assert wrk._estimate_cost("qwen2.5:7b", 100, 50) == 0.0
     assert wrk._estimate_cost("llama3.1:8b", 500, 200) == 0.0
     os.environ.pop("LLM_PROVIDER", None)
+
+
+def test_offline_provider_is_deterministic_and_never_builds_a_client(monkeypatch):
+    from unittest.mock import patch
+
+    monkeypatch.setenv("LLM_PROVIDER", "offline")
+    monkeypatch.setenv("LLM_MODEL", "offline-demo-v1")
+
+    with patch.object(
+        wrk,
+        "build_openai_client",
+        side_effect=AssertionError("offline mode must not construct a network client"),
+    ):
+        first = wrk.call_llm("audit this deterministic prompt")
+        second = wrk.call_llm("audit this deterministic prompt")
+
+    assert first == second
+    assert first["output"].startswith("OFFLINE_DEMO_PASS ")
+    assert "prompt_sha256=" in first["output"]
+    assert first["finish_reason"] == "stop"
+    assert first["cost_usd"] == 0.0
+    assert first["token_usage"]["total_tokens"] > 0
 
 
 def test_remote_cost_uses_price_table():

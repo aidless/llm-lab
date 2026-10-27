@@ -3,29 +3,29 @@
 [[Latest release](https://img.shields.io/github/v/release/aidless/llm-lab?label=release)](https://github.com/aidless/llm-lab/releases)
 [![CI](https://github.com/aidless/llm-lab/actions/workflows/test.yml/badge.svg)](https://github.com/aidless/llm-lab/actions/workflows/test.yml)
 [![CodeQL](https://github.com/aidless/llm-lab/actions/workflows/codeql.yml/badge.svg)](https://github.com/aidless/llm-lab/security/code-scanning)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org)
-[![Tests](https://img.shields.io/badge/tests-488%20passed%20%C2%B7%202%20skipped-brightgreen)](./CHANGELOG.md)
-[![Ruff + Mypy + Bandit](https://img.shields.io/badge/lint-ruff%20%2B%20mypy%20%2B%20bandit-blue)](./CONTRIBUTING.md)
+[![Tests](https://img.shields.io/badge/tests-497%20passed%20%C2%B7%202%20skipped-brightgreen)](../CHANGELOG.md)
+[![Ruff + Mypy + Bandit](https://img.shields.io/badge/lint-ruff%20%2B%20mypy%20%2B%20bandit-blue)](../CONTRIBUTING.md)
 
 > **The eval tool you can show your security team.**
 > LLM evaluation & orchestration for security-conscious teams — auditable,
 > air-gap-able, hardened by default, and Prometheus-observable.
 
-**Current status: v0.9.7 — first CI-green release.** 488 tests pass
+**Current status: v0.9.7 — first CI-green release.** 497 tests pass
 (2 skipped; both need a real provider key), ruff + mypy + bandit clean,
 macOS + 3 Python versions matrix, SBOM per release, CodeQL 0 open alerts.
-See [`CHANGELOG.md`](./CHANGELOG.md) for the journey from v0.1.0 → v0.9.7.
+See [`CHANGELOG.md`](../CHANGELOG.md) for the journey from v0.1.0 → v0.9.7.
 
 **Tamper-evident audit log.** Every `event_log` row carries a SHA-256 hash
 chained to its predecessor. Run `llm-lab verify` to detect any insertion,
 deletion, or modification. See
-[`docs/adr/0006-audit-trail-integrity.md`](./llm_lab/docs/adr/0006-audit-trail-integrity.md).
+  [`docs/adr/0006-audit-trail-integrity.md`](./docs/adr/0006-audit-trail-integrity.md).
 
 **Observability built in:** structured JSON logs, trace-id propagation,
 `GET /metrics` (Prometheus exposition format). No extra dependencies — see
-[`docs/adr/0007-structured-logging.md`](./llm_lab/docs/adr/0007-structured-logging.md)
-and [`docs/adr/0008-prometheus-metrics.md`](./llm_lab/docs/adr/0008-prometheus-metrics.md).
+  [`docs/adr/0007-structured-logging.md`](./docs/adr/0007-structured-logging.md)
+and [`docs/adr/0008-prometheus-metrics.md`](./docs/adr/0008-prometheus-metrics.md).
 
 ---
 
@@ -35,15 +35,15 @@ Other eval tools optimise for **ergonomics**. `llm-lab` optimises for
 **defensibility**:
 
 - ✅ **8 security audit fixes already shipped** (XSS, path traversal, auth bypass,
-  timing attacks, security headers, …) — see [`THREAT_MODEL.md`](./THREAT_MODEL.md).
+  timing attacks, security headers, …) — see [`THREAT_MODEL.md`](../THREAT_MODEL.md).
 - ✅ **Multi-tenant isolation** with explicit authentication on 8 endpoints.
 - ✅ **Auditable event log** with `verdict` + input/output hashes (path to
   tamper-evident chain tracked in
-  [`docs/adr/0006-audit-trail-integrity.md`](./llm_lab/docs/adr/0006-audit-trail-integrity.md)).
+  [`docs/adr/0006-audit-trail-integrity.md`](./docs/adr/0006-audit-trail-integrity.md)).
 - ✅ **Graceful degradation** under provider outages, missing API keys, and
   SQLite lock contention — verified by
-  [`benchmarks/self_bench.py --mode fault`](./llm_lab/benchmarks/self_bench.py).
-- ✅ **488 tests, ruff + mypy + bandit + pip-audit clean**.
+  [`benchmarks/self_bench.py --mode fault`](./benchmarks/self_bench.py).
+- ✅ **497 tests, ruff + mypy + bandit + pip-audit clean**.
 
 If your security team needs to know *why* your eval pipeline picked model B
 over model A, and *which prompt hashes* it ran, `llm-lab` gives you the answer.
@@ -121,7 +121,7 @@ existing alerting.
 >   environments, ship a periodic hash snapshot of the SQLite file to an
 >   immutable store and compare against it.
 
-See [`docs/adr/0006-audit-trail-integrity.md`](./llm_lab/docs/adr/0006-audit-trail-integrity.md)
+See [`docs/adr/0006-audit-trail-integrity.md`](./docs/adr/0006-audit-trail-integrity.md)
 for the design and limitations.
 
 ---
@@ -131,13 +131,13 @@ for the design and limitations.
 Three personas drive the design. Read whichever matches you best:
 
 - **Alice — ML engineer at a 50–500 person SaaS:** you keep losing
-  track of which prompt is which. [`docs/PERSONAS.md`](./llm_lab/docs/PERSONAS.md#p0--alice-the-ml-engineer-at-a-50-500-person-saas)
+  track of which prompt is which. [`docs/PERSONAS.md`](./docs/PERSONAS.md#p0--alice-the-ml-engineer-at-a-50-500-person-saas)
 - **Bob — security architect at a regulated company:** your
   security team blocks LLM tools that don't have an audit trail.
-  [`docs/PERSONAS.md`](./llm_lab/docs/PERSONAS.md#p0--bob-the-security-architect-at-a-regulated-company)
+  [`docs/PERSONAS.md`](./docs/PERSONAS.md#p0--bob-the-security-architect-at-a-regulated-company)
 - **Carol — independent ML consultant:** you re-build the same
   eval pipeline on every client engagement.
-  [`docs/PERSONAS.md`](./llm_lab/docs/PERSONAS.md#p1--carol-the-independent-ml-consultant)
+  [`docs/PERSONAS.md`](./docs/PERSONAS.md#p1--carol-the-independent-ml-consultant)
 
 > If none of these match you, [`promptfoo`](https://promptfoo.dev/)
 > is probably a better fit — it's faster and the community is
@@ -172,7 +172,7 @@ scrape_configs:
       - targets: ['localhost:8123']
 ```
 
-See [`docs/adr/0008-prometheus-metrics.md`](./llm_lab/docs/adr/0008-prometheus-metrics.md)
+See [`docs/adr/0008-prometheus-metrics.md`](./docs/adr/0008-prometheus-metrics.md)
 for the label semantics and cardinality controls.
 
 ---
@@ -180,7 +180,7 @@ for the label semantics and cardinality controls.
 ## Self-benchmark numbers (reproducible)
 
 `llm-lab` benchmarks itself on every CI run (`--mode smoke`) and publishes
-real-provider numbers in [`benchmarks/v2-results.json`](./llm_lab/benchmarks/v2-results.json)
+real-provider numbers in [`benchmarks/v2-results.json`](./benchmarks/v2-results.json)
 on every release.
 
 ### Stub run (offline, what CI runs)
@@ -264,8 +264,8 @@ path, and SQLite lock contention under WAL + `busy_timeout`.
                        └──────────────┘    └──────────────┘
 ```
 
-See [`llm_lab/docs/ARCHITECTURE.md`](./llm_lab/docs/ARCHITECTURE.md) for the
-full breakdown, and [`llm_lab/docs/adr/`](./llm_lab/docs/adr/) for the
+See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for the
+full breakdown, and [`docs/adr/`](./docs/adr/) for the
 rationale behind each design choice.
 
 ---
@@ -293,14 +293,14 @@ rationale behind each design choice.
 
 | Document | What's in it |
 | -------- | ------------ |
-| [`SECURITY.md`](./SECURITY.md) | How to report vulnerabilities, response SLA, severity scale |
-| [`THREAT_MODEL.md`](./THREAT_MODEL.md) | What we defend against, what we don't, what we mitigate |
-| [`GOVERNANCE.md`](./GOVERNANCE.md) | Single-maintainer → core-team evolution path |
-| [`CONTRIBUTING.md`](./CONTRIBUTING.md) | Dev setup, PR template, security-sensitive review checklist |
-| [`CHANGELOG.md`](./CHANGELOG.md) | Release history, SemVer notes |
-| [`CODEOWNERS`](./CODEOWNERS) | Review routing |
-| [`ADOPTERS.md`](./ADOPTERS.md) | Who's using it (empty — be the first!) |
-| [`llm_lab/docs/adr/`](./llm_lab/docs/adr/) | Architecture Decision Records |
+| [`SECURITY.md`](../SECURITY.md) | How to report vulnerabilities, response SLA, severity scale |
+| [`THREAT_MODEL.md`](../THREAT_MODEL.md) | What we defend against, what we don't, what we mitigate |
+| [`GOVERNANCE.md`](../GOVERNANCE.md) | Single-maintainer → core-team evolution path |
+| [`CONTRIBUTING.md`](../CONTRIBUTING.md) | Dev setup, PR template, security-sensitive review checklist |
+| [`CHANGELOG.md`](../CHANGELOG.md) | Release history, SemVer notes |
+| [`CODEOWNERS`](../CODEOWNERS) | Review routing |
+| [`ADOPTERS.md`](../ADOPTERS.md) | Who's using it (empty — be the first!) |
+| [`docs/adr/`](./docs/adr/) | Architecture Decision Records |
 
 ---
 
@@ -319,6 +319,6 @@ We say this out loud so you don't waste time looking for it:
 
 `llm-lab` is **pre-1.0**. APIs may change between minor versions until v1.0.0.
 We commit to keeping security and audit-log semantics stable across minor
-versions; breaking changes will be flagged in [`CHANGELOG.md`](./CHANGELOG.md).
+versions; breaking changes will be flagged in [`CHANGELOG.md`](../CHANGELOG.md).
 
-Current tracked work: [audit-trail tamper-evidence chain (ADR-0006)](./llm_lab/docs/adr/0006-audit-trail-integrity.md).
+Current tracked work: [audit-trail tamper-evidence chain (ADR-0006)](./docs/adr/0006-audit-trail-integrity.md).

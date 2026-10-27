@@ -18,6 +18,7 @@ from fastapi.responses import HTMLResponse, PlainTextResponse, Response  # noqa:
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 
 from llm_lab import (  # noqa: E402
+    __version__,
     db,
     export,
     tracer,
@@ -120,7 +121,7 @@ async def lifespan(_app: FastAPI):
     tracer.shutdown()
 
 
-app = FastAPI(title="llm-lab M0", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="llm-lab", version=__version__, lifespan=lifespan)
 
 
 @app.middleware("http")

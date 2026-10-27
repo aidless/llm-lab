@@ -1,152 +1,130 @@
 # llm-lab
 
-> **Local-first LLM evaluation framework** with tamper-evident audit logs and security-first design.
+**Local-first LLM evaluation workbench.** Plan a task, call a model, verify the
+output, and inspect a hash-linked audit trail without sending run data to a
+hosted evaluation service.
 
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Tests](https://img.shields.io/badge/tests-488%20passing-brightgreen)
+[![CI](https://github.com/aidless/llm-lab/actions/workflows/test.yml/badge.svg)](https://github.com/aidless/llm-lab/actions/workflows/test.yml)
+[![Python](https://img.shields.io/badge/python-3.10%2B-1f6f5f)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-c4552d)](LICENSE)
 
----
+The repository also contains a large, separately indexed AI/AGI knowledge
+library under [`knowledge/`](knowledge/README.md). The product code and the
+study notes are intentionally kept apart.
 
-## What is this?
+## Start with the offline demo
 
-A CLI + web tool for **running, verifying, and comparing LLM outputs** — entirely on your own machine.
+No API key and no network access required:
 
 ```bash
-# Run a single LLM task with automatic verification
-llm-lab run "Write a haiku about Rust"
-
-# Compare two models head-to-head
-llm-lab compare "Write a haiku about Rust" --model-a gpt-4o --model-b claude-3-5-sonnet
-
-# Launch the web UI
-llm-lab serve  # → http://localhost:8123
+python3 -m venv .venv
+.venv/bin/pip install -e './llm_lab[dev]'
+.venv/bin/llm-lab demo
 ```
 
-Every run is traced, verified, and stored in a local tamper-evident audit log. You get pass/fail verdicts, cost tracking, and full reproducibility — without sending your data to anyone.
+The command writes:
 
----
+```text
+.llm-lab-demo/
+├── audit.db      # SQLite event log with a SHA-256 hash chain
+├── result.json   # plan, model output, verdicts, token counts, cost
+└── report.html   # standalone inspection report
+```
 
-## Why llm-lab?
+It exits non-zero if any verification step fails or the audit chain is broken.
+The deterministic offline provider reports `$0.000000` cost and exercises the
+full planner → model adapter → verifier → audit path.
 
-| Problem | llm-lab's answer |
-|---------|-------------------|
-| "Is my LLM actually doing the task correctly?" | Built-in Verifier checks output against criteria → pass/fail verdict |
-| "Which model should I use?" | `compare` command runs A/B tests with cost + quality metrics |
-| "Can I prove what happened in each run?" | Tamper-evident audit chain (SHA-16 hash-linked logs) |
-| "Will my data stay private?" | Local-first: runs entirely on your machine, SQLite storage |
-| "Can I reproduce a result?" | Full trace + seed + config stored per run |
+**What this proves:** the evaluation and audit plumbing is reproducible.
 
----
+**What it does not prove:** model quality, benchmark leadership, production
+reliability, or user adoption. The offline provider emits a fixed,
+content-addressed response; it is a test fixture, not an LLM.
+
+## What you can inspect
+
+| Surface | Input | Output | Evidence |
+|---|---|---|---|
+| `llm-lab demo` | A deterministic evaluation goal | JSON result + standalone HTML report | `.llm-lab-demo/audit.db`, exit code |
+| `llm-lab run` | Task goal + provider configuration | Per-step verdict, token usage, cost | Hash-linked SQLite event log |
+| `llm-lab compare` | One goal + two models | A/B pass status, token and cost delta | Two traceable run IDs |
+| `llm-lab serve` | Browser UI | Local evaluation workspace | `http://127.0.0.1:8123` |
 
 ## Architecture
 
+```text
+goal
+  │
+  ▼
+planner ──► runner ──► model adapter ──► verifier
+  │              │                         │
+  │              └── token + cost          │
+  ▼                                        ▼
+plan template                         pass / fail
+  │                                        │
+  └──────────────► tracer ◄────────────────┘
+                     │
+                     ▼
+          SQLite hash-linked audit log
 ```
-┌─────────────┐     ┌───────────┐     ┌───────────┐     ┌──────────┐
-│   Planner    │────→│  Runner   │────→│ Verifier  │────→│  Tracer  │
-│ (task → plan)│     │ (LLM call)│     │ (check)   │     │ (audit)  │
-└─────────────┘     └───────────┘     └───────────┘     └──────────┘
-                          │                                   │
-                    ┌─────┴─────┐                       ┌──────┴──────┐
-                    │  Pricing  │                       │  SQLite DB  │
-                    │ (cost)    │                       │ (history)   │
-                    └───────────┘                       └─────────────┘
-```
 
-- **Planner**: Converts task descriptions into structured execution plans (YAML templates for code review, A/B compare, model eval, summarization, translation)
-- **Runner**: Executes LLM calls with retry, timeout, and cost tracking
-- **Verifier**: Checks LLM output against acceptance criteria → pass/fail
-- **Tracer**: Records every step in a hash-linked audit chain (tamper-evident)
-- **DB**: SQLite storage for full run history with reproducibility metadata
+- **Planner:** chooses a known YAML template or falls back to a model-generated
+  plan.
+- **Runner:** executes each step through a provider adapter and records usage.
+- **Verifier:** checks non-empty output, structure, keywords, schemas, or
+  optional DeepEval metrics.
+- **Tracer:** writes a per-row `prev_hash` / `row_hash` chain so deletion,
+  insertion, or mutation of historical rows is detectable.
 
----
+## Run with a model
 
-## Quickstart
+The offline demo is the supported first-run path. To evaluate a real model,
+copy the environment template and configure a provider:
 
 ```bash
-# Install
-cd llm_lab && pip install -e ".[dev]"
-
-# Configure
-echo 'LLM_API_KEY=your-key' > .env  # loaded via python-dotenv; or export LLM_API_KEY
-
-# Run
-llm-lab run "Summarize the key points of clean code"
-
-# Compare models
-llm-lab compare "Summarize the key points of clean code" \
-  --model-a gpt-4o --model-b deepseek-chat
-
-# Web UI
-llm-lab serve
-
-# View history
-llm-lab history
-
-# Export a result
-llm-lab export <run-id>
+cp llm_lab/.env.example .env
+# Edit .env: LLM_PROVIDER, LLM_MODEL, LLM_BASE_URL, LLM_API_KEY
+.venv/bin/llm-lab run "review this pull request for security issues"
 ```
 
-### Docker
+Real calls can incur provider charges. Use a small, explicit budget and do not
+put credentials in the repository.
+
+## Development checks
 
 ```bash
-docker-compose up -d  # Starts llm-lab + web UI on :8123
+# Product package
+cd llm_lab
+../.venv/bin/ruff check .
+../.venv/bin/mypy .
+../.venv/bin/pytest --timeout=30 -q
+
+# Repository-root self-evolution suite
+cd ..
+.venv/bin/pytest tests/test_selfevolve.py -q --timeout=30
 ```
 
----
+## Project layout
 
-## Key Features
-
-- **📋 Task Templates**: Pre-built YAML templates for common LLM tasks (code review, A/B testing, model evaluation, summarization, translation)
-- **🔍 Verification Engine**: Rule-based + DeepEval automated scoring with configurable thresholds
-- **📝 Audit Chain**: SHA-16 hash-linked event log — every run is tamper-evident and reproducible
-- **💰 Cost Tracking**: Per-run token count + pricing for cost-aware model selection
-- **🖥️ Web UI**: Browser-based interface at `localhost:8123`
-- **🐳 Docker Ready**: Full docker-compose deployment
-- **📊 Observability**: Structured logging + Prometheus metrics (ADR-0008)
-- **🔒 Security**: Threat model, security policy, SBOM (CycloneDX), auth support
-- **🧪 Tests**: 17 test suites covering API, audit chain, auth, CLI, DB, e2e, export, LLM contract, observability, planner, runner, tracer, verifier, worker
-
----
-
-## Project Structure
-
-```
-llm-lab/
-├── llm_lab/              # Main package
-│   ├── cli.py            # CLI entry point (run/compare/serve/history/export)
-│   ├── runner.py         # LLM execution engine
-│   ├── verifier.py       # Output verification
-│   ├── tracer.py         # Audit trail
-│   ├── db.py             # SQLite storage
-│   ├── planner/          # Task planning + YAML templates
-│   ├── tests/            # 17 test suites
-│   ├── docs/             # ADRs, blog posts, roadmap
-│   ├── Dockerfile        # Container build
-│   └── docker-compose.yml  # Full deployment
-├── selfevolve/           # Self-evolution modules
-│   ├── core.py           # Evolution loop
-│   ├── multi_agent.py    # Multi-agent coordination
-│   └── self_modification.py  # Safe self-modification
-├── agi_harness.py        # AGI harness integration
-└── .github/              # CI workflows, issue templates, PR template
+```text
+llm_lab/              # installable product package + tests
+tests/                # repository-root self-evolution tests
+selfevolve/           # experimental self-evolution modules
+knowledge/            # AI/AGI notes, discussions and reference documents
 ```
 
----
+The self-evolution code is retained as research context and is not part of the
+offline evaluation demo's quality claim. See [`knowledge/README.md`](knowledge/README.md)
+for the archived document index.
 
-## Governance
+## Governance and security
 
-This project follows open-source governance best practices:
-
-- [ADOPTERS.md](ADOPTERS.md) — who uses llm-lab
-- [CONTRIBUTING.md](CONTRIBUTING.md) — how to contribute
-- [GOVERNANCE.md](GOVERNANCE.md) — decision-making process
-- [SECURITY.md](SECURITY.md) — security policy
-- [THREAT_MODEL.md](THREAT_MODEL.md) — threat model
-- [CODEOWNERS](CODEOWNERS) — code ownership
-- 7 Architecture Decision Records in `llm_lab/docs/adr/` (0001–0003, 0006–0009; 0004/0005 reserved)
-
----
+- [Contributing](CONTRIBUTING.md)
+- [Security policy](SECURITY.md)
+- [Threat model](THREAT_MODEL.md)
+- [Governance](GOVERNANCE.md)
+- [Support](SUPPORT.md)
+- [Code of conduct](CODE_OF_CONDUCT.md)
 
 ## License
 
