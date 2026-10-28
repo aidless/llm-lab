@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import shutil
+import sys
 from pathlib import Path
 
 from contamination_scan.data import build_fixture, normalize_text
 from contamination_scan.scanner import char_ngrams, ngram_containment
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from verify_evidence import verify
 
 
