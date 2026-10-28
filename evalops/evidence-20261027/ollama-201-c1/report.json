@@ -1,0 +1,130 @@
+{
+  "answer_hash": "6569fbbf44b50e363dc731324ef991124538a5f177f9bfb09a49da6ba82690fb",
+  "config": {
+    "backoff_seconds": 0.5,
+    "concurrency": 1,
+    "max_retries": 1,
+    "max_tokens": 8,
+    "model": "qwen25-3b-16k:latest",
+    "provider": "ollama",
+    "temperature": 0.0,
+    "timeout_seconds": 90.0
+  },
+  "config_hash": "39943495a2ffdfde3475da378a0eabbe72a888865c8f8eb1abff076d1a5a5778",
+  "counts": {
+    "correct": 108,
+    "failures": {},
+    "parsed": 201,
+    "success": 201,
+    "total": 201
+  },
+  "latency_ms": {
+    "all": {
+      "mean": 1727.1369437812202,
+      "p50": 1473.2783129438758,
+      "p95": 3638.264677952975
+    },
+    "successful": {
+      "mean": 1727.1369437812202,
+      "p50": 1473.2783129438758,
+      "p95": 3638.264677952975
+    }
+  },
+  "limitations": [
+    "This is a local, non-production run.",
+    "The public C-Eval subset is not the official C-Eval leaderboard.",
+    "Parsed accuracy excludes parse/provider failures; strict accuracy includes them in the denominator.",
+    "Deterministic adapters are fixtures, not model-quality evidence."
+  ],
+  "model": "qwen25-3b-16k:latest",
+  "provider": "ollama",
+  "rates": {
+    "accuracy_parsed": 0.5373134328358209,
+    "parsed_rate": 1.0,
+    "strict_accuracy": 0.5373134328358209,
+    "success_rate": 1.0
+  },
+  "retries_total": 0,
+  "run_label": "ollama-201-c1",
+  "schema_version": "evalops.report.v1",
+  "subject_metrics": {
+    "college_physics": {
+      "accuracy_parsed": 0.3684210526315789,
+      "correct": 7,
+      "strict_accuracy": 0.3684210526315789,
+      "success": 19,
+      "total": 19
+    },
+    "college_programming": {
+      "accuracy_parsed": 0.76,
+      "correct": 19,
+      "strict_accuracy": 0.76,
+      "success": 25,
+      "total": 25
+    },
+    "computer_architecture": {
+      "accuracy_parsed": 0.6666666666666666,
+      "correct": 14,
+      "strict_accuracy": 0.6666666666666666,
+      "success": 21,
+      "total": 21
+    },
+    "discrete_mathematics": {
+      "accuracy_parsed": 0.1875,
+      "correct": 3,
+      "strict_accuracy": 0.1875,
+      "success": 16,
+      "total": 16
+    },
+    "high_school_mathematics": {
+      "accuracy_parsed": 0.5555555555555556,
+      "correct": 10,
+      "strict_accuracy": 0.5555555555555556,
+      "success": 18,
+      "total": 18
+    },
+    "law": {
+      "accuracy_parsed": 0.5833333333333334,
+      "correct": 14,
+      "strict_accuracy": 0.5833333333333334,
+      "success": 24,
+      "total": 24
+    },
+    "logic": {
+      "accuracy_parsed": 0.5454545454545454,
+      "correct": 12,
+      "strict_accuracy": 0.5454545454545454,
+      "success": 22,
+      "total": 22
+    },
+    "middle_school_mathematics": {
+      "accuracy_parsed": 0.42105263157894735,
+      "correct": 8,
+      "strict_accuracy": 0.42105263157894735,
+      "success": 19,
+      "total": 19
+    },
+    "operating_system": {
+      "accuracy_parsed": 0.631578947368421,
+      "correct": 12,
+      "strict_accuracy": 0.631578947368421,
+      "success": 19,
+      "total": 19
+    },
+    "probability_and_statistics": {
+      "accuracy_parsed": 0.5,
+      "correct": 9,
+      "strict_accuracy": 0.5,
+      "success": 18,
+      "total": 18
+    }
+  },
+  "task_set_hash": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657",
+  "throughput_tasks_per_second": 0.5788366941307246,
+  "token_usage": {
+    "completion_tokens": 402,
+    "prompt_tokens": 26542,
+    "total_tokens": 26944
+  },
+  "wall_seconds": 347.24819977395236
+}

@@ -52,5 +52,14 @@ data/
 models/
 .regression_tmp/
 *.bak
+.codex-evidence/
+evalops/evidence-20261027/verification-result.json
 
 *.bak*
+
+# Downloaded local test binaries
+.tools/
+
+# Keep checksummed local-server evidence logs
+!eval-infra-adapters/evidence/**/*.log
+!kube-eval-service/evidence/*.log

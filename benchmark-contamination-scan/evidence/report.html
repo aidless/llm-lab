@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Benchmark Contamination Preflight</title>
+<style>
+:root{--ink:#172019;--paper:#eff0e7;--card:#fffef7;--line:#c9c9b8;
+--green:#1e6345;--red:#a73a2f;--amber:#a66a12}
+*{box-sizing:border-box}body{margin:0;background:
+repeating-linear-gradient(135deg,#eceee4 0,#eceee4 1px,transparent 1px,transparent 14px);
+color:var(--ink);font:16px/1.5 "Aptos",sans-serif}
+header{padding:54px max(24px,7vw);background:linear-gradient(110deg,#f8f4e8,#e1e9dd);
+border-bottom:2px solid var(--ink)} .eyebrow{font-size:12px;font-weight:900;
+letter-spacing:.16em;color:var(--green);text-transform:uppercase}
+h1{font:800 clamp(42px,7vw,84px)/.95 Georgia,serif;letter-spacing:-.05em;
+max-width:900px;margin:12px 0} .lede{max-width:900px;font-size:20px}
+.decision{display:inline-block;padding:12px 18px;border-radius:12px;margin-top:16px;
+font:800 25px/1 Georgia,serif} .decision.pass{background:#d8eee4;color:var(--green)}
+.decision.hold{background:#faecd5;color:var(--amber)} .decision.block{
+background:#f4dcd7;color:var(--red)}
+main{max-width:1280px;margin:auto;padding:34px 24px 80px;display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;
+box-shadow:0 16px 40px rgba(39,48,35,.07)} .wide{grid-column:1/-1}
+.panel h2{font:700 28px/1.1 Georgia,serif;margin:6px 0 14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stats div{border-top:1px solid var(--line);padding-top:10px}
+.stats b{font:800 38px/.9 Georgia,serif;display:block}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}
+code{background:#e9ece3;padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+ul{padding-left:22px}@media(max-width:850px){main{grid-template-columns:1fr}
+.wide{grid-column:auto}.stats{grid-template-columns:1fr}}
+</style></head><body>
+<header><div class="eyebrow">EvalOps preflight · seeded audit fixture</div>
+<h1>Benchmark Contamination Scanner</h1>
+<p class="lede">Exact, 13-character n-gram and local semantic matching against a
+frozen candidate corpus, with dev-only threshold tuning and explicit review gates.</p>
+<p><strong>本地安全评测，不是生产安全系统。 Local safety evaluation, not a production security system.</strong></p>
+<div class="decision hold">HOLD</div></header>
+<main>
+<section class="panel"><div class="eyebrow">test split</div><h2>Detection quality</h2>
+<div class="stats">
+<div><b>96.3%</b><span>precision</span></div>
+<div><b>86.7%</b><span>recall</span></div>
+<div><b>0.912</b><span>F1</span></div>
+<div><b>1.4%</b><span>false positive</span></div>
+<div><b>13.3%</b><span>false negative</span></div>
+<div><b>0</b><span>human reviews</span></div>
+</div></section>
+<section class="panel"><div class="eyebrow">gate status</div><h2>Preflight reasons</h2>
+<ul><li><code>human_review_lt_40</code></li></ul>
+<p>N-gram: <code>0.40</code> ·
+Semantic: <code>0.90</code></p></section>
+<section class="panel wide"><div class="eyebrow">review queue</div>
+<h2>Suspicious samples</h2><table><thead><tr><th>Task</th><th>Exact</th>
+<th>N-gram</th><th>Semantic</th><th>Matched document</th></tr></thead>
+<tbody><tr><td><code>ceval_090</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_090</code></td></tr><tr><td><code>ceval_117</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_117</code></td></tr><tr><td><code>ceval_126</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_126</code></td></tr><tr><td><code>ceval_045</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_045</code></td></tr><tr><td><code>ceval_054</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_054</code></td></tr><tr><td><code>ceval_063</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_063</code></td></tr><tr><td><code>ceval_072</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_072</code></td></tr><tr><td><code>ceval_099</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_099</code></td></tr><tr><td><code>ceval_108</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_108</code></td></tr><tr><td><code>ceval_135</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_135</code></td></tr><tr><td><code>ceval_144</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_144</code></td></tr><tr><td><code>ceval_171</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_171</code></td></tr><tr><td><code>ceval_000</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_000</code></td></tr><tr><td><code>ceval_018</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_018</code></td></tr><tr><td><code>ceval_027</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_027</code></td></tr><tr><td><code>ceval_036</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_036</code></td></tr><tr><td><code>ceval_081</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_081</code></td></tr><tr><td><code>ceval_153</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_153</code></td></tr><tr><td><code>ceval_162</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_162</code></td></tr><tr><td><code>ceval_009</code></td><td>yes</td><td>1.000</td><td>1.000</td><td><code>seed-ceval_009</code></td></tr><tr><td><code>ceval_003</code></td><td>no</td><td>0.959</td><td>0.934</td><td><code>seed-ceval_003</code></td></tr><tr><td><code>ceval_156</code></td><td>no</td><td>0.938</td><td>0.857</td><td><code>seed-ceval_156</code></td></tr><tr><td><code>ceval_039</code></td><td>no</td><td>0.935</td><td>0.795</td><td><code>seed-ceval_039</code></td></tr><tr><td><code>ceval_030</code></td><td>no</td><td>0.929</td><td>0.758</td><td><code>seed-ceval_030</code></td></tr><tr><td><code>ceval_129</code></td><td>no</td><td>0.927</td><td>0.882</td><td><code>seed-ceval_129</code></td></tr><tr><td><code>ceval_012</code></td><td>no</td><td>0.919</td><td>0.809</td><td><code>seed-ceval_012</code></td></tr><tr><td><code>ceval_021</code></td><td>no</td><td>0.917</td><td>0.805</td><td><code>seed-ceval_021</code></td></tr><tr><td><code>ceval_084</code></td><td>no</td><td>0.914</td><td>0.779</td><td><code>seed-ceval_084</code></td></tr><tr><td><code>ceval_093</code></td><td>no</td><td>0.900</td><td>0.857</td><td><code>seed-ceval_093</code></td></tr><tr><td><code>ceval_147</code></td><td>no</td><td>0.898</td><td>0.912</td><td><code>seed-ceval_147</code></td></tr></tbody></table></section>
+<section class="panel wide"><div class="eyebrow">evidence boundary</div>
+<h2>What this does not prove</h2>
+<ul><li>The local corpus is a seeded audit fixture, not a model&#x27;s pretraining corpus.</li><li>Gold labels are known only because this fixture intentionally injects copies.</li><li>Do not describe fixture metrics as evidence about any specific pretrained model.</li><li>Threshold tuning uses the dev split only, but the fixture is synthetic.</li><li>Embedding similarity is model-dependent and not a proof of memorization.</li><li>A clean result cannot prove a model was not exposed to the benchmark.</li></ul>
+</section></main></body></html>

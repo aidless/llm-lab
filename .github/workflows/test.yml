@@ -78,11 +78,9 @@ jobs:
 
       - name: "Test (repo-root suite: tests/test_selfevolve.py)"
         # The job default working directory is llm_lab/, so the step above
-        # collects 391 passing tests and 2 skips. The README badge claims 497,
-        # which is the
-        # repo-root scope: it adds tests/test_selfevolve.py (106 stdlib-only
-        # tests). That file had no CI coverage, so the badge counted tests no
-        # gate ever ran. This step closes the gap: 391 + 106 = 497 passed.
+        # collects the package suite. This step adds the repository-root
+        # self-evolution suite, which previously had no CI coverage even though
+        # the README badge counted it.
         working-directory: .
         run: |
           python -m pytest tests/test_selfevolve.py -q --timeout=30
@@ -177,6 +175,86 @@ jobs:
         with:
           name: benchmark-smoke
           path: llm_lab/benchmarks/_ci_smoke.json
+
+  portfolio-test:
+    name: portfolio packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            llm_lab/pyproject.toml
+            agent-safety-eval/pyproject.toml
+            safety-judge-calibration/pyproject.toml
+            benchmark-contamination-scan/pyproject.toml
+            eval-infra-adapters/pyproject.toml
+            kube-eval-service/pyproject.toml
+
+      - name: Install all portfolio packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install \
+            -e "./llm_lab[dev]" \
+            -e "./agent-safety-eval[dev]" \
+            -e "./safety-judge-calibration[dev]" \
+            -e "./benchmark-contamination-scan[dev]" \
+            -e "./eval-infra-adapters[dev]" \
+            -e "./kube-eval-service[dev]"
+
+      - name: Ruff
+        run: |
+          for project in \
+            llm_lab \
+            agent-safety-eval \
+            safety-judge-calibration \
+            benchmark-contamination-scan \
+            eval-infra-adapters \
+            kube-eval-service
+          do
+            echo "== ruff: $project"
+            (cd "$project" && ruff check .)
+          done
+
+      - name: Mypy
+        run: |
+          for project in \
+            llm_lab \
+            agent-safety-eval \
+            safety-judge-calibration \
+            benchmark-contamination-scan \
+            eval-infra-adapters \
+            kube-eval-service
+          do
+            echo "== mypy: $project"
+            (cd "$project" && mypy .)
+          done
+
+      - name: Package tests
+        run: |
+          for project in \
+            llm_lab \
+            agent-safety-eval \
+            safety-judge-calibration \
+            benchmark-contamination-scan \
+            eval-infra-adapters \
+            kube-eval-service
+          do
+            echo "== pytest: $project"
+            (cd "$project" && pytest -q tests --timeout=30)
+          done
+
+      - name: Verify checked-in evidence
+        run: |
+          python agent-safety-eval/verify_evidence.py --allow-pending-human
+          python safety-judge-calibration/verify_evidence.py --allow-pending-human
+          python benchmark-contamination-scan/verify_evidence.py --allow-pending-human
+          (cd benchmark-contamination-scan && python scripts/assert_gate_fails_closed.py --expected-report evidence/report.json)
+          python eval-infra-adapters/verify_evidence.py
+          python kube-eval-service/verify_evidence.py
 
   sbom:
     name: SBOM (CycloneDX)

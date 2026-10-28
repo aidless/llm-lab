@@ -1,0 +1,9 @@
+{
+  "max_ms": 165.56588999992528,
+  "max_workers": 8,
+  "min_ms": 12.123993999921368,
+  "p50_ms": 31.92789799959428,
+  "p95_ms": 153.51397300037206,
+  "requests": 24,
+  "schema_version": "kube-eval.concurrency-smoke.v1"
+}

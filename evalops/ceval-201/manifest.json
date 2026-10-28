@@ -1,0 +1,86 @@
+{
+  "dataset": "C-Eval val (frozen 201-row public subset)",
+  "license": "CC-BY-NC-SA-4.0",
+  "mapping_verified": true,
+  "opencompass_export": {
+    "docs": "https://opencompass.readthedocs.io/en/stable/advanced_guides/custom_dataset.html",
+    "path": "opencompass/ceval-201qa.jsonl",
+    "status": "compatibility_export_only",
+    "validated_external_runner": false
+  },
+  "parquet_files": {
+    "college_physics": {
+      "file": "ceval_college_physics.parquet",
+      "rows": 19,
+      "sha256": "0e81a35b2dfa7e344d3eb666cd1308990c838c181f708030fd77f9dd81ef8a83"
+    },
+    "college_programming": {
+      "file": "ceval_college_programming.parquet",
+      "rows": 37,
+      "sha256": "23705408d1e4733ce877217c64a5e6ba21b0a8f65347ff64f1f6c7654b446377"
+    },
+    "computer_architecture": {
+      "file": "ceval_computer_architecture.parquet",
+      "rows": 21,
+      "sha256": "c1c5fab4950b04a91e1f9e0f024eae1f414e33dc47a4c02ec52650d1d319ae06"
+    },
+    "discrete_mathematics": {
+      "file": "ceval_discrete_mathematics.parquet",
+      "rows": 16,
+      "sha256": "7e04bdff838a745ff7118e47070ddca409fea61fe130672577945656dd9e2903"
+    },
+    "high_school_mathematics": {
+      "file": "ceval_high_school_mathematics.parquet",
+      "rows": 18,
+      "sha256": "d0d33970cb39b68d63cbdcd708099825d04118562c8d940f46805b527907d9a3"
+    },
+    "law": {
+      "file": "ceval_law.parquet",
+      "rows": 24,
+      "sha256": "bc940e6ca738861c9204507f613feef75447d909c70996b94c8f61624c4b0d6d"
+    },
+    "logic": {
+      "file": "ceval_logic.parquet",
+      "rows": 22,
+      "sha256": "e6729770934549cd4d038a6c7ae9a1448728237a262e30db87225c775aaddd05"
+    },
+    "middle_school_mathematics": {
+      "file": "ceval_middle_school_mathematics.parquet",
+      "rows": 19,
+      "sha256": "ddd771e85a96c091f45e7ea6bb6522f74e03e93e91c48e9f3dac11b8c5db3790"
+    },
+    "operating_system": {
+      "file": "ceval_operating_system.parquet",
+      "rows": 19,
+      "sha256": "e3b4d7b1d959c06cbca221535fb84ad697f9c8b88a1f91de6a2007b3bca78840"
+    },
+    "probability_and_statistics": {
+      "file": "ceval_probability_and_statistics.parquet",
+      "rows": 18,
+      "sha256": "f1dccb78d4f9184e7fbf5fe5c7f98fa59b49db817e0cd7cf40019d95a2cf5911"
+    }
+  },
+  "revision": "617524a00b307ff6f9933702f724131fe12ca7ce",
+  "schema_version": "evalops.dataset.v1",
+  "source_jsonl_sha256": "ba6b0145bdb21279abc8292f4886666da8b520e7ee1a9e42aa676e06a82374e1",
+  "source_rows": 201,
+  "source_url": "https://huggingface.co/datasets/ceval/ceval-exam",
+  "split": "val",
+  "subjects": {
+    "college_physics": 19,
+    "college_programming": 25,
+    "computer_architecture": 21,
+    "discrete_mathematics": 16,
+    "high_school_mathematics": 18,
+    "law": 24,
+    "logic": 22,
+    "middle_school_mathematics": 19,
+    "operating_system": 19,
+    "probability_and_statistics": 18
+  },
+  "tasks": {
+    "count": 201,
+    "path": "tasks-v1.jsonl",
+    "sha256": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657"
+  }
+}

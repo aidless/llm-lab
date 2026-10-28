@@ -17,6 +17,55 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) once 
 
 ## [Unreleased]
 
+### Added
+
+- **Agent Safety Runtime Monitor.** A 96-task, mock-only agent benchmark
+  covering prompt injection, unauthorized tools, dangerous file operations,
+  data exfiltration, stop failures and tool-error recovery. It records every
+  step, tool argument, policy decision, stop reason and trajectory hash; runs
+  `policy-off`/`policy-on` comparisons; and keeps human review as a separate
+  gate requiring at least 100 validated records.
+- **Safety Judge Calibration.** Two local judges on 200 frozen requests across
+  prompt-injection, unauthorized-request and normal-request slices, with FPR,
+  FNR, Cohen's kappa, Wilson intervals, Brier/ECE, per-slice results and
+  explicit `HOLD` conditions.
+- **Benchmark Contamination Preflight.** Exact, 13-character n-gram and local
+  semantic matching over the existing 201-task C-Eval subset, dev-only
+  threshold tuning, false-positive/negative intervals, a 40-record review
+  queue and a fail-closed EvalOps gate.
+- **Eval infrastructure adapters.** Deterministic vLLM/LMDeploy command
+  generation, managed subprocess lifecycle, OpenAI-compatible HTTP contracts,
+  error/OOM taxonomy, a real Ollama probe and a documented CPU-versus-GPU
+  evidence boundary.
+- **Kube Eval Service.** A bounded FastAPI evaluation service, hardened
+  Kubernetes manifests, security context and NetworkPolicy checks, a fresh
+  kind smoke with 24 concurrent requests, pod replacement and checksummed
+  recovery evidence.
+- **Portfolio CI and verification.** A matrix-independent CI job runs tests,
+  ruff, mypy and the checked-in evidence verifiers for all five packages.
+
+- **Auditable batch EvalOps (`llm_lab evalops`).** Frozen JSONL task sets with
+  SHA-256 manifests; strict multiple-choice parsing; deterministic,
+  OpenAI-compatible/Ollama, and fault-injection adapters; bounded concurrency;
+  timeout and retry/backoff handling; crash-safe resume; explicit failure
+  classes; per-task raw records; JSON/Markdown/HTML reports; and an
+  OpenCompass-compatible export boundary.
+- **C-Eval subset builder and evidence package.** `evalops build` validates
+  every source row against the public parquet rows before freezing 201
+  questions across 10 subjects.  `evalops/evidence-20261027` includes the
+  task manifest, an Ollama concurrency study, synthetic failure evidence, and
+  `verify_evidence.py`.
+
+### Fixed
+
+- **Machine-readable CLI JSON.** `--json` now writes through `typer.echo`
+  rather than Rich, so long values are not terminal-width wrapped and the
+  output remains valid JSON in a pipe.
+- **Retry/resume record integrity.** `--resume --retry-failed` now atomically
+  replaces the previous result for a task instead of appending a duplicate
+  JSONL row.  Resume rejects config, task-set, task-count, record-config, or
+  prompt-hash drift before touching the existing record file.
+
 ### Changed
 
 - **Ollama backend timing (`selfevolve/self_modification.py`).** Default
@@ -28,6 +77,10 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) once 
   patches (`LLM patches: 3` in one 3-cycle run, 2 promoted each cycle
   with tests passing); full suite verified locally: 479 passed /
   11 skipped (fresh run, Python 3.12).
+- **Local verification after EvalOps changes (2026-10-27).** Product package:
+  419 passed / 2 skipped; repository-root self-evolution suite: 106 passed;
+  ruff and mypy clean.  The checked-in evidence verifier also passes 52 file
+  checksums and recomputes every recorded aggregate.
 
 ---
 

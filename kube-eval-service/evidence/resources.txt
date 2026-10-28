@@ -1,0 +1,11 @@
+NAME                                READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                  SELECTOR
+deployment.apps/kube-eval-service   1/1     1            1           7s    service      kube-eval-service:dev   app.kubernetes.io/name=kube-eval-service
+
+NAME                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/kube-eval-service   ClusterIP   10.96.122.146   <none>        8080/TCP   7s    app.kubernetes.io/name=kube-eval-service
+
+NAME                                    READY   STATUS    RESTARTS   AGE   IP           NODE                                      NOMINATED NODE   READINESS GATES
+pod/kube-eval-service-7b686ccf5-wmqrj   1/1     Running   0          7s    10.244.0.5   eval-lab-smoke-1793169340-control-plane   <none>           <none>
+
+NAME                                                POD-SELECTOR                               AGE
+networkpolicy.networking.k8s.io/kube-eval-service   app.kubernetes.io/name=kube-eval-service   6s

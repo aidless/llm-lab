@@ -1,0 +1,19 @@
+{
+  "config": {
+    "backoff_seconds": 0.0,
+    "concurrency": 4,
+    "max_retries": 0,
+    "max_tokens": 8,
+    "model": "deterministic-fixture-v1",
+    "provider": "deterministic",
+    "temperature": 0.0,
+    "timeout_seconds": 5.0
+  },
+  "config_hash": "47ab0c179a794f400165f014e9feb8eae9e3ea2310a6603cdbd87820910dd404",
+  "resume": false,
+  "retry_failed": false,
+  "run_label": "deterministic-c4",
+  "schema_version": "evalops.run.v1",
+  "task_count": 201,
+  "task_set_hash": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657"
+}

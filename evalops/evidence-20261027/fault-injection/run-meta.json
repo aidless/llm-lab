@@ -1,0 +1,19 @@
+{
+  "config": {
+    "backoff_seconds": 0,
+    "concurrency": 2,
+    "max_retries": 0,
+    "max_tokens": 8,
+    "model": "deterministic-fixture-v1",
+    "provider": "fault-injection",
+    "temperature": 0.0,
+    "timeout_seconds": 5
+  },
+  "config_hash": "f7a5aa1421d9b570df6aaedcb998b235398d8f7aca56fb46e3c20906c21e4914",
+  "resume": false,
+  "retry_failed": false,
+  "run_label": "fault-injection-4-classes",
+  "schema_version": "evalops.run.v1",
+  "task_count": 6,
+  "task_set_hash": "6991f66ffa17295d0245491b886a97b855637c3fb28167a8a9541f7c0e42ef4e"
+}

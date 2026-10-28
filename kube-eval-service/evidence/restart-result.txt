@@ -1,0 +1,4 @@
+deleted_pod=kube-eval-service-7b686ccf5-wmqrj
+replacement_pod=kube-eval-service-7b686ccf5-j6cgn
+old_pod_restart_count=0
+replacement_restart_count=0

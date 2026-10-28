@@ -1,0 +1,3 @@
+cluster=eval-lab-smoke-1793169340
+namespace=eval-lab
+port_forward=18080

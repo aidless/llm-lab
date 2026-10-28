@@ -1,0 +1,725 @@
+{
+  "items": [
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_000",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_000",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_programming",
+      "suggested_contaminated": true,
+      "task_id": "ceval_000"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_003",
+        "exact": false,
+        "ngram_score": 0.9591836734693877,
+        "semantic_score": 0.9344388991005885,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_003",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_programming",
+      "suggested_contaminated": true,
+      "task_id": "ceval_003"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_009",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 0.9999999999999998,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_009",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_programming",
+      "suggested_contaminated": true,
+      "task_id": "ceval_009"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_012",
+        "exact": false,
+        "ngram_score": 0.918918918918919,
+        "semantic_score": 0.8085628829276859,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_012",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_programming",
+      "suggested_contaminated": true,
+      "task_id": "ceval_012"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_018",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_018",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_programming",
+      "suggested_contaminated": true,
+      "task_id": "ceval_018"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_021",
+        "exact": false,
+        "ngram_score": 0.9172413793103448,
+        "semantic_score": 0.8051942661193514,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_021",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_programming",
+      "suggested_contaminated": true,
+      "task_id": "ceval_021"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_027",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_027",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "logic",
+      "suggested_contaminated": true,
+      "task_id": "ceval_027"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_030",
+        "exact": false,
+        "ngram_score": 0.9285714285714286,
+        "semantic_score": 0.7581206768890894,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_030",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "logic",
+      "suggested_contaminated": true,
+      "task_id": "ceval_030"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_033",
+        "exact": false,
+        "ngram_score": 0.7137096774193549,
+        "semantic_score": 0.776655623228455,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_033",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "logic",
+      "suggested_contaminated": true,
+      "task_id": "ceval_033"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_036",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_036",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "logic",
+      "suggested_contaminated": true,
+      "task_id": "ceval_036"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_039",
+        "exact": false,
+        "ngram_score": 0.9347826086956522,
+        "semantic_score": 0.79529415406637,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_039",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "logic",
+      "suggested_contaminated": true,
+      "task_id": "ceval_039"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_042",
+        "exact": false,
+        "ngram_score": 0.6234567901234568,
+        "semantic_score": 0.7672413789750719,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_042",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "logic",
+      "suggested_contaminated": true,
+      "task_id": "ceval_042"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_045",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_045",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "logic",
+      "suggested_contaminated": true,
+      "task_id": "ceval_045"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_048",
+        "exact": false,
+        "ngram_score": 0.76,
+        "semantic_score": 0.8263283902500846,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_048",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "operating_system",
+      "suggested_contaminated": true,
+      "task_id": "ceval_048"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_051",
+        "exact": false,
+        "ngram_score": 0.6923076923076923,
+        "semantic_score": 0.7754993209950253,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_051",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "operating_system",
+      "suggested_contaminated": true,
+      "task_id": "ceval_051"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_054",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_054",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "operating_system",
+      "suggested_contaminated": true,
+      "task_id": "ceval_054"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_057",
+        "exact": false,
+        "ngram_score": 0.7966101694915254,
+        "semantic_score": 0.7374313534979675,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_057",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "operating_system",
+      "suggested_contaminated": true,
+      "task_id": "ceval_057"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_063",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_063",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "operating_system",
+      "suggested_contaminated": true,
+      "task_id": "ceval_063"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_066",
+        "exact": false,
+        "ngram_score": 0.8181818181818182,
+        "semantic_score": 0.8508403888906174,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_066",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "middle_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_066"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_069",
+        "exact": false,
+        "ngram_score": 0.6269430051813472,
+        "semantic_score": 0.7974620849849854,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_069",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "middle_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_069"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_072",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_072",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "middle_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_072"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_075",
+        "exact": false,
+        "ngram_score": 0.8545454545454545,
+        "semantic_score": 0.86499539123657,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_075",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "middle_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_075"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_078",
+        "exact": false,
+        "ngram_score": 0.8817204301075269,
+        "semantic_score": 0.7654102882288963,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_078",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "middle_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_078"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_081",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_081",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "middle_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_081"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_084",
+        "exact": false,
+        "ngram_score": 0.9142857142857143,
+        "semantic_score": 0.7788938281629473,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_084",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "middle_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_084"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_090",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_090",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_physics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_090"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_093",
+        "exact": false,
+        "ngram_score": 0.9,
+        "semantic_score": 0.8569443074527173,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_093",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_physics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_093"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_096",
+        "exact": false,
+        "ngram_score": 0.7272727272727273,
+        "semantic_score": 0.786568895895355,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_096",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_physics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_096"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_099",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_099",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_physics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_099"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_102",
+        "exact": false,
+        "ngram_score": 0.8867924528301887,
+        "semantic_score": 0.769574483383391,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_102",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "college_physics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_102"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_108",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_108",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "computer_architecture",
+      "suggested_contaminated": true,
+      "task_id": "ceval_108"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_117",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_117",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "computer_architecture",
+      "suggested_contaminated": true,
+      "task_id": "ceval_117"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_120",
+        "exact": false,
+        "ngram_score": 0.8153846153846154,
+        "semantic_score": 0.7473213253603487,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_120",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "computer_architecture",
+      "suggested_contaminated": true,
+      "task_id": "ceval_120"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_126",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_126",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "high_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_126"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_129",
+        "exact": false,
+        "ngram_score": 0.926829268292683,
+        "semantic_score": 0.882121326870845,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_129",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "high_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_129"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_132",
+        "exact": false,
+        "ngram_score": 0.8378378378378378,
+        "semantic_score": 0.9117004518068995,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_132",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "high_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_132"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_135",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_135",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "high_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_135"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_138",
+        "exact": false,
+        "ngram_score": 0.8695652173913043,
+        "semantic_score": 0.8636630133701589,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_138",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "high_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_138"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_141",
+        "exact": false,
+        "ngram_score": 0.8588235294117647,
+        "semantic_score": 0.8547055387711596,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_141",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "high_school_mathematics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_141"
+    },
+    {
+      "contaminated": null,
+      "decision": "pending",
+      "match": {
+        "document_id": "seed-ceval_144",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "notes": "",
+      "review_id": "contamination:ceval_144",
+      "reviewed_at_utc": "",
+      "reviewer": "",
+      "subject": "probability_and_statistics",
+      "suggested_contaminated": true,
+      "task_id": "ceval_144"
+    }
+  ],
+  "schema_version": "benchmark-contamination.review-queue.v1"
+}

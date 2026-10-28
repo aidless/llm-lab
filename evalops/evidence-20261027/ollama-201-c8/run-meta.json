@@ -1,0 +1,19 @@
+{
+  "config": {
+    "backoff_seconds": 0.5,
+    "concurrency": 8,
+    "max_retries": 1,
+    "max_tokens": 8,
+    "model": "qwen25-3b-16k:latest",
+    "provider": "ollama",
+    "temperature": 0.0,
+    "timeout_seconds": 90.0
+  },
+  "config_hash": "02cab2a34730236e5e06870a0cdccc6155ccadddb17f960af7eac97899e63269",
+  "resume": false,
+  "retry_failed": false,
+  "run_label": "ollama-201-c8",
+  "schema_version": "evalops.run.v1",
+  "task_count": 201,
+  "task_set_hash": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657"
+}

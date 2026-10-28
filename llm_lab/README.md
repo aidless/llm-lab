@@ -5,15 +5,15 @@
 [![CodeQL](https://github.com/aidless/llm-lab/actions/workflows/codeql.yml/badge.svg)](https://github.com/aidless/llm-lab/security/code-scanning)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org)
-[![Tests](https://img.shields.io/badge/tests-497%20passed%20%C2%B7%202%20skipped-brightgreen)](../CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-419%20passed%20%C2%B7%202%20skipped-brightgreen)](../CHANGELOG.md)
 [![Ruff + Mypy + Bandit](https://img.shields.io/badge/lint-ruff%20%2B%20mypy%20%2B%20bandit-blue)](../CONTRIBUTING.md)
 
 > **The eval tool you can show your security team.**
 > LLM evaluation & orchestration for security-conscious teams — auditable,
 > air-gap-able, hardened by default, and Prometheus-observable.
 
-**Current status: v0.9.7 — first CI-green release.** 497 tests pass
-(2 skipped; both need a real provider key), ruff + mypy + bandit clean,
+**Current status: v0.9.7 — first CI-green release.** 419 package tests pass
+(2 environment-dependent skips), ruff + mypy + bandit clean,
 macOS + 3 Python versions matrix, SBOM per release, CodeQL 0 open alerts.
 See [`CHANGELOG.md`](../CHANGELOG.md) for the journey from v0.1.0 → v0.9.7.
 
@@ -43,7 +43,7 @@ Other eval tools optimise for **ergonomics**. `llm-lab` optimises for
 - ✅ **Graceful degradation** under provider outages, missing API keys, and
   SQLite lock contention — verified by
   [`benchmarks/self_bench.py --mode fault`](./benchmarks/self_bench.py).
-- ✅ **497 tests, ruff + mypy + bandit + pip-audit clean**.
+- ✅ **419 package tests, ruff + mypy + bandit + pip-audit clean**.
 
 If your security team needs to know *why* your eval pipeline picked model B
 over model A, and *which prompt hashes* it ran, `llm-lab` gives you the answer.
@@ -76,6 +76,55 @@ llm-lab serve
 
 The CLI prints a verdict (`pass`/`fail`), per-step token counts, total cost,
 and emits an HTML report you can share with auditors.
+
+---
+
+## Auditable batch evaluation
+
+`llm-lab evalops` adds a separate batch-evaluation contract for frozen task
+sets.  Unlike a single planner run, it records one final result per task,
+strictly parses multiple-choice answers, separates provider and evaluator
+failures, and makes the denominator for every metric explicit.  The task-set
+builder currently handles the bundled C-Eval multiple-choice schema; the
+runner/report contract can be exercised with any compatible frozen JSONL set.
+
+```bash
+# Freeze and verify a task set; the manifest stores the task-file hash.
+llm-lab evalops verify evalops/ceval-201
+
+# Run an OpenAI-compatible local model (Ollama or vLLM endpoint).
+llm-lab evalops run evalops/ceval-201/tasks-v1.jsonl \
+  --output runs/ceval-201-c8 \
+  --adapter ollama \
+  --model qwen25-3b-16k:latest \
+  --concurrency 8 \
+  --json
+
+# Rebuild reports from raw records and run metadata.
+llm-lab evalops report runs/ceval-201-c8/records.jsonl \
+  --config-json runs/ceval-201-c8/run-meta.json \
+  --wall-seconds 50.4 \
+  --output runs/ceval-201-c8-recomputed
+```
+
+The contract includes:
+
+- SHA-256 hashes for the task set, effective config, and answer set.
+- Bounded concurrency, timeout, retry/backoff, and crash-safe resume.
+- Config/task/task-count drift rejection before a resume.
+- Atomic replacement of a retried task, so one task never appears twice.
+- Explicit `timeout`, `transport`, `model_error`, `parse_error`, and
+  `evaluator_error` failure classes.
+- JSON, Markdown, HTML, and OpenCompass-compatible dataset exports.
+
+The checked-in [`evalops/evidence-20261027`](../evalops/evidence-20261027/README.md)
+package contains a verified 201-task local C-Eval subset run and a standalone
+`verify_evidence.py`.  It documents both the result and its boundaries:
+the subset is not an official leaderboard, local CPU timings are not a
+production SLO, and the deterministic fixture is not model-quality evidence.
+
+See [ADR-0010](./docs/adr/0010-frozen-batch-evalops.md) for the record and
+resume contract.
 
 ---
 

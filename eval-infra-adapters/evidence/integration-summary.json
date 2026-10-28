@@ -1,0 +1,148 @@
+{
+  "boundary": "本地安全评测，不是生产安全系统。 Local CPU evidence only; no production security or GPU serving claim.",
+  "captured_at_utc": "2026-10-28T06:32:28Z",
+  "claims": {
+    "gpu_throughput": false,
+    "openai_compatible_contract": true,
+    "production_slo": false,
+    "real_lmdeploy_execution": false,
+    "real_local_ollama_probe": true,
+    "real_vllm_execution": false
+  },
+  "contract_smoke": {
+    "backends": [
+      "vllm",
+      "lmdeploy"
+    ],
+    "ok": true,
+    "source_sha256": "05bef4cf838877bffa73c2becadd1acf8f63032d1c43c806c3b8defbfb3c8397"
+  },
+  "gpu_acceptance": {
+    "gpu_available": false,
+    "lmdeploy_installed": false,
+    "real_gpu_executed": false,
+    "required_before_claim": [
+      "record GPU model, VRAM, driver and backend version",
+      "record C=1/4/8 wall time, p50/p95, retries, failures and result agreement",
+      "capture startup logs and classify any OOM",
+      "checksum the full evidence package"
+    ],
+    "status": "BLOCKED_ENVIRONMENT",
+    "vllm_installed": false
+  },
+  "limitations": [
+    "The vLLM and LMDeploy contract smoke uses a deterministic localhost fixture.",
+    "The 201-task C=1/4/8 measurements were collected with Ollama on CPU.",
+    "No GPU, multi-GPU, OOM, production latency or official leaderboard claim is made."
+  ],
+  "ollama_201": {
+    "model": "qwen25-3b-16k:latest",
+    "repeat_consistency": [
+      {
+        "agree": 196,
+        "disagreement_task_ids": [
+          "ceval_002",
+          "ceval_012",
+          "ceval_030",
+          "ceval_078",
+          "ceval_141"
+        ],
+        "pair": "ollama-201-c1 vs ollama-201-c4",
+        "rate": 0.9751243781094527,
+        "total": 201
+      },
+      {
+        "agree": 195,
+        "disagreement_task_ids": [
+          "ceval_002",
+          "ceval_007",
+          "ceval_012",
+          "ceval_030",
+          "ceval_078",
+          "ceval_141"
+        ],
+        "pair": "ollama-201-c1 vs ollama-201-c8",
+        "rate": 0.9701492537313433,
+        "total": 201
+      },
+      {
+        "agree": 200,
+        "disagreement_task_ids": [
+          "ceval_007"
+        ],
+        "pair": "ollama-201-c4 vs ollama-201-c8",
+        "rate": 0.9950248756218906,
+        "total": 201
+      }
+    ],
+    "runs": [
+      {
+        "answer_hash": "6569fbbf44b50e363dc731324ef991124538a5f177f9bfb09a49da6ba82690fb",
+        "concurrency": 1,
+        "config_hash": "39943495a2ffdfde3475da378a0eabbe72a888865c8f8eb1abff076d1a5a5778",
+        "correct": 108,
+        "failure_counts": {},
+        "model": "qwen25-3b-16k:latest",
+        "p50_ms": 1473.2783129438758,
+        "p95_ms": 3638.264677952975,
+        "parsed_accuracy": 0.5373134328358209,
+        "provider": "ollama",
+        "run": "ollama-201-c1",
+        "strict_accuracy": 0.5373134328358209,
+        "success": 201,
+        "task_set_hash": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657",
+        "tasks": 201,
+        "throughput_tasks_per_second": 0.5788366941307246,
+        "wall_seconds": 347.24819977395236
+      },
+      {
+        "answer_hash": "e2e7ec77ce8fe2229710556471e0874f115b2eb52e98de202e7f3ba36add12ef",
+        "concurrency": 4,
+        "config_hash": "bcd0ffff2aefef706854f7451c4d1b2fe144938472a406286f3c312ba2e1c277",
+        "correct": 107,
+        "failure_counts": {},
+        "model": "qwen25-3b-16k:latest",
+        "p50_ms": 1573.9824548363686,
+        "p95_ms": 2815.8107469789684,
+        "parsed_accuracy": 0.5323383084577115,
+        "provider": "ollama",
+        "run": "ollama-201-c4",
+        "strict_accuracy": 0.5323383084577115,
+        "success": 201,
+        "task_set_hash": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657",
+        "tasks": 201,
+        "throughput_tasks_per_second": 2.4135065469517394,
+        "wall_seconds": 83.28131541796029
+      },
+      {
+        "answer_hash": "e6693e933ba8e64873a45daa4505308f90d8132829466dcd4cf0f218cd4dd509",
+        "concurrency": 8,
+        "config_hash": "02cab2a34730236e5e06870a0cdccc6155ccadddb17f960af7eac97899e63269",
+        "correct": 108,
+        "failure_counts": {},
+        "model": "qwen25-3b-16k:latest",
+        "p50_ms": 1878.8904109969735,
+        "p95_ms": 3458.405266981572,
+        "parsed_accuracy": 0.5373134328358209,
+        "provider": "ollama",
+        "run": "ollama-201-c8",
+        "strict_accuracy": 0.5373134328358209,
+        "success": 201,
+        "task_set_hash": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657",
+        "tasks": 201,
+        "throughput_tasks_per_second": 3.986175655599427,
+        "wall_seconds": 50.42427062080242
+      }
+    ],
+    "source": "evalops/evidence-20261027/summary.json",
+    "source_sha256": "b7cd247c32710541322ad28082c5b471a1c61b0445c8480fee3bbfb2727e45df",
+    "task_set_hash": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657"
+  },
+  "real_ollama_probe": {
+    "model": "llama3.2:1b",
+    "model_digest": "baf6a787fdffd633537aa2eb51cfd54cb93ff08e28040095462bb63daf552878",
+    "ok": true,
+    "source_sha256": "2b6dde2571984d1e9909fcd75b4913c45c702a06460e5c98aaa799a60a396cc4"
+  },
+  "schema_version": "eval-infra.integration-summary.v1"
+}

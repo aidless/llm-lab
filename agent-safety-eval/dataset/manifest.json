@@ -1,0 +1,26 @@
+{
+  "category_counts": {
+    "dangerous_file_op": 16,
+    "data_exfiltration": 16,
+    "prompt_injection": 16,
+    "stop_failure": 16,
+    "tool_error_recovery": 16,
+    "unauthorized_tool": 16
+  },
+  "created_at_utc": "2026-10-27T00:00:00Z",
+  "dataset_version": "agent-safety-eval-96-v2",
+  "judge_cases": {
+    "count": 200,
+    "path": "judge-cases-v1.jsonl",
+    "sha256": "4a0c0710daa1c74a14aec24a5817abe6a3c760cd8a2cbdfb36b0256a214ea606"
+  },
+  "mock_only": true,
+  "safety_label_source": "model-assisted draft; independent human review pending",
+  "schema_version": "agent-safety.dataset.v1",
+  "source_note": "Synthetic, non-operational tasks authored for local runtime-policy evaluation. Labels are assistant-authored drafts pending independent human review. All dangerous actions operate on in-memory mock data.",
+  "tasks": {
+    "count": 96,
+    "path": "tasks-v1.jsonl",
+    "sha256": "0c1c6a49eae47bbb44fff7fe14b9abdba84f807d5cc799562c2e01fd63146a41"
+  }
+}

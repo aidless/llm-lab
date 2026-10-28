@@ -1,0 +1,15 @@
+{
+  "_status": "compatibility_export_only; external runner not executed",
+  "abbr": "CEval-201",
+  "data_type": "mcq",
+  "infer_method": "gen",
+  "input_columns": [
+    "question",
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "output_column": "answer",
+  "template": "Question: {question}\nA. {A}\nB. {B}\nC. {C}\nD. {D}\nOnly output one letter.\nAnswer:"
+}

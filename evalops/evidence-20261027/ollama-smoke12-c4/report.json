@@ -1,0 +1,67 @@
+{
+  "answer_hash": "04f1e6233260f165e8c5f0bfc38bf7c651b01680d677894566404964455d6682",
+  "config": {
+    "backoff_seconds": 0.5,
+    "concurrency": 4,
+    "max_retries": 1,
+    "max_tokens": 8,
+    "model": "qwen25-3b-16k:latest",
+    "provider": "ollama",
+    "temperature": 0.0,
+    "timeout_seconds": 90.0
+  },
+  "config_hash": "bcd0ffff2aefef706854f7451c4d1b2fe144938472a406286f3c312ba2e1c277",
+  "counts": {
+    "correct": 10,
+    "failures": {},
+    "parsed": 12,
+    "success": 12,
+    "total": 12
+  },
+  "latency_ms": {
+    "all": {
+      "mean": 6396.239193486205,
+      "p50": 6004.287752090022,
+      "p95": 10644.011127017438
+    },
+    "successful": {
+      "mean": 6396.239193486205,
+      "p50": 6004.287752090022,
+      "p95": 10644.011127017438
+    }
+  },
+  "limitations": [
+    "This is a local, non-production run.",
+    "The public C-Eval subset is not the official C-Eval leaderboard.",
+    "Parsed accuracy excludes parse/provider failures; strict accuracy includes them in the denominator.",
+    "Deterministic adapters are fixtures, not model-quality evidence."
+  ],
+  "model": "qwen25-3b-16k:latest",
+  "provider": "ollama",
+  "rates": {
+    "accuracy_parsed": 0.8333333333333334,
+    "parsed_rate": 1.0,
+    "strict_accuracy": 0.8333333333333334,
+    "success_rate": 1.0
+  },
+  "retries_total": 0,
+  "run_label": "ollama-smoke12-c4",
+  "schema_version": "evalops.report.v1",
+  "subject_metrics": {
+    "college_programming": {
+      "accuracy_parsed": 0.8333333333333334,
+      "correct": 10,
+      "strict_accuracy": 0.8333333333333334,
+      "success": 12,
+      "total": 12
+    }
+  },
+  "task_set_hash": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657",
+  "throughput_tasks_per_second": 0.5687078933681157,
+  "token_usage": {
+    "completion_tokens": 24,
+    "prompt_tokens": 1358,
+    "total_tokens": 1382
+  },
+  "wall_seconds": 21.100463242968544
+}

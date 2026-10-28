@@ -1,0 +1,33 @@
+{
+  "captured_date": "2026-10-27",
+  "host": {
+    "cpu": "AMD Ryzen 7 5800H with Radeon Graphics",
+    "logical_cpus": 16,
+    "memory_gib_observed": 14,
+    "os": "Linux 7.0.0-38-generic x86_64"
+  },
+  "python": "3.12.3",
+  "llm_lab": "0.9.7",
+  "ollama": {
+    "endpoint": "http://127.0.0.1:11434/v1",
+    "model": "qwen25-3b-16k:latest",
+    "model_id": "f5bf3e0cf012",
+    "model_size": "1.9 GB",
+    "parameters": "3.1B",
+    "quantization": "Q4_K_M",
+    "context_length": 32768,
+    "runtime_num_ctx": 16384,
+    "license": "Qwen RESEARCH LICENSE AGREEMENT",
+    "version": "0.33.3"
+  },
+  "dependencies": {
+    "httpx": "0.28.1",
+    "rich": "14.3.4",
+    "typer": "0.27.3"
+  },
+  "resource_notes": [
+    "All recorded inference used the local Ollama endpoint.",
+    "No paid API, GPU rental, or paid compute was used.",
+    "nvidia-smi was unavailable; no GPU or vLLM run is claimed."
+  ]
+}

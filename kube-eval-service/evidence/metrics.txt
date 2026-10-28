@@ -1,0 +1,12 @@
+# HELP eval_service_requests_total Evaluation requests.
+# TYPE eval_service_requests_total counter
+eval_service_requests_total 25
+# HELP eval_service_tasks_total Evaluation tasks.
+# TYPE eval_service_tasks_total counter
+eval_service_tasks_total 100
+# HELP eval_service_errors_total Task-level evaluation errors.
+# TYPE eval_service_errors_total counter
+eval_service_errors_total 0
+# HELP eval_service_request_latency_seconds Average request latency.
+# TYPE eval_service_request_latency_seconds gauge
+eval_service_request_latency_seconds 0.001634

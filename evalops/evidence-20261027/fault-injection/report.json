@@ -1,0 +1,68 @@
+{
+  "answer_hash": "970a0e65f38caa2498281cd279cd7310b7c5e228415cb2617561bac92bce06bd",
+  "config": {
+    "backoff_seconds": 0,
+    "concurrency": 2,
+    "max_retries": 0,
+    "max_tokens": 8,
+    "model": "deterministic-fixture-v1",
+    "provider": "fault-injection",
+    "temperature": 0.0,
+    "timeout_seconds": 5
+  },
+  "config_hash": "f7a5aa1421d9b570df6aaedcb998b235398d8f7aca56fb46e3c20906c21e4914",
+  "counts": {
+    "correct": 2,
+    "failures": {
+      "model_error": 1,
+      "parse_error": 1,
+      "timeout": 1,
+      "transport": 1
+    },
+    "parsed": 2,
+    "success": 2,
+    "total": 6
+  },
+  "latency_ms": {
+    "all": {
+      "mean": 0.004444853402674198,
+      "p50": 0.004909583367407322,
+      "p95": 0.0056899734772741795
+    },
+    "successful": {
+      "mean": 0.004023080691695213,
+      "p50": 0.004023080691695213,
+      "p95": 0.004794425331056118
+    }
+  },
+  "limitations": [
+    "This is a local, non-production run.",
+    "The public C-Eval subset is not the official C-Eval leaderboard.",
+    "Parsed accuracy excludes parse/provider failures; strict accuracy includes them in the denominator.",
+    "Deterministic adapters are fixtures, not model-quality evidence."
+  ],
+  "model": "deterministic-fixture-v1",
+  "provider": "fault-injection",
+  "rates": {
+    "accuracy_parsed": 1.0,
+    "parsed_rate": 0.3333333333333333,
+    "strict_accuracy": 0.3333333333333333,
+    "success_rate": 0.3333333333333333
+  },
+  "retries_total": 0,
+  "run_label": "fault-injection-4-classes",
+  "schema_version": "evalops.report.v1",
+  "subject_metrics": {
+    "college_programming": {
+      "accuracy_parsed": 1.0,
+      "correct": 2,
+      "strict_accuracy": 0.3333333333333333,
+      "success": 2,
+      "total": 6
+    }
+  },
+  "task_set_hash": "6991f66ffa17295d0245491b886a97b855637c3fb28167a8a9541f7c0e42ef4e",
+  "throughput_tasks_per_second": 3116.2178882910216,
+  "token_usage": {},
+  "wall_seconds": 0.0019254109356552362
+}

@@ -48,7 +48,58 @@ content-addressed response; it is a test fixture, not an LLM.
 | `llm-lab demo` | A deterministic evaluation goal | JSON result + standalone HTML report | `.llm-lab-demo/audit.db`, exit code |
 | `llm-lab run` | Task goal + provider configuration | Per-step verdict, token usage, cost | Hash-linked SQLite event log |
 | `llm-lab compare` | One goal + two models | A/B pass status, token and cost delta | Two traceable run IDs |
+| `llm-lab evalops run` | Frozen batch task set + provider config | Per-task records + JSON/MD/HTML reports | Task/config/answer hashes |
 | `llm-lab serve` | Browser UI | Local evaluation workspace | `http://127.0.0.1:8123` |
+
+## Auditable batch evaluation
+
+`llm-lab evalops` freezes a task set before execution and carries its hash
+through every run.  A run records one final result per task, classifies
+provider and format failures separately, and supports bounded concurrency,
+retry/backoff, and a drift-checked resume.
+
+```bash
+.venv/bin/llm-lab evalops verify evalops/ceval-201
+.venv/bin/llm-lab evalops run evalops/ceval-201/tasks-v1.jsonl \
+  --output runs/ceval-201-c8 \
+  --adapter ollama \
+  --model qwen25-3b-16k:latest \
+  --concurrency 8
+```
+
+The checked-in
+[EvalOps evidence package](evalops/evidence-20261027/README.md) contains raw
+records and reports for a 201-question public C-Eval validation subset,
+concurrency 1/4/8 runs, synthetic fault injection, and an independent verifier.
+Those are local engineering results, not an official leaderboard result or a
+production SLO.  vLLM and the external OpenCompass runner were not executed.
+
+## Portfolio evidence projects
+
+> **本地安全评测，不是生产安全系统。 / Local safety evaluation, not a production security system.**
+
+These packages extend EvalOps into auditable safety and evaluation-engineering
+workflows. Each keeps raw records, JSON/Markdown/HTML reports, a SHA-256
+manifest and an independent verifier. Human-review and GPU gates are never
+silently converted into passes.
+
+| Project | Evidence | Current gate |
+|---|---|---|
+| [Agent Safety Runtime Monitor](agent-safety-eval/README.md) | 96 mock-only tasks, two local models, policy-off/on trajectories | `HOLD` until at least 100 human-review records and required unsafe trajectories are reviewed |
+| [Safety Judge Calibration](safety-judge-calibration/README.md) | 200 frozen requests, two local judges, FPR/FNR, Wilson intervals, per-slice results | `HOLD` until all 200 reference labels have human provenance |
+| [Benchmark Contamination Preflight](benchmark-contamination-scan/README.md) | 201 C-Eval tasks, seeded corpus, exact/n-gram/semantic matches, fail-closed EvalOps gate | `HOLD` until 40 human reviews; current non-PASS gate exits `2` |
+| [Eval Infra Adapters](eval-infra-adapters/README.md) | vLLM/LMDeploy contract smoke, real Ollama probe, existing 201-task CPU `C=1/4/8` evidence | GPU experiments `BLOCKED_ENVIRONMENT`; no production throughput claim |
+| [Kube Eval Service](kube-eval-service/README.md) | Fresh kind cluster, bounded HTTP service, 24-request concurrency smoke, pod replacement | Local single-node CPU smoke only |
+
+The main safety project is deliberately separate from `agi_harness.py`. All
+dangerous actions run against an in-memory mock filesystem and mock outboxes;
+no real file, shell, email or network effect is performed.
+
+Verify every checked-in package without rerunning a model or cluster:
+
+```bash
+./scripts/verify_portfolio.sh
+```
 
 ## Architecture
 
@@ -110,6 +161,12 @@ cd ..
 llm_lab/              # installable product package + tests
 tests/                # repository-root self-evolution tests
 selfevolve/           # experimental self-evolution modules
+evalops/              # frozen task sets + verified local evidence
+agent-safety-eval/    # mock-only agent safety trajectories and review gate
+safety-judge-calibration/ # judge FPR/FNR calibration and HOLD conditions
+benchmark-contamination-scan/ # contamination preflight and EvalOps gate
+eval-infra-adapters/  # vLLM/LMDeploy contracts and CPU evidence boundary
+kube-eval-service/    # local kind evaluation-service smoke
 knowledge/            # AI/AGI notes, discussions and reference documents
 ```
 

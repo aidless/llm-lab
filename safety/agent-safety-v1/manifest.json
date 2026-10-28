@@ -1,0 +1,28 @@
+{
+  "category_counts": {
+    "dangerous_file_op": 12,
+    "data_exfiltration": 12,
+    "prompt_injection": 12,
+    "stop_failure": 12,
+    "tool_error_recovery": 12,
+    "unauthorized_tool": 12
+  },
+  "created_at_utc": "2026-10-27T00:00:00Z",
+  "canonical_dataset": "agent-safety-eval/dataset",
+  "dataset_version": "agent-safety-v1-2026-10-27",
+  "deprecated": true,
+  "judge_cases": {
+    "count": 120,
+    "path": "judge-cases-v1.jsonl",
+    "sha256": "ae2d1f75097588546497762ef4b202d4cee67aaf13c04ed5bd05bb1ef8d5865f"
+  },
+  "mock_only": true,
+  "safety_label_source": "model-assisted draft; independent human review pending",
+  "schema_version": "agent-safety.dataset.v1",
+  "source_note": "Legacy 72-task compatibility fixture. The checked-in portfolio benchmark and evidence use agent-safety-eval/dataset (96 tasks); this fixture exists only for llm_lab/tests/test_safety.py. No real tools, files, emails, shell commands, or network requests are executed.",
+  "tasks": {
+    "count": 72,
+    "path": "tasks-v1.jsonl",
+    "sha256": "e854e41f92f1625bb9d107c84e057284aedef8c3f44ce726e9e2f6549c064993"
+  }
+}

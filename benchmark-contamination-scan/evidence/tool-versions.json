@@ -1,0 +1,22 @@
+{
+  "base_url": "http://127.0.0.1:11434",
+  "captured_at_utc": "2026-10-28T06:26:27Z",
+  "document_count": 240,
+  "embedding_model": "nomic-embed-text:latest",
+  "embedding_model_details": {
+    "context_length": 2048,
+    "embedding_length": 768,
+    "families": [
+      "nomic-bert"
+    ],
+    "family": "nomic-bert",
+    "format": "gguf",
+    "parameter_size": "137M",
+    "parent_model": "",
+    "quantization_level": "F16"
+  },
+  "embedding_model_digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+  "ngram_n": 13,
+  "ollama_version": "0.33.3",
+  "task_count": 201
+}

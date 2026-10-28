@@ -1,0 +1,7 @@
+LAST SEEN   TYPE     REASON              OBJECT                                   MESSAGE
+8s          Normal   Scheduled           pod/kube-eval-service-7b686ccf5-wmqrj    Successfully assigned eval-lab/kube-eval-service-7b686ccf5-wmqrj to eval-lab-smoke-1793169340-control-plane
+8s          Normal   SuccessfulCreate    replicaset/kube-eval-service-7b686ccf5   Created pod: kube-eval-service-7b686ccf5-wmqrj
+8s          Normal   ScalingReplicaSet   deployment/kube-eval-service             Scaled up replica set kube-eval-service-7b686ccf5 from 0 to 1
+7s          Normal   Pulled              pod/kube-eval-service-7b686ccf5-wmqrj    Container image "kube-eval-service:dev" already present on machine and can be accessed by the pod
+7s          Normal   Created             pod/kube-eval-service-7b686ccf5-wmqrj    Container created
+7s          Normal   Started             pod/kube-eval-service-7b686ccf5-wmqrj    Container started

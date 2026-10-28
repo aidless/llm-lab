@@ -1,0 +1,35 @@
+{
+  "decision": "HOLD",
+  "human_review": {
+    "gate_40_reviews": false,
+    "reviewed_records": 0,
+    "reviewer_ids": []
+  },
+  "metrics": {
+    "contamination_rate": 0.25742574257425743,
+    "f1": 0.912280701754386,
+    "false_negative_rate": 0.13333333333333333,
+    "false_negative_rate_wilson_95": {
+      "high": 0.2968168394441695,
+      "low": 0.05309569424218104
+    },
+    "false_positive_rate": 0.014084507042253521,
+    "false_positive_rate_wilson_95": {
+      "high": 0.07556230847938292,
+      "low": 0.0024905391347781955
+    },
+    "precision": 0.9629629629629629,
+    "recall": 0.8666666666666667
+  },
+  "reasons": [
+    "human_review_lt_40"
+  ],
+  "schema_version": "evalops.preflight.v1",
+  "source": "benchmark-contamination-scan",
+  "task_manifest": {
+    "count": 201,
+    "path": "../evalops/ceval-201/tasks-v1.jsonl",
+    "path_base": "benchmark-contamination-scan project root",
+    "sha256": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "corpus": {
+    "count": 240,
+    "path": "corpus-v1.jsonl",
+    "seeded_positive_documents": 60,
+    "sha256": "1394bd1f920a0a532dcecec01df780a2c547eb965cecb86669aa939bd89c1669",
+    "unrelated_documents": 180
+  },
+  "labels": {
+    "count": 201,
+    "dev_count": 100,
+    "path": "labels-v1.jsonl",
+    "sha256": "302f3b0be96922b81cda2ae492b7674feae695e17093d20b2054c30bd5b8b704",
+    "test_count": 101
+  },
+  "limitations": [
+    "The local corpus is a seeded audit fixture, not a model's pretraining corpus.",
+    "Gold labels are known only because this fixture intentionally injects copies.",
+    "Do not describe fixture metrics as evidence about any specific pretrained model."
+  ],
+  "schema_version": "benchmark-contamination.fixture.v1",
+  "tasks": {
+    "count": 201,
+    "path": "../evalops/ceval-201/tasks-v1.jsonl",
+    "path_base": "benchmark-contamination-scan project root",
+    "sha256": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657"
+  }
+}

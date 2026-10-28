@@ -1,0 +1,259 @@
+{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "creationTimestamp": "2026-10-28T06:36:30Z",
+        "generateName": "kube-eval-service-7b686ccf5-",
+        "generation": 1,
+        "labels": {
+            "app.kubernetes.io/name": "kube-eval-service",
+            "app.kubernetes.io/part-of": "eval-lab",
+            "pod-template-hash": "7b686ccf5"
+        },
+        "name": "kube-eval-service-7b686ccf5-wmqrj",
+        "namespace": "eval-lab",
+        "ownerReferences": [
+            {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "kube-eval-service-7b686ccf5",
+                "uid": "81d2fa0f-a140-4564-8aaa-59335b1de612"
+            }
+        ],
+        "resourceVersion": "585",
+        "uid": "8e98bd64-65e2-4a98-a20e-82eb57dbf040"
+    },
+    "spec": {
+        "automountServiceAccountToken": false,
+        "containers": [
+            {
+                "envFrom": [
+                    {
+                        "configMapRef": {
+                            "name": "kube-eval-config"
+                        }
+                    }
+                ],
+                "image": "kube-eval-service:dev",
+                "imagePullPolicy": "Never",
+                "livenessProbe": {
+                    "failureThreshold": 3,
+                    "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                    },
+                    "initialDelaySeconds": 5,
+                    "periodSeconds": 5,
+                    "successThreshold": 1,
+                    "timeoutSeconds": 2
+                },
+                "name": "service",
+                "ports": [
+                    {
+                        "containerPort": 8080,
+                        "name": "http",
+                        "protocol": "TCP"
+                    }
+                ],
+                "readinessProbe": {
+                    "failureThreshold": 3,
+                    "httpGet": {
+                        "path": "/readyz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                    },
+                    "initialDelaySeconds": 2,
+                    "periodSeconds": 3,
+                    "successThreshold": 1,
+                    "timeoutSeconds": 2
+                },
+                "resources": {
+                    "limits": {
+                        "cpu": "500m",
+                        "memory": "256Mi"
+                    },
+                    "requests": {
+                        "cpu": "50m",
+                        "memory": "64Mi"
+                    }
+                },
+                "securityContext": {
+                    "allowPrivilegeEscalation": false,
+                    "capabilities": {
+                        "drop": [
+                            "ALL"
+                        ]
+                    },
+                    "readOnlyRootFilesystem": true
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                    {
+                        "mountPath": "/tmp",
+                        "name": "tmp"
+                    }
+                ]
+            }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": true,
+        "nodeName": "eval-lab-smoke-1793169340-control-plane",
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {
+            "fsGroup": 10001,
+            "runAsGroup": 10001,
+            "runAsNonRoot": true,
+            "runAsUser": 10001,
+            "seccompProfile": {
+                "type": "RuntimeDefault"
+            }
+        },
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 20,
+        "tolerations": [
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            }
+        ],
+        "volumes": [
+            {
+                "emptyDir": {
+                    "sizeLimit": "32Mi"
+                },
+                "name": "tmp"
+            }
+        ]
+    },
+    "status": {
+        "allocatedResources": {
+            "cpu": "50m",
+            "memory": "64Mi"
+        },
+        "conditions": [
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-28T06:36:31Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-28T06:36:30Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-28T06:36:35Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-28T06:36:35Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-28T06:36:30Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+            }
+        ],
+        "containerStatuses": [
+            {
+                "allocatedResources": {
+                    "cpu": "50m",
+                    "memory": "64Mi"
+                },
+                "containerID": "containerd://e5f70c1fd1cf5615ae42a68ff9401a984c9723daae4b30d8c940c681bb95a8d5",
+                "image": "docker.io/library/kube-eval-service:dev",
+                "imageID": "docker.io/library/import-2026-10-28@sha256:707e617dadb721ef62554f762b028b645fae236448689ecb48efd31087f4ef47",
+                "lastState": {},
+                "name": "service",
+                "ready": true,
+                "resources": {
+                    "limits": {
+                        "cpu": "500m",
+                        "memory": "256Mi"
+                    },
+                    "requests": {
+                        "cpu": "50m",
+                        "memory": "64Mi"
+                    }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                    "running": {
+                        "startedAt": "2026-10-28T06:36:31Z"
+                    }
+                },
+                "user": {
+                    "linux": {
+                        "gid": 10001,
+                        "supplementalGroups": [
+                            10001
+                        ],
+                        "uid": 10001
+                    }
+                },
+                "volumeMounts": [
+                    {
+                        "mountPath": "/tmp",
+                        "name": "tmp"
+                    }
+                ]
+            }
+        ],
+        "hostIP": "172.22.0.3",
+        "hostIPs": [
+            {
+                "ip": "172.22.0.3"
+            }
+        ],
+        "observedGeneration": 1,
+        "phase": "Running",
+        "podIP": "10.244.0.5",
+        "podIPs": [
+            {
+                "ip": "10.244.0.5"
+            }
+        ],
+        "qosClass": "Burstable",
+        "resources": {
+            "limits": {
+                "cpu": "500m",
+                "memory": "256Mi"
+            },
+            "requests": {
+                "cpu": "28m",
+                "memory": "64Mi"
+            }
+        },
+        "startTime": "2026-10-28T06:36:30Z"
+    }
+}

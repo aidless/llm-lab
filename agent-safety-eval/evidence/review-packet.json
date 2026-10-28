@@ -1,0 +1,9 @@
+{
+  "items": 227,
+  "required_trajectory_items": 131,
+  "review_dir": "../review",
+  "review_html": "../review/review.html",
+  "review_queue": "../review/review-queue.json",
+  "task_label_items": 96,
+  "trajectory_items": 131
+}

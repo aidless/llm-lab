@@ -1,0 +1,882 @@
+{
+  "decision": "HOLD",
+  "dev_confusion": {
+    "f1": 0.9090909090909091,
+    "fn": 5,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 0.8333333333333334,
+    "split": "dev",
+    "tn": 70,
+    "tp": 25
+  },
+  "false_negative_samples": [
+    "ceval_105",
+    "ceval_111",
+    "ceval_114",
+    "ceval_123"
+  ],
+  "false_positive_samples": [
+    "ceval_167"
+  ],
+  "gate_reasons": [
+    "human_review_lt_40"
+  ],
+  "human_review": {
+    "gate_40_reviews": false,
+    "reviewed_records": 0,
+    "reviewer_ids": []
+  },
+  "limitations": [
+    "The local corpus is a seeded audit fixture, not a model's pretraining corpus.",
+    "Gold labels are known only because this fixture intentionally injects copies.",
+    "Do not describe fixture metrics as evidence about any specific pretrained model.",
+    "Threshold tuning uses the dev split only, but the fixture is synthetic.",
+    "Embedding similarity is model-dependent and not a proof of memorization.",
+    "A clean result cannot prove a model was not exposed to the benchmark."
+  ],
+  "manifest": {
+    "corpus": {
+      "count": 240,
+      "path": "corpus-v1.jsonl",
+      "seeded_positive_documents": 60,
+      "sha256": "1394bd1f920a0a532dcecec01df780a2c547eb965cecb86669aa939bd89c1669",
+      "unrelated_documents": 180
+    },
+    "labels": {
+      "count": 201,
+      "dev_count": 100,
+      "path": "labels-v1.jsonl",
+      "sha256": "302f3b0be96922b81cda2ae492b7674feae695e17093d20b2054c30bd5b8b704",
+      "test_count": 101
+    },
+    "limitations": [
+      "The local corpus is a seeded audit fixture, not a model's pretraining corpus.",
+      "Gold labels are known only because this fixture intentionally injects copies.",
+      "Do not describe fixture metrics as evidence about any specific pretrained model."
+    ],
+    "schema_version": "benchmark-contamination.fixture.v1",
+    "tasks": {
+      "count": 201,
+      "path": "../evalops/ceval-201/tasks-v1.jsonl",
+      "path_base": "benchmark-contamination-scan project root",
+      "sha256": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657"
+    }
+  },
+  "metrics": {
+    "contamination_rate": 0.25742574257425743,
+    "f1": 0.912280701754386,
+    "false_negative_rate": 0.13333333333333333,
+    "false_negative_rate_wilson_95": {
+      "high": 0.2968168394441695,
+      "low": 0.05309569424218104
+    },
+    "false_positive_rate": 0.014084507042253521,
+    "false_positive_rate_wilson_95": {
+      "high": 0.07556230847938292,
+      "low": 0.0024905391347781955
+    },
+    "precision": 0.9629629629629629,
+    "recall": 0.8666666666666667
+  },
+  "schema_version": "benchmark-contamination.report.v1",
+  "suspicious_samples": [
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_090",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "test",
+      "subject": "college_physics",
+      "suspect": true,
+      "task_id": "ceval_090"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_117",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "test",
+      "subject": "computer_architecture",
+      "suspect": true,
+      "task_id": "ceval_117"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_126",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "test",
+      "subject": "high_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_126"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_045",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "dev",
+      "subject": "logic",
+      "suspect": true,
+      "task_id": "ceval_045"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_054",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "dev",
+      "subject": "operating_system",
+      "suspect": true,
+      "task_id": "ceval_054"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_063",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "dev",
+      "subject": "operating_system",
+      "suspect": true,
+      "task_id": "ceval_063"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_072",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0000000000000002,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "dev",
+      "subject": "middle_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_072"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_099",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "test",
+      "subject": "college_physics",
+      "suspect": true,
+      "task_id": "ceval_099"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_108",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "test",
+      "subject": "computer_architecture",
+      "suspect": true,
+      "task_id": "ceval_108"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_135",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "test",
+      "subject": "high_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_135"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_144",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "test",
+      "subject": "probability_and_statistics",
+      "suspect": true,
+      "task_id": "ceval_144"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_171",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "test",
+      "subject": "discrete_mathematics",
+      "suspect": true,
+      "task_id": "ceval_171"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_000",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "dev",
+      "subject": "college_programming",
+      "suspect": true,
+      "task_id": "ceval_000"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_018",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "dev",
+      "subject": "college_programming",
+      "suspect": true,
+      "task_id": "ceval_018"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_027",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "dev",
+      "subject": "logic",
+      "suspect": true,
+      "task_id": "ceval_027"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_036",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "dev",
+      "subject": "logic",
+      "suspect": true,
+      "task_id": "ceval_036"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_081",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 1.0,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "dev",
+      "subject": "middle_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_081"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_153",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 0.9999999999999999,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "test",
+      "subject": "probability_and_statistics",
+      "suspect": true,
+      "task_id": "ceval_153"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_162",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 0.9999999999999998,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "test",
+      "subject": "discrete_mathematics",
+      "suspect": true,
+      "task_id": "ceval_162"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_009",
+        "exact": true,
+        "ngram_score": 1.0,
+        "semantic_score": 0.9999999999999998,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "exact",
+      "split": "dev",
+      "subject": "college_programming",
+      "suspect": true,
+      "task_id": "ceval_009"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_003",
+        "exact": false,
+        "ngram_score": 0.9591836734693877,
+        "semantic_score": 0.9344388991005885,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "dev",
+      "subject": "college_programming",
+      "suspect": true,
+      "task_id": "ceval_003"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_156",
+        "exact": false,
+        "ngram_score": 0.9381443298969072,
+        "semantic_score": 0.857198869477249,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "test",
+      "subject": "probability_and_statistics",
+      "suspect": true,
+      "task_id": "ceval_156"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_039",
+        "exact": false,
+        "ngram_score": 0.9347826086956522,
+        "semantic_score": 0.79529415406637,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "dev",
+      "subject": "logic",
+      "suspect": true,
+      "task_id": "ceval_039"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_030",
+        "exact": false,
+        "ngram_score": 0.9285714285714286,
+        "semantic_score": 0.7581206768890894,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "dev",
+      "subject": "logic",
+      "suspect": true,
+      "task_id": "ceval_030"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_129",
+        "exact": false,
+        "ngram_score": 0.926829268292683,
+        "semantic_score": 0.882121326870845,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "test",
+      "subject": "high_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_129"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_012",
+        "exact": false,
+        "ngram_score": 0.918918918918919,
+        "semantic_score": 0.8085628829276859,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "dev",
+      "subject": "college_programming",
+      "suspect": true,
+      "task_id": "ceval_012"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_021",
+        "exact": false,
+        "ngram_score": 0.9172413793103448,
+        "semantic_score": 0.8051942661193514,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "dev",
+      "subject": "college_programming",
+      "suspect": true,
+      "task_id": "ceval_021"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_084",
+        "exact": false,
+        "ngram_score": 0.9142857142857143,
+        "semantic_score": 0.7788938281629473,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "dev",
+      "subject": "middle_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_084"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_093",
+        "exact": false,
+        "ngram_score": 0.9,
+        "semantic_score": 0.8569443074527173,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "test",
+      "subject": "college_physics",
+      "suspect": true,
+      "task_id": "ceval_093"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_147",
+        "exact": false,
+        "ngram_score": 0.8983050847457628,
+        "semantic_score": 0.9120460318587533,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "test",
+      "subject": "probability_and_statistics",
+      "suspect": true,
+      "task_id": "ceval_147"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_102",
+        "exact": false,
+        "ngram_score": 0.8867924528301887,
+        "semantic_score": 0.769574483383391,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "test",
+      "subject": "college_physics",
+      "suspect": true,
+      "task_id": "ceval_102"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_078",
+        "exact": false,
+        "ngram_score": 0.8817204301075269,
+        "semantic_score": 0.7654102882288963,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "dev",
+      "subject": "middle_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_078"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_177",
+        "exact": false,
+        "ngram_score": 0.8811881188118812,
+        "semantic_score": 0.8200626196140707,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "test",
+      "subject": "law",
+      "suspect": true,
+      "task_id": "ceval_177"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_138",
+        "exact": false,
+        "ngram_score": 0.8695652173913043,
+        "semantic_score": 0.8636630133701589,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "test",
+      "subject": "high_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_138"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_174",
+        "exact": false,
+        "ngram_score": 0.8681318681318682,
+        "semantic_score": 0.8139696175106886,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "test",
+      "subject": "discrete_mathematics",
+      "suspect": true,
+      "task_id": "ceval_174"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_165",
+        "exact": false,
+        "ngram_score": 0.8620689655172413,
+        "semantic_score": 0.7539362623727559,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "test",
+      "subject": "discrete_mathematics",
+      "suspect": true,
+      "task_id": "ceval_165"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_141",
+        "exact": false,
+        "ngram_score": 0.8588235294117647,
+        "semantic_score": 0.8547055387711596,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "test",
+      "subject": "high_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_141"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_075",
+        "exact": false,
+        "ngram_score": 0.8545454545454545,
+        "semantic_score": 0.86499539123657,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "dev",
+      "subject": "middle_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_075"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_150",
+        "exact": false,
+        "ngram_score": 0.8421052631578947,
+        "semantic_score": 0.8196525440652667,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "test",
+      "subject": "probability_and_statistics",
+      "suspect": true,
+      "task_id": "ceval_150"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_132",
+        "exact": false,
+        "ngram_score": 0.8378378378378378,
+        "semantic_score": 0.9117004518068995,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "test",
+      "subject": "high_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_132"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_066",
+        "exact": false,
+        "ngram_score": 0.8181818181818182,
+        "semantic_score": 0.8508403888906174,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "dev",
+      "subject": "middle_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_066"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_168",
+        "exact": false,
+        "ngram_score": 0.8163265306122449,
+        "semantic_score": 0.7734765749929359,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "test",
+      "subject": "discrete_mathematics",
+      "suspect": true,
+      "task_id": "ceval_168"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_120",
+        "exact": false,
+        "ngram_score": 0.8153846153846154,
+        "semantic_score": 0.7473213253603487,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "test",
+      "subject": "computer_architecture",
+      "suspect": true,
+      "task_id": "ceval_120"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_057",
+        "exact": false,
+        "ngram_score": 0.7966101694915254,
+        "semantic_score": 0.7374313534979675,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "dev",
+      "subject": "operating_system",
+      "suspect": true,
+      "task_id": "ceval_057"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_048",
+        "exact": false,
+        "ngram_score": 0.76,
+        "semantic_score": 0.8263283902500846,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "near",
+      "split": "dev",
+      "subject": "operating_system",
+      "suspect": true,
+      "task_id": "ceval_048"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_096",
+        "exact": false,
+        "ngram_score": 0.7272727272727273,
+        "semantic_score": 0.786568895895355,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "test",
+      "subject": "college_physics",
+      "suspect": true,
+      "task_id": "ceval_096"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_033",
+        "exact": false,
+        "ngram_score": 0.7137096774193549,
+        "semantic_score": 0.776655623228455,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "dev",
+      "subject": "logic",
+      "suspect": true,
+      "task_id": "ceval_033"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_051",
+        "exact": false,
+        "ngram_score": 0.6923076923076923,
+        "semantic_score": 0.7754993209950253,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "dev",
+      "subject": "operating_system",
+      "suspect": true,
+      "task_id": "ceval_051"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_159",
+        "exact": false,
+        "ngram_score": 0.6298701298701299,
+        "semantic_score": 0.8168823147005051,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "test",
+      "subject": "probability_and_statistics",
+      "suspect": true,
+      "task_id": "ceval_159"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_069",
+        "exact": false,
+        "ngram_score": 0.6269430051813472,
+        "semantic_score": 0.7974620849849854,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "dev",
+      "subject": "middle_school_mathematics",
+      "suspect": true,
+      "task_id": "ceval_069"
+    },
+    {
+      "gold_contaminated": true,
+      "match": {
+        "document_id": "seed-ceval_042",
+        "exact": false,
+        "ngram_score": 0.6234567901234568,
+        "semantic_score": 0.7672413789750719,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": "paraphrase",
+      "split": "dev",
+      "subject": "logic",
+      "suspect": true,
+      "task_id": "ceval_042"
+    },
+    {
+      "gold_contaminated": false,
+      "match": {
+        "document_id": "seed-ceval_000",
+        "exact": false,
+        "ngram_score": 0.0,
+        "semantic_score": 0.9098477747788092,
+        "source": "seeded-c-eval-copy"
+      },
+      "seed_type": null,
+      "split": "test",
+      "subject": "discrete_mathematics",
+      "suspect": true,
+      "task_id": "ceval_167"
+    }
+  ],
+  "test_confusion": {
+    "f1": 0.912280701754386,
+    "fn": 4,
+    "fp": 1,
+    "precision": 0.9629629629629629,
+    "recall": 0.8666666666666667,
+    "split": "test",
+    "tn": 70,
+    "tp": 26
+  },
+  "thresholds": {
+    "dev_f1": 0.9090909090909091,
+    "dev_precision": 1.0,
+    "dev_recall": 0.8333333333333334,
+    "ngram_threshold": 0.4,
+    "semantic_threshold": 0.9
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "captured_at_utc": "2026-10-28T07:02:40Z",
+  "cpu_count": 16,
+  "mock_only": true,
+  "models": {
+    "llama3.2:1b": {
+      "capabilities": [
+        "completion",
+        "tools"
+      ],
+      "details": {
+        "context_length": 131072,
+        "embedding_length": 2048,
+        "families": [
+          "llama"
+        ],
+        "family": "llama",
+        "format": "gguf",
+        "parameter_size": "1.2B",
+        "parent_model": "",
+        "quantization_level": "Q8_0"
+      },
+      "digest": "baf6a787fdffd633537aa2eb51cfd54cb93ff08e28040095462bb63daf552878",
+      "size_bytes": 1321098329
+    },
+    "qwen3:0.6b": {
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "details": {
+        "context_length": 40960,
+        "embedding_length": 1024,
+        "families": [
+          "qwen3"
+        ],
+        "family": "qwen3",
+        "format": "gguf",
+        "parameter_size": "751.63M",
+        "parent_model": "",
+        "quantization_level": "Q4_K_M"
+      },
+      "digest": "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435",
+      "size_bytes": 522653767
+    }
+  },
+  "nvidia_smi": {
+    "error": "FileNotFoundError: nvidia-smi"
+  },
+  "ollama": {
+    "version": {
+      "version": "0.33.3"
+    }
+  },
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+}

@@ -68,7 +68,7 @@ package-dir = {"" = ".."}
 # must be inside the project root, which is llm_lab/ here -- pointing it at
 # ".." is silently ignored and setuptools falls back to flat-layout
 # auto-discovery (which ships llm_lab/tests/ into the wheel).
-packages = ["llm_lab", "llm_lab.planner"]
+packages = ["llm_lab", "llm_lab.planner", "llm_lab.safety"]
 
 # With pyproject.toml metadata, include-package-data defaults to True, which
 # makes setuptools ship every git-tracked file under llm_lab/ as "package

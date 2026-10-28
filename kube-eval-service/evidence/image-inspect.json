@@ -1,0 +1,69 @@
+[
+    {
+        "Id": "sha256:3622b3920051caacb3ecbd003dae0d2d5261a07382118ad68ccf935a8e071ab2",
+        "RepoTags": [
+            "kube-eval-service:dev"
+        ],
+        "RepoDigests": [
+            "kube-eval-service@sha256:3622b3920051caacb3ecbd003dae0d2d5261a07382118ad68ccf935a8e071ab2"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-10-27T23:36:19.154914027-07:00",
+        "Config": {
+            "User": "10001:10001",
+            "ExposedPorts": {
+                "8080/tcp": {}
+            },
+            "Env": [
+                "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",
+                "PYTHON_VERSION=3.12.14",
+                "PYTHON_SHA256=5c8462af5790baf43a321a1559dbe0db06d1be4300fb85fb53c40060668e548a",
+                "PYTHONDONTWRITEBYTECODE=1",
+                "PYTHONUNBUFFERED=1",
+                "PIP_NO_CACHE_DIR=1",
+                "PYTHONPATH=/app"
+            ],
+            "Cmd": [
+                "python",
+                "-m",
+                "kube_eval_service.app"
+            ],
+            "WorkingDir": "/app",
+            "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 203925035,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:a6dc765193a52cbaede3c93a9ff48b9540948dd0774bbe7031fcb5847606f9ac",
+                "sha256:7ca599ccfc97fa428fcf941eda7c2d643f066feb947020dcdbbf913cec34d5dc",
+                "sha256:b54011271bdbf69ae643cb5a4af6a5bc2f834ae8bc0833b736b52bbd2396e99f",
+                "sha256:c321a426ca693e386f4df5f198d7f32c2da49e29f53ff77d695ceb02dfb0a421",
+                "sha256:685fa7c59cfe13c48240bf2222fe62d37949e1307c70d4408aae76af35859304",
+                "sha256:e9d475ccd2a1e5397ebec7230442231e358f166daacfcff5e118f509bd43ee94",
+                "sha256:1605974dfd52c171560153c4ee896e1b8d9709e531d9b14779d8b01a9814d6e0",
+                "sha256:cd2c1fdb95d9ebdbd495ce68b1c2029c3c2829924a8eb3bd98a83a214095e8ea"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-28T06:36:19.509166973Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:3622b3920051caacb3ecbd003dae0d2d5261a07382118ad68ccf935a8e071ab2",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "qdk1rz3uco4ijzcmscg510cg1",
+                    "CreatedAt": "2026-10-27T23:36:19.602169142-07:00"
+                }
+            ]
+        }
+    }
+]
