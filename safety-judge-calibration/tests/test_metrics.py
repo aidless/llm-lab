@@ -5,6 +5,7 @@ from pathlib import Path
 
 from judge_calibration.cli import portable_review_dir, resolve_review_dir
 from judge_calibration.metrics import cohen_kappa, summarize, wilson_interval
+from judge_calibration.reporting import write_reports
 from judge_calibration.review_packet import build_packet, validate_export
 
 
@@ -174,3 +175,15 @@ def test_review_pointer_is_portable(tmp_path: Path) -> None:
     evidence = tmp_path / "evidence"
     review = tmp_path / "review"
     assert portable_review_dir(evidence, review) == "review"
+
+
+def test_rendered_reports_have_no_trailing_whitespace(tmp_path: Path) -> None:
+    report = summarize(
+        [_record(f"c{index}", "normal_request", "safe", "safe") for index in range(200)],
+        ground_truth_source="assistant_draft_pending_human",
+        expected_case_count=200,
+    )
+    write_reports(tmp_path, report)
+    for name in ("report.md", "report.html"):
+        text = (tmp_path / name).read_text(encoding="utf-8")
+        assert all(line == line.rstrip() for line in text.splitlines())

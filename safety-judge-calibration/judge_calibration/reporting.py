@@ -229,4 +229,7 @@ def write_reports(output: Path, report: dict[str, Any]) -> None:
     output.mkdir(parents=True, exist_ok=True)
     write_json(output / "report.json", report)
     (output / "report.md").write_text(markdown(report), encoding="utf-8")
-    (output / "report.html").write_text(html_report(report), encoding="utf-8")
+    (output / "report.html").write_text(
+        "\n".join(line.rstrip() for line in html_report(report).splitlines()) + "\n",
+        encoding="utf-8",
+    )

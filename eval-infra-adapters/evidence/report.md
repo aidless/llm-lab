@@ -9,8 +9,8 @@
 
 | Backend | Process ready | Probe | Generated command |
 |---|---:|---:|---|
-| `vllm` | True | True | `vllm serve fixture-model --host 127.0.0.1 --port 41243 --tensor-parallel-size 1` |
-| `lmdeploy` | True | True | `lmdeploy serve api_server fixture-model --server-name 127.0.0.1 --server-port 60409 --tp 1` |
+| `vllm` | True | True | `vllm serve fixture-model --host 127.0.0.1 --port 38409 --tensor-parallel-size 1` |
+| `lmdeploy` | True | True | `lmdeploy serve api_server fixture-model --server-name 127.0.0.1 --server-port 33513 --tp 1` |
 
 ## Non-claims
 

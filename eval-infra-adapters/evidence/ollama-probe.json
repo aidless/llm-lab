@@ -2,7 +2,7 @@
   "backend": "ollama-openai-compatible",
   "base_url": "http://127.0.0.1:11434",
   "boundary": "本地安全评测，不是生产安全系统。 This is a local CPU OpenAI-compatible contract probe, not a serving benchmark.",
-  "captured_at_utc": "2026-10-28T06:31:58Z",
+  "captured_at_utc": "2026-10-28T08:43:51Z",
   "execution_environment": "local CPU; not GPU/production throughput",
   "native": {
     "model": "llama3.2:1b",
@@ -30,7 +30,7 @@
       "chat": {
         "content": "OK.",
         "finish_reason": "stop",
-        "latency_ms": 4670.0293959984265,
+        "latency_ms": 3971.418132998224,
         "model": "llama3.2:1b",
         "usage": {
           "completion_tokens": 3,
@@ -42,7 +42,7 @@
         }
       },
       "health": {
-        "latency_ms": 2.241413998490316,
+        "latency_ms": 5.221080999035621,
         "ok": true,
         "status": 200
       },
@@ -50,7 +50,7 @@
         "backend": "ollama-openai-compatible",
         "base_url": "http://127.0.0.1:11434",
         "health_status": 200,
-        "latency_ms": 2.241413998490316,
+        "latency_ms": 5.221080999035621,
         "models": [
           "gemma4:e2b",
           "qwen25-3b-16k:latest",

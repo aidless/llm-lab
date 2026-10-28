@@ -1,6 +1,6 @@
 {
   "boundary": "本地安全评测，不是生产安全系统。 Local CPU evidence only; no production security or GPU serving claim.",
-  "captured_at_utc": "2026-10-28T06:32:28Z",
+  "captured_at_utc": "2026-10-28T08:43:52Z",
   "claims": {
     "gpu_throughput": false,
     "openai_compatible_contract": true,
@@ -15,7 +15,7 @@
       "lmdeploy"
     ],
     "ok": true,
-    "source_sha256": "05bef4cf838877bffa73c2becadd1acf8f63032d1c43c806c3b8defbfb3c8397"
+    "source_sha256": "73e76ce6480db337296390704f4471000104defc791f2cb0ff3978d34582c6b1"
   },
   "gpu_acceptance": {
     "gpu_available": false,
@@ -142,7 +142,7 @@
     "model": "llama3.2:1b",
     "model_digest": "baf6a787fdffd633537aa2eb51cfd54cb93ff08e28040095462bb63daf552878",
     "ok": true,
-    "source_sha256": "2b6dde2571984d1e9909fcd75b4913c45c702a06460e5c98aaa799a60a396cc4"
+    "source_sha256": "fa8cf85079e28cae47ad0ae7ccdbc3c8ebb2980fbc281e9956345264963fe24b"
   },
   "schema_version": "eval-infra.integration-summary.v1"
 }

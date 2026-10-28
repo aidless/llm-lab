@@ -8,7 +8,7 @@ import hashlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-EXCLUDED = {"SHA256SUMS", "verification-result.json", "report.html"}
+EXCLUDED = {"SHA256SUMS", "verification-result.json"}
 
 
 def sha256(path: Path) -> str:
