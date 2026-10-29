@@ -51,6 +51,8 @@ node_modules/
 *.pyc
 *.log
 data/
+!eval-infra-adapters/opencompass-export/data/
+!eval-infra-adapters/opencompass-export/data/**
 models/
 .regression_tmp/
 *.bak
