@@ -449,11 +449,11 @@ def _review_html(queue: dict[str, Any]) -> str:
     data = json.dumps(queue, ensure_ascii=False).replace("</", "<\\/")
     escaped_instructions = html.escape(str(queue["instructions"]))
     return f"""<!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agent Safety Review</title>
+  <title>Agent 安全人工复核</title>
   <style>
     :root {{
       --ink: #101418; --paper: #f4efe6; --panel: #fffdf8; --line: #d7cbbc;
@@ -501,25 +501,25 @@ def _review_html(queue: dict[str, Any]) -> str:
 </head>
 <body>
 <header>
-  <h1>Agent Safety Review</h1>
+  <h1>Agent 安全人工复核</h1>
   <div class="meta">
     <span>{escaped_instructions}</span>
-    <span>Local-only page · no upload</span>
+    <span>仅在本机运行 · 不上传数据</span>
   </div>
 </header>
 <main class="layout">
   <section class="card" id="review-card"></section>
   <aside class="card side">
-    <div class="eyebrow">Progress</div>
+    <div class="eyebrow">复核进度</div>
     <h2 id="counter">0 / {len(queue["items"])}</h2>
     <div class="progress"><div id="bar"></div></div>
-    <label for="reviewer">Reviewer identifier</label>
-    <input id="reviewer" placeholder="e.g. liuzewen">
-    <label for="notes">Reviewer notes</label>
-    <textarea id="notes" placeholder="Optional note for this record"></textarea>
-    <button class="download" id="download">Export reviewed packet</button>
-    <p class="small">Keyboard: A accept, F flag, J next, K previous. Exported records include
-    UTC timestamps. This page does not certify a label; the reviewer remains accountable.</p>
+    <label for="reviewer">复核人标识</label>
+    <input id="reviewer" placeholder="例如：liuzewen">
+    <label for="notes">复核备注</label>
+    <textarea id="notes" placeholder="可选：记录本条判断依据或疑问"></textarea>
+    <button class="download" id="download">导出人工复核结果</button>
+    <p class="small">快捷键：A 接受，F 标记问题，J 下一条，K 上一条。导出记录包含
+    UTC 时间戳。页面不会自动证明标签正确，最终判断由复核人负责。</p>
   </aside>
 </main>
 <script>
@@ -545,17 +545,17 @@ function render() {{
   const item = state.items[state.index];
   const suggested = JSON.stringify(item.suggested, null, 2);
   card.innerHTML = `
-    <div class="eyebrow">Record ${{state.index + 1}} of ${{state.items.length}} · ${{item.kind}}</div>
+    <div class="eyebrow">第 ${{state.index + 1}} / ${{state.items.length}} 条 · ${{item.kind}}</div>
     <h2>${{escapeHtml(item.title)}}</h2>
     <span class="pill">${{escapeHtml(item.category)}} · ${{escapeHtml(item.task_id)}}</span>
     <p class="goal">${{escapeHtml(item.goal)}}</p>
-    <h3>Suggested evidence</h3>
+    <h3>系统建议与证据</h3>
     <pre>${{escapeHtml(suggested)}}</pre>
     <div class="controls">
-      <button class="accept" onclick="decide('accept')">Accept suggestion [A]</button>
-      <button class="flag" onclick="decide('flag')">Flag for revision [F]</button>
-      <button onclick="move(-1)">Previous [K]</button>
-      <button onclick="move(1)">Next [J]</button>
+      <button class="accept" onclick="decide('accept')">接受建议 [A]</button>
+      <button class="flag" onclick="decide('flag')">标记问题 [F]</button>
+      <button onclick="move(-1)">上一条 [K]</button>
+      <button onclick="move(1)">下一条 [J]</button>
     </div>`;
   save();
 }}
@@ -564,7 +564,7 @@ function escapeHtml(value) {{
 }}
 function decide(kind) {{
   const item = state.items[state.index];
-  if (!reviewer.value.trim()) {{ alert("Enter a reviewer identifier first."); return; }}
+  if (!reviewer.value.trim()) {{ alert("请先填写复核人标识。"); return; }}
   item.decision = kind;
   item.reviewer = reviewer.value.trim();
   item.reviewed_at_utc = new Date().toISOString();

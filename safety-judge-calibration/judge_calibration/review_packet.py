@@ -132,9 +132,9 @@ def validate_export(
 def _html(payload: dict[str, Any]) -> str:
     data = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
     return f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Safety Judge Human Labels</title>
+<title>安全 Judge 人工标注</title>
 <style>
 :root {{ --ink:#15191b; --paper:#eef0ed; --card:#fffdf8; --line:#d0d1ca;
   --safe:#17634b; --unsafe:#ae3b31; }}
@@ -158,14 +158,14 @@ margin-top:12px}} input,textarea{{width:100%;padding:10px;border:1px solid var(-
 border-radius:8px;font:inherit}} textarea{{min-height:90px}} @media(max-width:800px){{
 main{{grid-template-columns:1fr}}aside{{position:static}}}}
 </style></head><body>
-<header><h1>Safety Judge Human Labels</h1><div id="counter"></div></header>
+<header><h1>安全 Judge 人工标注</h1><div id="counter"></div></header>
 <main><section class="card" id="card"></section>
 <aside class="card"><progress id="progress" value="0" max="{payload["case_count"]}"></progress>
-<label>Reviewer ID</label><input id="reviewer" placeholder="e.g. liuzewen">
-<label>Notes</label><textarea id="notes"></textarea>
+<label>复核人标识</label><input id="reviewer" placeholder="例如：liuzewen">
+<label>备注</label><textarea id="notes" placeholder="可选：记录判断依据"></textarea>
 <button class="unsafe" id="export" style="width:100%;margin-top:12px">
-Export labeled packet</button>
-<p>Keys: S safe, U unsafe, J next, K previous. Labels require a reviewer ID.</p>
+导出人工标注结果</button>
+<p>快捷键：S 安全，U 不安全，J 下一条，K 上一条。提交标签前必须填写复核人标识。</p>
 </aside></main>
 <script>
 const queue={data};
@@ -176,7 +176,7 @@ progress=document.getElementById("progress"),reviewer=document.getElementById("r
 notes=document.getElementById("notes");
 function done(){{return state.items.filter(x=>x.decision!=="pending").length}}
 function save(){{localStorage.setItem("judge-review-v1",JSON.stringify(state));progress.value=done();
-counter.textContent=`${{done()}} / ${{state.items.length}} reviewed`;
+counter.textContent=`已复核 ${{done()}} / ${{state.items.length}}`;
 reviewer.value=state.items[state.index].reviewer||reviewer.value||"";
 notes.value=state.items[state.index].notes||"";}}
 function esc(v){{return String(v).replace(/[&<>"']/g,c=>({{"&":"&amp;","<":"&lt;",
@@ -184,13 +184,13 @@ function esc(v){{return String(v).replace(/[&<>"']/g,c=>({{"&":"&amp;","<":"&lt;
 function render(){{const x=state.items[state.index];card.innerHTML=`
 <div class="eyebrow">${{state.index+1}} / ${{state.items.length}} · ${{esc(x.slice)}}</div>
 <h2>${{esc(x.case_id)}}</h2><div class="request">${{esc(x.request)}}</div>
-<div class="suggest"><b>Draft suggestion:</b> ${{esc(x.suggested_label)}}<br>
+<div class="suggest"><b>草稿建议：</b> ${{esc(x.suggested_label)}}<br>
 ${{esc(x.rationale)}}</div><div class="actions">
-<button class="safe" onclick="label('safe')">Safe [S]</button>
-<button class="unsafe" onclick="label('unsafe')">Unsafe [U]</button>
-<button onclick="move(-1)">Previous [K]</button><button onclick="move(1)">Next [J]</button>
+<button class="safe" onclick="label('safe')">安全 [S]</button>
+<button class="unsafe" onclick="label('unsafe')">不安全 [U]</button>
+<button onclick="move(-1)">上一条 [K]</button><button onclick="move(1)">下一条 [J]</button>
 </div>`;save();}}
-function label(value){{if(!reviewer.value.trim()){{alert("Reviewer ID required");return}}
+function label(value){{if(!reviewer.value.trim()){{alert("请先填写复核人标识");return}}
 const x=state.items[state.index];x.gold_label=value;x.decision=value;x.reviewer=reviewer.value.trim();
 x.reviewed_at_utc=new Date().toISOString();x.notes=notes.value.trim();save();
 if(state.index<state.items.length-1){{state.index++;render();}}}}
