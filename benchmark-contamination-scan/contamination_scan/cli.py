@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import html
 import json
 import time
 from pathlib import Path
@@ -154,6 +153,14 @@ def write_review_queue(
     thresholds: dict[str, float],
     output: Path,
 ) -> None:
+    task_lookup = {
+        str(task["id"]): _task_text(task)
+        for task in load_ceval_tasks(DEFAULT_TASKS)
+    }
+    document_lookup = {
+        str(document["id"]): str(document["text"])
+        for document in read_jsonl(DEFAULT_DATASET / "corpus-v1.jsonl")
+    }
     def suspect(row: dict[str, Any]) -> bool:
         return is_suspect(
             Match(**row["match"]),
@@ -176,6 +183,8 @@ def write_review_queue(
                 "review_id": f"contamination:{row['task_id']}",
                 "task_id": row["task_id"],
                 "subject": row["subject"],
+                "question_text": task_lookup.get(str(row["task_id"]), ""),
+                "source_text": document_lookup.get(str(match.get("document_id")), ""),
                 "suggested_contaminated": suspect(row),
                 "match": match,
                 "decision": "pending",
@@ -196,62 +205,13 @@ def write_review_queue(
 
 def _review_html(queue: dict[str, Any]) -> str:
     data = json.dumps(queue, ensure_ascii=False).replace("</", "<\\/")
-    title = html.escape("Benchmark 污染人工复核")
-    return f"""<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{title}</title>
-<style>
-:root{{--ink:#17201c;--paper:#edf1e7;--card:#fffdf7;--line:#c9d0c5;--yes:#a23b2d;--no:#176247}}
-*{{box-sizing:border-box}}body{{margin:0;background:linear-gradient(135deg,#f7f0df,var(--paper));
-color:var(--ink);font:16px/1.55 "Noto Sans CJK SC","Source Han Sans SC",sans-serif}}
-header{{position:sticky;top:0;z-index:2;padding:18px 24px;background:#f8f4e9eF;
-border-bottom:2px solid var(--ink);display:flex;justify-content:space-between;gap:20px}}
-h1{{margin:0;font:800 29px/1.1 "Noto Serif CJK SC",serif}}main{{max-width:1080px;margin:28px auto 80px;
-padding:0 20px;display:grid;grid-template-columns:1fr 300px;gap:20px}}
-.card{{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;
-box-shadow:0 14px 35px #34443814}}.meta{{color:#6a392f;font-weight:800;letter-spacing:.05em}}
-pre{{white-space:pre-wrap;overflow-wrap:anywhere;background:#17201c;color:#f7f1e7;padding:16px;
-border-radius:12px;max-height:430px;overflow:auto}}button{{padding:11px 15px;border:1px solid var(--ink);
-border-radius:999px;background:white;font-weight:800;cursor:pointer}}button.yes{{background:var(--yes);color:white}}
-button.no{{background:var(--no);color:white}}.actions{{display:flex;gap:10px;flex-wrap:wrap}}
-aside{{position:sticky;top:100px;align-self:start}}label{{display:block;font-weight:800;margin-top:12px}}
-input,textarea{{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit}}
-textarea{{min-height:90px}}progress{{width:100%;height:14px}}@media(max-width:800px){{main{{grid-template-columns:1fr}}aside{{position:static}}}}
-</style></head><body>
-<header><h1>{title}</h1><div id="counter"></div></header>
-<main><section class="card" id="card"></section><aside class="card">
-<progress id="progress" value="0" max="{len(queue['items'])}"></progress>
-<label>复核人标识</label><input id="reviewer" placeholder="例如：liuzewen">
-<label>备注</label><textarea id="notes" placeholder="可选：记录匹配依据或疑问"></textarea>
-<button class="yes" id="export" style="width:100%;margin-top:12px">导出人工复核结果</button>
-<p>快捷键：Y 污染，N 未污染，J 下一条，K 上一条。仅在本机运行，不上传数据。</p>
-</aside></main><script>
-const queue={data};let state=JSON.parse(localStorage.getItem("contamination-review-v1")||"null");
-if(!state||state.items.length!==queue.items.length)state={{index:0,items:queue.items}};
-const card=document.getElementById("card"),counter=document.getElementById("counter"),
-progress=document.getElementById("progress"),reviewer=document.getElementById("reviewer"),notes=document.getElementById("notes");
-function done(){{return state.items.filter(x=>x.decision!=="pending").length}}
-function esc(v){{return String(v).replace(/[&<>"']/g,c=>({{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}}[c]))}}
-function save(){{localStorage.setItem("contamination-review-v1",JSON.stringify(state));progress.value=done();
-counter.textContent=`已复核 ${{done()}} / ${{state.items.length}}`;reviewer.value=state.items[state.index].reviewer||reviewer.value||"";
-notes.value=state.items[state.index].notes||""}}
-function render(){{const x=state.items[state.index];card.innerHTML=`<div class="meta">第 ${{state.index+1}} / ${{state.items.length}} 条 · ${{esc(x.task_id)}}</div>
-<h2>${{esc(x.subject)}}</h2><p><b>系统建议：</b>${{x.suggested_contaminated?"疑似污染":"未发现污染"}}</p>
-<pre>${{esc(JSON.stringify(x.match,null,2))}}</pre><div class="actions">
-<button class="yes" onclick="label(true)">判为污染 [Y]</button><button class="no" onclick="label(false)">判为未污染 [N]</button>
-<button onclick="move(-1)">上一条 [K]</button><button onclick="move(1)">下一条 [J]</button></div>`;save()}}
-function label(value){{if(!reviewer.value.trim()){{alert("请先填写复核人标识");return}}const x=state.items[state.index];
-x.contaminated=value;x.decision=value?"contaminated":"clean";x.reviewer=reviewer.value.trim();
-x.reviewed_at_utc=new Date().toISOString();x.notes=notes.value.trim();save();if(state.index<state.items.length-1){{state.index++;render()}}}}
-function move(d){{const x=state.items[state.index];x.reviewer=reviewer.value.trim();x.notes=notes.value.trim();
-state.index=Math.max(0,Math.min(state.items.length-1,state.index+d));render()}}
-document.getElementById("export").onclick=()=>{{const payload={{schema_version:"benchmark-contamination.review-export.v1",
-exported_at_utc:new Date().toISOString(),items:state.items}};const blob=new Blob([JSON.stringify(payload,null,2)],{{type:"application/json"}});
-const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="review-export.json";a.click()}};
-document.addEventListener("keydown",e=>{{if(["INPUT","TEXTAREA"].includes(e.target.tagName))return;const k=e.key.toLowerCase();
-if(k==="y")label(true);if(k==="n")label(false);if(k==="j")move(1);if(k==="k")move(-1)}});render();
-</script></body></html>"""
+    return f"""<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>评测题污染白话复核</title><style>
+:root{{--ink:#17201c;--paper:#edf1e7;--card:#fffdf7;--line:#c9d0c5;--yes:#a23b2d;--no:#176247;--amber:#9a6517}}*{{box-sizing:border-box}}body{{margin:0;background:linear-gradient(135deg,#f7f0df,var(--paper));color:var(--ink);font:17px/1.6 "Noto Sans CJK SC",sans-serif}}header{{position:sticky;top:0;z-index:2;padding:18px 24px;background:#f8f4e9ef;border-bottom:2px solid var(--ink);display:flex;justify-content:space-between}}h1{{margin:0;font:800 29px/1.1 serif}}main{{max-width:1180px;margin:28px auto 80px;padding:0 20px;display:grid;grid-template-columns:1fr 290px;gap:20px}}.card{{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 14px 35px #34443814}}.compare{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}.text{{white-space:pre-wrap;background:#f5eddd;border-top:5px solid var(--amber);padding:15px;border-radius:9px;min-height:180px}}button{{padding:11px 15px;border:1px solid var(--ink);border-radius:999px;background:white;font-weight:800;cursor:pointer}}button.yes{{background:var(--yes);color:white}}button.no{{background:var(--no);color:white}}.actions{{display:flex;gap:9px;flex-wrap:wrap}}aside{{position:sticky;top:100px;align-self:start}}label{{display:block;font-weight:800;margin-top:12px}}input,textarea{{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit}}textarea{{min-height:90px}}progress{{width:100%}}pre{{white-space:pre-wrap;overflow-wrap:anywhere;background:#17201c;color:#fff;padding:14px;border-radius:9px}}.muted{{color:#665f54}}@media(max-width:850px){{main{{grid-template-columns:1fr}}aside{{position:static}}.compare{{grid-template-columns:1fr}}}}</style></head><body>
+<header><h1>评测题污染白话复核</h1><span>仅在本机运行 · 不上传数据</span></header><main><section class="card" id="card"></section><aside class="card"><progress id="progress" value="0" max="{len(queue['items'])}"></progress><div id="counter"></div><label>复核人标识</label><input id="reviewer" placeholder="例如：liuzewen"><label>备注</label><textarea id="notes" placeholder="可选：指出相同或改写的位置"></textarea><button class="yes" id="export" style="width:100%;margin-top:12px">导出人工复核结果</button><p class="muted">证据不足不会算作有效标签。</p></aside></main><script>
+const queue={data};const practice=[{{q:"两段文字逐字相同，只改变了换行。算污染吗？",a:true,e:"算。直接复制或仅改变格式属于明显污染。"}},{{q:"两段都谈数学，但题目、数字和问法完全不同。算污染吗？",a:false,e:"通常不算。主题相同不等于样本被复制。"}},{{q:"只看到相似度分数，没有来源原文。能确定吗？",a:null,e:"不能。没有可比较原文时应选证据不足。"}}];let phase=localStorage.getItem("contamination-guide-practice-done")==="yes"?"review":"intro",practiceIndex=0;let state=JSON.parse(localStorage.getItem("contamination-review-v2")||"null");if(!state||state.items.length!==queue.items.length)state={{index:0,items:queue.items}};const card=document.getElementById("card"),counter=document.getElementById("counter"),progress=document.getElementById("progress"),reviewer=document.getElementById("reviewer"),notes=document.getElementById("notes");function esc(v){{return String(v??"").replace(/[&<>"']/g,c=>({{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}}[c]))}}function done(){{return state.items.filter(x=>typeof x.contaminated==="boolean"&&x.decision!=="pending").length}}function save(){{localStorage.setItem("contamination-review-v2",JSON.stringify(state));progress.value=done();counter.textContent=`已复核 ${{done()}} / ${{state.items.length}}`;reviewer.value=state.items[state.index]?.reviewer||reviewer.value||"";notes.value=state.items[state.index]?.notes||""}}
+function intro(){{card.innerHTML=`<h2>先做 3 道练习</h2><p>污染不是“题目很常见”，而是评测题可能被直接复制或轻微改写进了训练资料。</p><div class="text"><b>判断重点：</b>比较具体文字、选项、数字和结构。不要只看相似度分数。</div><p><b>本地安全评测，不是生产安全系统。</b></p><button class="no" onclick="startPractice()">开始练习</button>`}}function startPractice(){{phase="practice";practiceIndex=0;renderPractice()}}function renderPractice(msg=""){{const x=practice[practiceIndex];card.innerHTML=`<div class="muted">练习 ${{practiceIndex+1}} / 3</div><h2>${{x.q}}</h2><div class="actions"><button class="yes" onclick="answerPractice(true)">算污染</button><button class="no" onclick="answerPractice(false)">不算污染</button><button onclick="answerPractice(null)">证据不足</button></div><p>${{msg}}</p>`}}function answerPractice(v){{const x=practice[practiceIndex],ok=v===x.a;renderPractice(`<b>${{ok?"答对了":"再想一下"}}：</b>${{x.e}} <button onclick="nextPractice()">继续</button>`)}}function nextPractice(){{practiceIndex++;if(practiceIndex>=3){{localStorage.setItem("contamination-guide-practice-done","yes");phase="review";render()}}else renderPractice()}}
+function render(){{if(phase==="intro")return intro();if(phase==="practice")return renderPractice();const x=state.items[state.index],missing=!x.question_text||!x.source_text;card.innerHTML=`<div class="muted">第 ${{state.index+1}} / ${{state.items.length}} 条 · ${{esc(x.task_id)}}</div><h2>请比较下面两段内容</h2><div class="compare"><div><h3>评测题</h3><div class="text">${{esc(x.question_text||"未提供评测题原文")}}</div></div><div><h3>疑似来源</h3><div class="text">${{esc(x.source_text||"未提供疑似来源原文")}}</div></div></div><h2>两段内容是否像是直接复制或轻微改写？</h2>${{missing?'<p class="text"><b>证据不足：</b>缺少一侧原文，请不要猜。</p>':''}}<div class="actions"><button class="yes" onclick="label(true)">是，疑似污染</button><button class="no" onclick="label(false)">否，不像污染</button><button onclick="markUncertain()">证据不足 / 我不确定</button><button onclick="move(-1)">上一条</button><button onclick="move(1)">下一条</button></div><details><summary>查看技术细节</summary><pre>${{esc(JSON.stringify(x.match,null,2))}}</pre></details>`;save()}}function label(v){{if(!reviewer.value.trim()){{alert("请先填写复核人标识");return}}const x=state.items[state.index];x.contaminated=v;x.decision=v?"contaminated":"clean";x.reviewer=reviewer.value.trim();x.reviewed_at_utc=new Date().toISOString();x.notes=notes.value.trim();save();if(state.index<state.items.length-1){{state.index++;render()}}}}function markUncertain(){{const x=state.items[state.index];x.contaminated=null;x.decision="pending";x.reviewer=reviewer.value.trim();x.notes=(notes.value.trim()+" [证据不足]").trim();save();if(state.index<state.items.length-1){{state.index++;render()}}}}function move(d){{const x=state.items[state.index];x.reviewer=reviewer.value.trim();x.notes=notes.value.trim();state.index=Math.max(0,Math.min(state.items.length-1,state.index+d));render()}}
+document.getElementById("export").onclick=()=>{{const payload={{schema_version:"benchmark-contamination.review-export.v1",exported_at_utc:new Date().toISOString(),items:state.items}};const blob=new Blob([JSON.stringify(payload,null,2)],{{type:"application/json"}});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="review-export.json";a.click()}};render();</script></body></html>"""
 
 
 def command_report(args: argparse.Namespace) -> int:

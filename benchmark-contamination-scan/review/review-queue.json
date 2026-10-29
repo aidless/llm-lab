@@ -25,9 +25,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "关于左值引用，下列用法或叙述不正确的是____\nA. 引用可以先定义，再赋值；\nB. 引用可以作为函数参数；\nC. 函数可以返回引用；\nD. 引用是另一个有名字变量的别名。\n\n只输出一个字母。\nA. 引用可以先定义，再赋值；\nB. 引用可以作为函数参数；\nC. 函数可以返回引用；\nD. 引用是另一个有名字变量的别名。",
       "review_id": "contamination:ceval_000",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "关于左值引用，下列用法或叙述不正确的是____\nA. 引用可以先定义，再赋值；\nB. 引用可以作为函数参数；\nC. 函数可以返回引用；\nD. 引用是另一个有名字变量的别名。\n\n只输出一个字母。\nA. 引用可以先定义，再赋值；\nB. 引用可以作为函数参数；\nC. 函数可以返回引用；\nD. 引用是另一个有名字变量的别名。",
       "subject": "college_programming",
       "suggested_contaminated": true,
       "task_id": "ceval_000"
@@ -57,9 +59,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "有以下程序代码\n#include<iostream>\nusing namespace std;\nclass integer{\npublic:\ninteger(int value=0):value(value){}\ninteger operator+(integer itg){\nreturn value+=itg.value;\n}\nfriend ostream&operator<<(ostream&os,integer&it){\nreturn os<<it.value;\n}\nprivate:\nint value;\n};\nint main()\n{\ninteger i;\ninteger ii;\nii=2+i;\ncout<<\"i=\"<<i<<\",\";\ncout<<\"ii=\"<<ii<<endl;\nreturn 0;\n}\n编译情况或运行时输出是____\nA. i=0 ,ii=2\nB. i=2 ,ii=2\nC. i=0 ,ii=0\nD. 编译错误\n\n只输出一个字母。\nA. i=0 ,ii=2\nB. i=2 ,ii=2\nC. i=0 ,ii=0\nD. 编译错误",
       "review_id": "contamination:ceval_003",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: 有以下程序代码\n#include<iostream>\nusing namespace std;\nclass integer{\npublic:\ninteger(int value=0):value(value){}\ninteger operator+(integer itg){\nreturn value+=itg.value;\n}\nfriend ostream&operator<<(ostream&os,integer&it){\nreturn os<<it.value;\n}\nprivate:\nint value;\n};\nint main()\n{\ninteger i;\ninteger ii;\nii=2+i;\ncout<<\"i=\"<<i<<\",\";\ncout<<\"ii=\"<<ii<<endl;\nreturn 0;\n}\n编译情况或运行时输出是____\nA. i=0 ,ii=2\nB. i=2 ,ii=2\nC. i=0 ,ii=0\nD. 编译错误\n\n只输出一个字母。\nOption A: i=0 ,ii=2\nOption B: i=2 ,ii=2\nOption C: i=0 ,ii=0\nOption D: 编译错误",
       "subject": "college_programming",
       "suggested_contaminated": true,
       "task_id": "ceval_003"
@@ -89,9 +93,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "下列排序算法中，元素的移动次数与关键字的初始排列次序无关的是____\nA. 直接插入排序\nB. 冒泡排序\nC. 基数排序\nD. 快速排序\n\n只输出一个字母。\nA. 直接插入排序\nB. 冒泡排序\nC. 基数排序\nD. 快速排序",
       "review_id": "contamination:ceval_006",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of college_programming: 下列排序算法中，元素的移动次数与关键字的初始排列次序无关的是____\nA. 直接插入排序\nB. 冒泡排序\nC. 基数排序\nD. 快速排序\n\n只输出一个字母。 The candidate answers are summarized as 直接插入排序; 冒泡排序; 基数排序; 快速排序.",
       "subject": "college_programming",
       "suggested_contaminated": true,
       "task_id": "ceval_006"
@@ -121,9 +127,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "假定AB为一个类，r2是AB类的对象，执行“AB r1=3;”时将自动调用该类的____\nA. 带一个整型参数的构造函数\nB. 无参构造函数\nC. 赋值运算符重载函数\nD. 拷贝构造函数\n\n只输出一个字母。\nA. 带一个整型参数的构造函数\nB. 无参构造函数\nC. 赋值运算符重载函数\nD. 拷贝构造函数",
       "review_id": "contamination:ceval_009",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "假定AB为一个类，r2是AB类的对象，执行“AB r1=3;”时将自动调用该类的____\nA. 带一个整型参数的构造函数\nB. 无参构造函数\nC. 赋值运算符重载函数\nD. 拷贝构造函数\n\n只输出一个字母。\nA. 带一个整型参数的构造函数\nB. 无参构造函数\nC. 赋值运算符重载函数\nD. 拷贝构造函数",
       "subject": "college_programming",
       "suggested_contaminated": true,
       "task_id": "ceval_009"
@@ -153,9 +161,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "—组关键字序列A(12,14,3,16,8,7,10,17,5,11,9,6,13,15,4),为排成递增序利用堆排序的方法建立的初始的堆为____\nA. （ 3， 4， 5, 8， 9， 7, 6, 17， 16， 14， 11， 12， 13， 15， 10 )\nB. ( 3， 5, 4, 8, 9， 7, 6， 17， 16， 14, 11， 12, 13， 15， 10 )\nC. ( 17, 16, 15, 14, 11, 13, 10, 12, 5, 8, 9, 6, 7， 3， 4 )\nD. ( 17, 16, 14, 15, 11, 13, 10, 12, 5, 8, 9, 6, 7, 3, 4 )\n\n只输出一个字母。\nA. （ 3， 4， 5, 8， 9， 7, 6, 17， 16， 14， 11， 12， 13， 15， 10 )\nB. ( 3， 5, 4, 8, 9， 7, 6， 17， 16， 14, 11， 12, 13， 15， 10 )\nC. ( 17, 16, 15, 14, 11, 13, 10, 12, 5, 8, 9, 6, 7， 3， 4 )\nD. ( 17, 16, 14, 15, 11, 13, 10, 12, 5, 8, 9, 6, 7, 3, 4 )",
       "review_id": "contamination:ceval_012",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: —组关键字序列A(12,14,3,16,8,7,10,17,5,11,9,6,13,15,4),为排成递增序利用堆排序的方法建立的初始的堆为____\nA. （ 3， 4， 5, 8， 9， 7, 6, 17， 16， 14， 11， 12， 13， 15， 10 )\nB. ( 3， 5, 4, 8, 9， 7, 6， 17， 16， 14, 11， 12, 13， 15， 10 )\nC. ( 17, 16, 15, 14, 11, 13, 10, 12, 5, 8, 9, 6, 7， 3， 4 )\nD. ( 17, 16, 14, 15, 11, 13, 10, 12, 5, 8, 9, 6, 7, 3, 4 )\n\n只输出一个字母。\nOption A: （ 3， 4， 5, 8， 9， 7, 6, 17， 16， 14， 11， 12， 13， 15， 10 )\nOption B: ( 3， 5, 4, 8, 9， 7, 6， 17， 16， 14, 11， 12, 13， 15， 10 )\nOption C: ( 17, 16, 15, 14, 11, 13, 10, 12, 5, 8, 9, 6, 7， 3， 4 )\nOption D: ( 17, 16, 14, 15, 11, 13, 10, 12, 5, 8, 9, 6, 7, 3, 4 )",
       "subject": "college_programming",
       "suggested_contaminated": true,
       "task_id": "ceval_012"
@@ -185,9 +195,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "线性表若采用链式存储结构时，要求内存中可用存储单元的地址____。\nA. 必须是连续的\nB. 部分地址必须是连续的\nC. 一定是不连续的\nD. 连续不连续都可以\n\n只输出一个字母。\nA. 必须是连续的\nB. 部分地址必须是连续的\nC. 一定是不连续的\nD. 连续不连续都可以",
       "review_id": "contamination:ceval_015",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of college_programming: 线性表若采用链式存储结构时，要求内存中可用存储单元的地址____。\nA. 必须是连续的\nB. 部分地址必须是连续的\nC. 一定是不连续的\nD. 连续不连续都可以\n\n只输出一个字母。 The candidate answers are summarized as 必须是连续的; 部分地址必须是连续的; 一定是不连续的; 连续不连续都可以.",
       "subject": "college_programming",
       "suggested_contaminated": true,
       "task_id": "ceval_015"
@@ -217,9 +229,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "实现一个银行系统，包括存钱、取钱、转账等多项业务，最恰当的资源组合方式是____\nA. 继承\nB. 重载\nC. 组合\nD. 实例化\n\n只输出一个字母。\nA. 继承\nB. 重载\nC. 组合\nD. 实例化",
       "review_id": "contamination:ceval_018",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "实现一个银行系统，包括存钱、取钱、转账等多项业务，最恰当的资源组合方式是____\nA. 继承\nB. 重载\nC. 组合\nD. 实例化\n\n只输出一个字母。\nA. 继承\nB. 重载\nC. 组合\nD. 实例化",
       "subject": "college_programming",
       "suggested_contaminated": true,
       "task_id": "ceval_018"
@@ -249,9 +263,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "下面关于模版说法正确的是____。\nA. 类模版提供了一种对类中类型进行参数化的方法; 在实例化模版类时，实际的数据类型会代替与类成员或方法相关联的类型参数\nB. 类模版中必须包含类成员与类方法\nC. 不可以用自定义的数据类型实例化一个模版类\nD. 类模版中类方法的参数必须用占位符替代，而不能使用实际数据类型\n\n只输出一个字母。\nA. 类模版提供了一种对类中类型进行参数化的方法; 在实例化模版类时，实际的数据类型会代替与类成员或方法相关联的类型参数\nB. 类模版中必须包含类成员与类方法\nC. 不可以用自定义的数据类型实例化一个模版类\nD. 类模版中类方法的参数必须用占位符替代，而不能使用实际数据类型",
       "review_id": "contamination:ceval_021",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: 下面关于模版说法正确的是____。\nA. 类模版提供了一种对类中类型进行参数化的方法; 在实例化模版类时，实际的数据类型会代替与类成员或方法相关联的类型参数\nB. 类模版中必须包含类成员与类方法\nC. 不可以用自定义的数据类型实例化一个模版类\nD. 类模版中类方法的参数必须用占位符替代，而不能使用实际数据类型\n\n只输出一个字母。\nOption A: 类模版提供了一种对类中类型进行参数化的方法; 在实例化模版类时，实际的数据类型会代替与类成员或方法相关联的类型参数\nOption B: 类模版中必须包含类成员与类方法\nOption C: 不可以用自定义的数据类型实例化一个模版类\nOption D: 类模版中类方法的参数必须用占位符替代，而不能使用实际数据类型",
       "subject": "college_programming",
       "suggested_contaminated": true,
       "task_id": "ceval_021"
@@ -281,9 +297,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "关于多态性，下列说法错误的是____\nA. C++语言的多态性分为编译时的多态性和运行时的多态性；\nB. 运行时的多态性可通过虚函数和函数重载实现；\nC. 编译时的多态性可通过模板实现；\nD. 实现运行时多态性的机制称为动态多态性。\n\n只输出一个字母。\nA. C++语言的多态性分为编译时的多态性和运行时的多态性；\nB. 运行时的多态性可通过虚函数和函数重载实现；\nC. 编译时的多态性可通过模板实现；\nD. 实现运行时多态性的机制称为动态多态性。",
       "review_id": "contamination:ceval_024",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of college_programming: 关于多态性，下列说法错误的是____\nA. C++语言的多态性分为编译时的多态性和运行时的多态性；\nB. 运行时的多态性可通过虚函数和函数重载实现；\nC. 编译时的多态性可通过模板实现；\nD. 实现运行时多态性的机制称为动态多态性。\n\n只输出一个字母。 The candidate answers are summarized as C++语言的多态性分为编译时的多态性和运行时的多态性；; 运行时的多态性可通过虚函数和函数重载实现；; 编译时的多态性可通过模板实现；; 实现运行时多态性的机制称为动态多态性。.",
       "subject": "college_programming",
       "suggested_contaminated": true,
       "task_id": "ceval_024"
@@ -313,9 +331,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "已知某班共有25位同学，女生中身高最高者与最矮者相差10厘米；男生中身高最高者与最矮者则相差15厘米。小明认为，根据已知信息，只要再知道男生、女生最高者的具体身高，或者再知道男生、女生的平均身高，均可确定全班同学中身高最高者与最低者之间的差距。以下哪项如果为真，最能构成对小明观点的反驳？____\nA. 根据已知信息，如果不能确定全班同学中身高最高者与最低者之间的差距，则既不能确定男生、女生最高者的具体身高，也不能确定男生、女生的平均身高。\nB. 根据已知信息，尽管再知道男生、女生的平均身高，也不能确定全班同学中身高最高者与最低者之间的差距。\nC. 根据已知信息，即使确定了全班同学中身高最高者与最低者之间的差距，也不能确定男生、女生的平均身高。\nD. 根据已知信息，如果不能确定全班同学中身高最高者与最低者之间的差距，则也不能确定男生、女生最高者的具体身高。\n\n只输出一个字母。\nA. 根据已知信息，如果不能确定全班同学中身高最高者与最低者之间的差距，则既不能确定男生、女生最高者的具体身高，也不能确定男生、女生的平均身高。\nB. 根据已知信息，尽管再知道男生、女生的平均身高，也不能确定全班同学中身高最高者与最低者之间的差距。\nC. 根据已知信息，即使确定了全班同学中身高最高者与最低者之间的差距，也不能确定男生、女生的平均身高。\nD. 根据已知信息，如果不能确定全班同学中身高最高者与最低者之间的差距，则也不能确定男生、女生最高者的具体身高。",
       "review_id": "contamination:ceval_027",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "已知某班共有25位同学，女生中身高最高者与最矮者相差10厘米；男生中身高最高者与最矮者则相差15厘米。小明认为，根据已知信息，只要再知道男生、女生最高者的具体身高，或者再知道男生、女生的平均身高，均可确定全班同学中身高最高者与最低者之间的差距。以下哪项如果为真，最能构成对小明观点的反驳？____\nA. 根据已知信息，如果不能确定全班同学中身高最高者与最低者之间的差距，则既不能确定男生、女生最高者的具体身高，也不能确定男生、女生的平均身高。\nB. 根据已知信息，尽管再知道男生、女生的平均身高，也不能确定全班同学中身高最高者与最低者之间的差距。\nC. 根据已知信息，即使确定了全班同学中身高最高者与最低者之间的差距，也不能确定男生、女生的平均身高。\nD. 根据已知信息，如果不能确定全班同学中身高最高者与最低者之间的差距，则也不能确定男生、女生最高者的具体身高。\n\n只输出一个字母。\nA. 根据已知信息，如果不能确定全班同学中身高最高者与最低者之间的差距，则既不能确定男生、女生最高者的具体身高，也不能确定男生、女生的平均身高。\nB. 根据已知信息，尽管再知道男生、女生的平均身高，也不能确定全班同学中身高最高者与最低者之间的差距。\nC. 根据已知信息，即使确定了全班同学中身高最高者与最低者之间的差距，也不能确定男生、女生的平均身高。\nD. 根据已知信息，如果不能确定全班同学中身高最高者与最低者之间的差距，则也不能确定男生、女生最高者的具体身高。",
       "subject": "logic",
       "suggested_contaminated": true,
       "task_id": "ceval_027"
@@ -345,9 +365,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "李老师说“并非丽丽考上了清华大学并且明明没有考上南京大学。”如果李老师说的是为真，则以下哪项可能为真?____Ⅰ．丽丽考上了清华大学，明明考上了南京大学。Ⅱ．丽丽没考上清华大学，明明没考上南京大学。Ⅲ．丽丽没考上清华大学，明明考上了南京大学。Ⅳ．丽丽考上了清华大学，明明没有考上南京大学。\nA. 仅Ⅰ和Ⅱ。\nB. 仅Ⅱ和Ⅲ。\nC. 仅Ⅱ、Ⅲ和Ⅳ。\nD. 仅Ⅰ、Ⅱ和Ⅲ。\n\n只输出一个字母。\nA. 仅Ⅰ和Ⅱ。\nB. 仅Ⅱ和Ⅲ。\nC. 仅Ⅱ、Ⅲ和Ⅳ。\nD. 仅Ⅰ、Ⅱ和Ⅲ。",
       "review_id": "contamination:ceval_030",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: 李老师说“并非丽丽考上了清华大学并且明明没有考上南京大学。”如果李老师说的是为真，则以下哪项可能为真?____Ⅰ．丽丽考上了清华大学，明明考上了南京大学。Ⅱ．丽丽没考上清华大学，明明没考上南京大学。Ⅲ．丽丽没考上清华大学，明明考上了南京大学。Ⅳ．丽丽考上了清华大学，明明没有考上南京大学。\nA. 仅Ⅰ和Ⅱ。\nB. 仅Ⅱ和Ⅲ。\nC. 仅Ⅱ、Ⅲ和Ⅳ。\nD. 仅Ⅰ、Ⅱ和Ⅲ。\n\n只输出一个字母。\nOption A: 仅Ⅰ和Ⅱ。\nOption B: 仅Ⅱ和Ⅲ。\nOption C: 仅Ⅱ、Ⅲ和Ⅳ。\nOption D: 仅Ⅰ、Ⅱ和Ⅲ。",
       "subject": "logic",
       "suggested_contaminated": true,
       "task_id": "ceval_030"
@@ -377,9 +399,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "办公室主任：本办公室不打算使用循环再利用纸张。给用户的信件必须能留下好的印象。不能打印在劣质纸张上。文具供应商：循环再利用纸张不一定是劣质的。事实上，最初的纸张就是用可回收材料制造的。一直到19世纪50年代，由于碎屑原料供不应求，才使用木纤维作为造纸原料。以下哪项最为恰当地概括了文具供应商的反驳中存在的漏洞?____\nA. 没有意识到办公室主任对于循环再利用纸张的偏见是由于某种无知。\nB. 使用了不相关的事实来证明一个关于产品质量的断定。\nC. 不恰当地假设办公室主任忽视了环境保护。\nD. 不恰当地假设办公室主任了解纸张的制造工艺。\n\n只输出一个字母。\nA. 没有意识到办公室主任对于循环再利用纸张的偏见是由于某种无知。\nB. 使用了不相关的事实来证明一个关于产品质量的断定。\nC. 不恰当地假设办公室主任忽视了环境保护。\nD. 不恰当地假设办公室主任了解纸张的制造工艺。",
       "review_id": "contamination:ceval_033",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of logic: 办公室主任：本办公室不打算使用循环再利用纸张。给用户的信件必须能留下好的印象。不能打印在劣质纸张上。文具供应商：循环再利用纸张不一定是劣质的。事实上，最初的纸张就是用可回收材料制造的。一直到19世纪50年代，由于碎屑原料供不应求，才使用木纤维作为造纸原料。以下哪项最为恰当地概括了文具供应商的反驳中存在的漏洞?____\n The candidate answers are summarized as 没有意识到办公室主任对于循环再利用纸张的偏见是由于某种无知。; 使用了不相关的事实来证明一个关于产品质量的断定。; 不恰当地假设办公室主任忽视了环境保护。; 不恰当地假设办公室主任了解纸张的制造工艺。.",
       "subject": "logic",
       "suggested_contaminated": true,
       "task_id": "ceval_033"
@@ -409,9 +433,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "小红装病逃学了一天，大明答应为她保密。事后，知道事情底细的老师对大明说，我和你一样，都认为违背承诺是一件不好的事情。但是，人和人的交往，事实上默认一个承诺，这就是说真话，任何谎言都违背这一承诺。因此，如果小红确实装病逃学，那么，你即使已经承诺为她保密，也应该对我说实话。要使老师的话成立，以下哪项是必须假设的?____\nA. 说谎比违背其他承诺更有害。\nB. 有时，违背承诺并不是一件坏事。\nC. 任何默认的承诺都比表达的承诺更重要。\nD. 违背默认的承诺有时要比违背表达的承诺更不好。\n\n只输出一个字母。\nA. 说谎比违背其他承诺更有害。\nB. 有时，违背承诺并不是一件坏事。\nC. 任何默认的承诺都比表达的承诺更重要。\nD. 违背默认的承诺有时要比违背表达的承诺更不好。",
       "review_id": "contamination:ceval_036",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "小红装病逃学了一天，大明答应为她保密。事后，知道事情底细的老师对大明说，我和你一样，都认为违背承诺是一件不好的事情。但是，人和人的交往，事实上默认一个承诺，这就是说真话，任何谎言都违背这一承诺。因此，如果小红确实装病逃学，那么，你即使已经承诺为她保密，也应该对我说实话。要使老师的话成立，以下哪项是必须假设的?____\nA. 说谎比违背其他承诺更有害。\nB. 有时，违背承诺并不是一件坏事。\nC. 任何默认的承诺都比表达的承诺更重要。\nD. 违背默认的承诺有时要比违背表达的承诺更不好。\n\n只输出一个字母。\nA. 说谎比违背其他承诺更有害。\nB. 有时，违背承诺并不是一件坏事。\nC. 任何默认的承诺都比表达的承诺更重要。\nD. 违背默认的承诺有时要比违背表达的承诺更不好。",
       "subject": "logic",
       "suggested_contaminated": true,
       "task_id": "ceval_036"
@@ -441,9 +467,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "教育专家李教授提出，每个人在自己的一生中，都要不断地努力，否则就会像龟兔赛跑的故事一样，一时跑得快并不能保证一直领先。如果你本来基础好又能不断努力，那你肯定能比别人更早取得成功。如果李教授的陈述为真,以下哪项一定为假____\nA. 只要不断努力，任何人都可能取得成功。\nB. 一时不成功并不意味着一直不成功。\nC. 小王本来基础好并且能不断努力，但也可能比别人更晚取得成功。\nD. 人的成功是有衡量标准的。\n\n只输出一个字母。\nA. 只要不断努力，任何人都可能取得成功。\nB. 一时不成功并不意味着一直不成功。\nC. 小王本来基础好并且能不断努力，但也可能比别人更晚取得成功。\nD. 人的成功是有衡量标准的。",
       "review_id": "contamination:ceval_039",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: 教育专家李教授提出，每个人在自己的一生中，都要不断地努力，否则就会像龟兔赛跑的故事一样，一时跑得快并不能保证一直领先。如果你本来基础好又能不断努力，那你肯定能比别人更早取得成功。如果李教授的陈述为真,以下哪项一定为假____\nA. 只要不断努力，任何人都可能取得成功。\nB. 一时不成功并不意味着一直不成功。\nC. 小王本来基础好并且能不断努力，但也可能比别人更晚取得成功。\nD. 人的成功是有衡量标准的。\n\n只输出一个字母。\nOption A: 只要不断努力，任何人都可能取得成功。\nOption B: 一时不成功并不意味着一直不成功。\nOption C: 小王本来基础好并且能不断努力，但也可能比别人更晚取得成功。\nOption D: 人的成功是有衡量标准的。",
       "subject": "logic",
       "suggested_contaminated": true,
       "task_id": "ceval_039"
@@ -473,9 +501,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "足球是一项集体运动，若想不断取得胜利，每个强队都必须有一位核心队员，他总是能在关键场次带领全队赢得比赛。友南是某国甲级联赛强队西海队队员。据某记者统计，在上赛季参加的所有比赛中，有友南参赛的场次，西海队胜率高达75．5％，另有16．3％的平局，8．2％的场次输球，而在友南缺战的情况下，西海队胜率只有58．9％，输球的比率高达23．5％。该记者由此得出结论，友南是上赛季西海队的核心队员。以下哪项如果为真,最能质疑该记者的结论____\nA. 上赛季友南上场且西海队输球的比赛，都是西海队与传统强队对阵的关键场次。\nB. 西海队队长表示：“没有友南我们将失去很多东西，但我们会找到解决办法。”\nC. 本赛季开始以来，在友南上场的情况下，西海队胜率暴跌20％。\nD. 上赛季友南缺席且西海队输球的比赛，都是小组赛中西海队已经确定出线后的比赛。\n\n只输出一个字母。\nA. 上赛季友南上场且西海队输球的比赛，都是西海队与传统强队对阵的关键场次。\nB. 西海队队长表示：“没有友南我们将失去很多东西，但我们会找到解决办法。”\nC. 本赛季开始以来，在友南上场的情况下，西海队胜率暴跌20％。\nD. 上赛季友南缺席且西海队输球的比赛，都是小组赛中西海队已经确定出线后的比赛。",
       "review_id": "contamination:ceval_042",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of logic: 足球是一项集体运动，若想不断取得胜利，每个强队都必须有一位核心队员，他总是能在关键场次带领全队赢得比赛。友南是某国甲级联赛强队西海队队员。据某记者统计，在上赛季参加的所有比赛中，有友南参赛的场次，西海队胜率高达75．5％，另有16．3％的平局，8．2％的场次输球，而在友南缺战的情况下，西海队胜率只有58．9％，输球的比 The candidate answers are summarized as 上赛季友南上场且西海队输球的比赛，都是西海队与传统强队对阵的关键场次。; 西海队队长表示：“没有友南我们将失去很多东西，但我们会找到解决办法。”; 本赛季开始以来，在友南上场的情况下，西海队胜率暴跌20％。; 上赛季友南缺席且西海队输球的比赛，都是小组赛中西海队已经确定出线后的比赛。.",
       "subject": "logic",
       "suggested_contaminated": true,
       "task_id": "ceval_042"
@@ -505,9 +535,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "新疆的哈萨克人用经过训练的金雕在草原上长途追击野狼。某研究小组为研究金雕的飞行方向和判断野狼群的活动范围，将无线电传导器放置在一只金雕身上进行追踪。野狼为了觅食，其活动范围通常很广。因此，金雕追击野狼的飞行范围通常也很大。然而两周以来，无线电传导器不断传回的信号显示，金雕仅在放飞地3公里的范围内飞行。以下哪项如果为真，最有助于解释上述金雕的行为?____\nA. 金雕放飞地周边重峦叠嶂，险峻异常。\nB. 金雕的放飞地2公里范围内有一牧羊草场，成为狼群袭击的目标。\nC. 由于受训金雕的捕杀，放飞地广阔草原的野狼几乎灭绝了。\nD. 无线电传导信号仅能在有限的范围内传导。\n\n只输出一个字母。\nA. 金雕放飞地周边重峦叠嶂，险峻异常。\nB. 金雕的放飞地2公里范围内有一牧羊草场，成为狼群袭击的目标。\nC. 由于受训金雕的捕杀，放飞地广阔草原的野狼几乎灭绝了。\nD. 无线电传导信号仅能在有限的范围内传导。",
       "review_id": "contamination:ceval_045",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "新疆的哈萨克人用经过训练的金雕在草原上长途追击野狼。某研究小组为研究金雕的飞行方向和判断野狼群的活动范围，将无线电传导器放置在一只金雕身上进行追踪。野狼为了觅食，其活动范围通常很广。因此，金雕追击野狼的飞行范围通常也很大。然而两周以来，无线电传导器不断传回的信号显示，金雕仅在放飞地3公里的范围内飞行。以下哪项如果为真，最有助于解释上述金雕的行为?____\nA. 金雕放飞地周边重峦叠嶂，险峻异常。\nB. 金雕的放飞地2公里范围内有一牧羊草场，成为狼群袭击的目标。\nC. 由于受训金雕的捕杀，放飞地广阔草原的野狼几乎灭绝了。\nD. 无线电传导信号仅能在有限的范围内传导。\n\n只输出一个字母。\nA. 金雕放飞地周边重峦叠嶂，险峻异常。\nB. 金雕的放飞地2公里范围内有一牧羊草场，成为狼群袭击的目标。\nC. 由于受训金雕的捕杀，放飞地广阔草原的野狼几乎灭绝了。\nD. 无线电传导信号仅能在有限的范围内传导。",
       "subject": "logic",
       "suggested_contaminated": true,
       "task_id": "ceval_045"
@@ -537,9 +569,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "在Unix中，passwd命令位于____目录中的。\nA. /usr/bin\nB. /lib\nC. /etc\nD. /dev\n\n只输出一个字母。\nA. /usr/bin\nB. /lib\nC. /etc\nD. /dev",
       "review_id": "contamination:ceval_048",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: 在Unix中，passwd命令位于____目录中的。\nA. /usr/bin\nB. /lib\nC. /etc\nD. /dev\n\n只输出一个字母。\nOption A: /usr/bin\nOption B: /lib\nOption C: /etc\nOption D: /dev",
       "subject": "operating_system",
       "suggested_contaminated": true,
       "task_id": "ceval_048"
@@ -569,9 +603,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "Unix的软中断机制是____。\nA. 设备中断\nB. 信号量\nC. 系统调用\nD. 信号\n\n只输出一个字母。\nA. 设备中断\nB. 信号量\nC. 系统调用\nD. 信号",
       "review_id": "contamination:ceval_051",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of operating_system: Unix的软中断机制是____。\nA. 设备中断\nB. 信号量\nC. 系统调用\nD. 信号\n\n只输出一个字母。 The candidate answers are summarized as 设备中断; 信号量; 系统调用; 信号.",
       "subject": "operating_system",
       "suggested_contaminated": true,
       "task_id": "ceval_051"
@@ -601,9 +637,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "在虚拟页式存储管理方案中，____完成将页面调入内存的工作。\nA. 文件读写\nB. 页面淘汰过程\nC. 页面工作集处理\nD. 缺页中断处理\n\n只输出一个字母。\nA. 文件读写\nB. 页面淘汰过程\nC. 页面工作集处理\nD. 缺页中断处理",
       "review_id": "contamination:ceval_054",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "在虚拟页式存储管理方案中，____完成将页面调入内存的工作。\nA. 文件读写\nB. 页面淘汰过程\nC. 页面工作集处理\nD. 缺页中断处理\n\n只输出一个字母。\nA. 文件读写\nB. 页面淘汰过程\nC. 页面工作集处理\nD. 缺页中断处理",
       "subject": "operating_system",
       "suggested_contaminated": true,
       "task_id": "ceval_054"
@@ -633,9 +671,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "Linux存储管理的特点是采用在大小不同的分区里实现____的存储管理技术。\nA. 可变分区\nB. 分页\nC. 分段\nD. 段页式\n\n只输出一个字母。\nA. 可变分区\nB. 分页\nC. 分段\nD. 段页式",
       "review_id": "contamination:ceval_057",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: Linux存储管理的特点是采用在大小不同的分区里实现____的存储管理技术。\nA. 可变分区\nB. 分页\nC. 分段\nD. 段页式\n\n只输出一个字母。\nOption A: 可变分区\nOption B: 分页\nOption C: 分段\nOption D: 段页式",
       "subject": "operating_system",
       "suggested_contaminated": true,
       "task_id": "ceval_057"
@@ -665,9 +705,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "设计批处理多道系统时，首先要考虑的是____。\nA. 灵活性和可适应性\nB. 系统效率和吞吐量\nC. 交互性和响应时间\nD. 实时性和可靠性\n\n只输出一个字母。\nA. 灵活性和可适应性\nB. 系统效率和吞吐量\nC. 交互性和响应时间\nD. 实时性和可靠性",
       "review_id": "contamination:ceval_060",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of operating_system: 设计批处理多道系统时，首先要考虑的是____。\nA. 灵活性和可适应性\nB. 系统效率和吞吐量\nC. 交互性和响应时间\nD. 实时性和可靠性\n\n只输出一个字母。 The candidate answers are summarized as 灵活性和可适应性; 系统效率和吞吐量; 交互性和响应时间; 实时性和可靠性.",
       "subject": "operating_system",
       "suggested_contaminated": true,
       "task_id": "ceval_060"
@@ -697,9 +739,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "中断和DMA在操作过程中____嵌套。\nA. 都不可以\nB. 中断可以、但DMA不可以\nC. 都可以\nD. 中断不可以、但DMA可以\n\n只输出一个字母。\nA. 都不可以\nB. 中断可以、但DMA不可以\nC. 都可以\nD. 中断不可以、但DMA可以",
       "review_id": "contamination:ceval_063",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "中断和DMA在操作过程中____嵌套。\nA. 都不可以\nB. 中断可以、但DMA不可以\nC. 都可以\nD. 中断不可以、但DMA可以\n\n只输出一个字母。\nA. 都不可以\nB. 中断可以、但DMA不可以\nC. 都可以\nD. 中断不可以、但DMA可以",
       "subject": "operating_system",
       "suggested_contaminated": true,
       "task_id": "ceval_063"
@@ -729,9 +773,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "下列各组代数式中为同类项的是____\nA. $-2xy$与$2x$\nB. $5x^2y$与$-2xy^2$\nC. $5x^5y^4$与$-5x^5z^4$\nD. $-xy$与$\\frac{3}{2}y x$\n\n只输出一个字母。\nA. $-2xy$与$2x$\nB. $5x^2y$与$-2xy^2$\nC. $5x^5y^4$与$-5x^5z^4$\nD. $-xy$与$\\frac{3}{2}y x$",
       "review_id": "contamination:ceval_066",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: 下列各组代数式中为同类项的是____\nA. $-2xy$与$2x$\nB. $5x^2y$与$-2xy^2$\nC. $5x^5y^4$与$-5x^5z^4$\nD. $-xy$与$\\frac{3}{2}y x$\n\n只输出一个字母。\nOption A: $-2xy$与$2x$\nOption B: $5x^2y$与$-2xy^2$\nOption C: $5x^5y^4$与$-5x^5z^4$\nOption D: $-xy$与$\\frac{3}{2}y x$",
       "subject": "middle_school_mathematics",
       "suggested_contaminated": true,
       "task_id": "ceval_066"
@@ -761,9 +807,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "某商场销售甲、乙两种服装，已知乙服装每件的成本比甲服装贵50元，甲、乙服装均按成本价提高40％   作为标价出售.一段时间后，甲服装卖出了350件，乙服装卖出了200件，销售金额为 129500元，若用方程$350\\times1.4x+200\\times1.4\\times\\left(x+50\\right)=129500$   表示其中的数量关系，则式子中 所表示的量是____\nA. 甲服装的标价\nB. 乙服装的标价\nC. 甲服装的成本价\nD. 乙服装的成本价\n\n只输出一个字母。\nA. 甲服装的标价\nB. 乙服装的标价\nC. 甲服装的成本价\nD. 乙服装的成本价",
       "review_id": "contamination:ceval_069",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of middle_school_mathematics: 某商场销售甲、乙两种服装，已知乙服装每件的成本比甲服装贵50元，甲、乙服装均按成本价提高40％   作为标价出售.一段时间后，甲服装卖出了350件，乙服装卖出了200件，销售金额为 129500元，若用方程$350\\times1.4x+200\\times1.4\\times\\left(x+50\\right)=129500 The candidate answers are summarized as 甲服装的标价; 乙服装的标价; 甲服装的成本价; 乙服装的成本价.",
       "subject": "middle_school_mathematics",
       "suggested_contaminated": true,
       "task_id": "ceval_069"
@@ -793,9 +841,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "某施工队承接了60公里的修路任务，为了提前完成任务，实际每天的工作效率比原计划提高了25％，结果提前60天完成了这项任务．设原计划每天修路x公里，根据题意列出的方程正确的是____\nA. $\\frac{60\\times (1+25 \\%)}{x} -\\frac{60}{x}=60$\nB. $\\frac{60}{x}-\\frac{60\\times (1+25 \\%)}{x} =60$\nC. $\\frac{60 }{ (1+25 \\%)x} -\\frac{60}{x}=60$\nD. $ \\frac{60}{x}-\\frac{60 }{ (1+25 \\%)x} =60$\n\n只输出一个字母。\nA. $\\frac{60\\times (1+25 \\%)}{x} -\\frac{60}{x}=60$\nB. $\\frac{60}{x}-\\frac{60\\times (1+25 \\%)}{x} =60$\nC. $\\frac{60 }{ (1+25 \\%)x} -\\frac{60}{x}=60$\nD. $ \\frac{60}{x}-\\frac{60 }{ (1+25 \\%)x} =60$",
       "review_id": "contamination:ceval_072",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "某施工队承接了60公里的修路任务，为了提前完成任务，实际每天的工作效率比原计划提高了25％，结果提前60天完成了这项任务．设原计划每天修路x公里，根据题意列出的方程正确的是____\nA. $\\frac{60\\times (1+25 \\%)}{x} -\\frac{60}{x}=60$\nB. $\\frac{60}{x}-\\frac{60\\times (1+25 \\%)}{x} =60$\nC. $\\frac{60 }{ (1+25 \\%)x} -\\frac{60}{x}=60$\nD. $ \\frac{60}{x}-\\frac{60 }{ (1+25 \\%)x} =60$\n\n只输出一个字母。\nA. $\\frac{60\\times (1+25 \\%)}{x} -\\frac{60}{x}=60$\nB. $\\frac{60}{x}-\\frac{60\\times (1+25 \\%)}{x} =60$\nC. $\\frac{60 }{ (1+25 \\%)x} -\\frac{60}{x}=60$\nD. $ \\frac{60}{x}-\\frac{60 }{ (1+25 \\%)x} =60$",
       "subject": "middle_school_mathematics",
       "suggested_contaminated": true,
       "task_id": "ceval_072"
@@ -825,9 +875,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "一元二次方程$x^2-3x=1$的两个实数根为$\\alpha$,$\\beta$,则$\\alpha+\\beta$的值为____\nA. 3\nB. -1\nC. -3\nD. 1\n\n只输出一个字母。\nA. 3\nB. -1\nC. -3\nD. 1",
       "review_id": "contamination:ceval_075",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: 一元二次方程$x^2-3x=1$的两个实数根为$\\alpha$,$\\beta$,则$\\alpha+\\beta$的值为____\nA. 3\nB. -1\nC. -3\nD. 1\n\n只输出一个字母。\nOption A: 3\nOption B: -1\nOption C: -3\nOption D: 1",
       "subject": "middle_school_mathematics",
       "suggested_contaminated": true,
       "task_id": "ceval_075"
@@ -857,9 +909,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "阳光文具店出售笔袋和水笔，笔袋每个12元，水笔每个2元，促销期间购一个笔袋送一个水笔，某人共付款 150元，购得笔袋、水笔共 35个（含赠品），则此人购得笔袋的个数为____\nA. 9\nB. 10\nC. 11\nD. 12\n\n只输出一个字母。\nA. 9\nB. 10\nC. 11\nD. 12",
       "review_id": "contamination:ceval_078",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of middle_school_mathematics: 阳光文具店出售笔袋和水笔，笔袋每个12元，水笔每个2元，促销期间购一个笔袋送一个水笔，某人共付款 150元，购得笔袋、水笔共 35个（含赠品），则此人购得笔袋的个数为____\nA. 9\nB. 10\nC. 11\nD. 12\n\n只输出一个字母。 The candidate answers are summarized as 9; 10; 11; 12.",
       "subject": "middle_school_mathematics",
       "suggested_contaminated": true,
       "task_id": "ceval_078"
@@ -889,9 +943,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "下列图形中有稳定性的是____\nA. 平行四边形\nB. 直角三角形\nC. 长方形\nD. 正方形\n\n只输出一个字母。\nA. 平行四边形\nB. 直角三角形\nC. 长方形\nD. 正方形",
       "review_id": "contamination:ceval_081",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "下列图形中有稳定性的是____\nA. 平行四边形\nB. 直角三角形\nC. 长方形\nD. 正方形\n\n只输出一个字母。\nA. 平行四边形\nB. 直角三角形\nC. 长方形\nD. 正方形",
       "subject": "middle_school_mathematics",
       "suggested_contaminated": true,
       "task_id": "ceval_081"
@@ -921,9 +977,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "“垃圾分类”已经在全国开展得如火如荼，某回收公司有四包可回收垃圾，每包以标准克数（ 千克）为基准，超过的千克数记作正数，不足的千克数记作负数，以下数据是记录结果，其中表示实际重量最接近标准千克数的是 ____\nA. -1\nB. 2\nC. -0.5\nD. 0\n\n只输出一个字母。\nA. -1\nB. 2\nC. -0.5\nD. 0",
       "review_id": "contamination:ceval_084",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: “垃圾分类”已经在全国开展得如火如荼，某回收公司有四包可回收垃圾，每包以标准克数（ 千克）为基准，超过的千克数记作正数，不足的千克数记作负数，以下数据是记录结果，其中表示实际重量最接近标准千克数的是 ____\nA. -1\nB. 2\nC. -0.5\nD. 0\n\n只输出一个字母。\nOption A: -1\nOption B: 2\nOption C: -0.5\nOption D: 0",
       "subject": "middle_school_mathematics",
       "suggested_contaminated": true,
       "task_id": "ceval_084"
@@ -953,9 +1011,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "在双缝干涉实验中，两条缝的宽度原来是相等的。若其中一缝的宽度略变窄(缝中心位置不变)，则____\nA. 干涉条纹的间距变宽\nB. 干涉条纹的间距变窄\nC. 干涉条纹的间距不变，但原极小处的强度不再为零\nD. 不再发生干涉现象\n\n只输出一个字母。\nA. 干涉条纹的间距变宽\nB. 干涉条纹的间距变窄\nC. 干涉条纹的间距不变，但原极小处的强度不再为零\nD. 不再发生干涉现象",
       "review_id": "contamination:ceval_087",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of college_physics: 在双缝干涉实验中，两条缝的宽度原来是相等的。若其中一缝的宽度略变窄(缝中心位置不变)，则____\nA. 干涉条纹的间距变宽\nB. 干涉条纹的间距变窄\nC. 干涉条纹的间距不变，但原极小处的强度不再为零\nD. 不再发生干涉现象\n\n只输出一个字母。 The candidate answers are summarized as 干涉条纹的间距变宽; 干涉条纹的间距变窄; 干涉条纹的间距不变，但原极小处的强度不再为零; 不再发生干涉现象.",
       "subject": "college_physics",
       "suggested_contaminated": true,
       "task_id": "ceval_087"
@@ -985,9 +1045,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "设声波通过理想气体的速率正比于气体分子的热运动平均速率，则声波通过具有相同温度的氧气和氢气的速率之比$V_{O_2}/V_{H_2}$为____\nA. 1\nB. 1/2\nC. 1/3\nD. 1/4\n\n只输出一个字母。\nA. 1\nB. 1/2\nC. 1/3\nD. 1/4",
       "review_id": "contamination:ceval_090",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "设声波通过理想气体的速率正比于气体分子的热运动平均速率，则声波通过具有相同温度的氧气和氢气的速率之比$V_{O_2}/V_{H_2}$为____\nA. 1\nB. 1/2\nC. 1/3\nD. 1/4\n\n只输出一个字母。\nA. 1\nB. 1/2\nC. 1/3\nD. 1/4",
       "subject": "college_physics",
       "suggested_contaminated": true,
       "task_id": "ceval_090"
@@ -1017,9 +1079,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "关于电场强度定义式E=F/q0，下列说法中哪个是正确的？____\nA. 场强E的大小与试探电荷q0的大小成反比\nB. 对场中某点，试探电荷受力F与q0的比值不因q0而变\nC. 试探电荷受力F的方向就是场强E的方向\nD. 若场中某点不放试探电荷q0，则F=0，从而E=0\n\n只输出一个字母。\nA. 场强E的大小与试探电荷q0的大小成反比\nB. 对场中某点，试探电荷受力F与q0的比值不因q0而变\nC. 试探电荷受力F的方向就是场强E的方向\nD. 若场中某点不放试探电荷q0，则F=0，从而E=0",
       "review_id": "contamination:ceval_093",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: 关于电场强度定义式E=F/q0，下列说法中哪个是正确的？____\nA. 场强E的大小与试探电荷q0的大小成反比\nB. 对场中某点，试探电荷受力F与q0的比值不因q0而变\nC. 试探电荷受力F的方向就是场强E的方向\nD. 若场中某点不放试探电荷q0，则F=0，从而E=0\n\n只输出一个字母。\nOption A: 场强E的大小与试探电荷q0的大小成反比\nOption B: 对场中某点，试探电荷受力F与q0的比值不因q0而变\nOption C: 试探电荷受力F的方向就是场强E的方向\nOption D: 若场中某点不放试探电荷q0，则F=0，从而E=0",
       "subject": "college_physics",
       "suggested_contaminated": true,
       "task_id": "ceval_093"
@@ -1049,9 +1113,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "在波长为λ的驻波中两个相邻波节之间的距离为：____\nA. λ\nB. 3λ/4\nC. λ/2\nD. λ/4\n\n只输出一个字母。\nA. λ\nB. 3λ/4\nC. λ/2\nD. λ/4",
       "review_id": "contamination:ceval_096",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of college_physics: 在波长为λ的驻波中两个相邻波节之间的距离为：____\nA. λ\nB. 3λ/4\nC. λ/2\nD. λ/4\n\n只输出一个字母。 The candidate answers are summarized as λ; 3λ/4; λ/2; λ/4.",
       "subject": "college_physics",
       "suggested_contaminated": true,
       "task_id": "ceval_096"
@@ -1081,9 +1147,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "一特殊的轻弹簧，弹性力F=-kx3，k为一常量系数，x为伸长(或压缩)量。现将弹簧水平放置于光滑的水平面上，一端固定，一端与质量为m的滑块相连而处于自然长度状态。今沿弹簧长度方向给滑块一个冲量，使其获得一速度v，压缩弹簧，则弹簧被压缩的最大长度为____\nA. \\sqrt{m/k}v\nB. \\sqrt{k/m}v\nC. (4mv/k)^(1/4)\nD. (2mv^2/k)^(1/4)\n\n只输出一个字母。\nA. \\sqrt{m/k}v\nB. \\sqrt{k/m}v\nC. (4mv/k)^(1/4)\nD. (2mv^2/k)^(1/4)",
       "review_id": "contamination:ceval_099",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "一特殊的轻弹簧，弹性力F=-kx3，k为一常量系数，x为伸长(或压缩)量。现将弹簧水平放置于光滑的水平面上，一端固定，一端与质量为m的滑块相连而处于自然长度状态。今沿弹簧长度方向给滑块一个冲量，使其获得一速度v，压缩弹簧，则弹簧被压缩的最大长度为____\nA. \\sqrt{m/k}v\nB. \\sqrt{k/m}v\nC. (4mv/k)^(1/4)\nD. (2mv^2/k)^(1/4)\n\n只输出一个字母。\nA. \\sqrt{m/k}v\nB. \\sqrt{k/m}v\nC. (4mv/k)^(1/4)\nD. (2mv^2/k)^(1/4)",
       "subject": "college_physics",
       "suggested_contaminated": true,
       "task_id": "ceval_099"
@@ -1113,9 +1181,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "对于沿曲线运动的物体，以下几种说法中哪一种是正确的____\nA. 切向加速度必不为零\nB. 法向加速度必不为零（拐点处除外）\nC. 由于速度沿切线方向，法向分速度必为零，因此法向加速度必为零\nD. 若物体作匀速率运动，其总加速度必为零\n\n只输出一个字母。\nA. 切向加速度必不为零\nB. 法向加速度必不为零（拐点处除外）\nC. 由于速度沿切线方向，法向分速度必为零，因此法向加速度必为零\nD. 若物体作匀速率运动，其总加速度必为零",
       "review_id": "contamination:ceval_102",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: 对于沿曲线运动的物体，以下几种说法中哪一种是正确的____\nA. 切向加速度必不为零\nB. 法向加速度必不为零（拐点处除外）\nC. 由于速度沿切线方向，法向分速度必为零，因此法向加速度必为零\nD. 若物体作匀速率运动，其总加速度必为零\n\n只输出一个字母。\nOption A: 切向加速度必不为零\nOption B: 法向加速度必不为零（拐点处除外）\nOption C: 由于速度沿切线方向，法向分速度必为零，因此法向加速度必为零\nOption D: 若物体作匀速率运动，其总加速度必为零",
       "subject": "college_physics",
       "suggested_contaminated": true,
       "task_id": "ceval_102"
@@ -1145,9 +1215,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "开中断和关中断两种操作都用于对____进行设置。\nA. 中断允许触发器\nB. 中断屏蔽寄存器\nC. 中断请求寄存器\nD. 中断向量寄存器\n\n只输出一个字母。\nA. 中断允许触发器\nB. 中断屏蔽寄存器\nC. 中断请求寄存器\nD. 中断向量寄存器",
       "review_id": "contamination:ceval_105",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of computer_architecture: 开中断和关中断两种操作都用于对____进行设置。\nA. 中断允许触发器\nB. 中断屏蔽寄存器\nC. 中断请求寄存器\nD. 中断向量寄存器\n\n只输出一个字母。 The candidate answers are summarized as 中断允许触发器; 中断屏蔽寄存器; 中断请求寄存器; 中断向量寄存器.",
       "subject": "computer_architecture",
       "suggested_contaminated": true,
       "task_id": "ceval_105"
@@ -1177,9 +1249,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "关于LRU算法，以下论述正确的是____。\nA. LRU算法替换掉那些在Cache中驻留时间最长且未被引用的块\nB. LRU算法替换掉那些在Cache中驻留时间最短且未被引用的块\nC. LRU算法替换掉那些在Cache中驻留时间最长且仍在引用的块\nD. LRU算法替换掉那些在Cache中驻留时间最短且仍在引用的块\n\n只输出一个字母。\nA. LRU算法替换掉那些在Cache中驻留时间最长且未被引用的块\nB. LRU算法替换掉那些在Cache中驻留时间最短且未被引用的块\nC. LRU算法替换掉那些在Cache中驻留时间最长且仍在引用的块\nD. LRU算法替换掉那些在Cache中驻留时间最短且仍在引用的块",
       "review_id": "contamination:ceval_108",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "关于LRU算法，以下论述正确的是____。\nA. LRU算法替换掉那些在Cache中驻留时间最长且未被引用的块\nB. LRU算法替换掉那些在Cache中驻留时间最短且未被引用的块\nC. LRU算法替换掉那些在Cache中驻留时间最长且仍在引用的块\nD. LRU算法替换掉那些在Cache中驻留时间最短且仍在引用的块\n\n只输出一个字母。\nA. LRU算法替换掉那些在Cache中驻留时间最长且未被引用的块\nB. LRU算法替换掉那些在Cache中驻留时间最短且未被引用的块\nC. LRU算法替换掉那些在Cache中驻留时间最长且仍在引用的块\nD. LRU算法替换掉那些在Cache中驻留时间最短且仍在引用的块",
       "subject": "computer_architecture",
       "suggested_contaminated": true,
       "task_id": "ceval_108"
@@ -1209,9 +1283,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "计算机的指令系统是计算机____的接口。\nA. 数据和指令\nB. 命令和显示\nC. 输入系统和输出系统\nD. 软件和硬件\n\n只输出一个字母。\nA. 数据和指令\nB. 命令和显示\nC. 输入系统和输出系统\nD. 软件和硬件",
       "review_id": "contamination:ceval_111",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Study note copied with minor formatting.\nQuestion: 计算机的指令系统是计算机____的接口。\nA. 数据和指令\nB. 命令和显示\nC. 输入系统和输出系统\nD. 软件和硬件\n\n只输出一个字母。\nOption A: 数据和指令\nOption B: 命令和显示\nOption C: 输入系统和输出系统\nOption D: 软件和硬件",
       "subject": "computer_architecture",
       "suggested_contaminated": true,
       "task_id": "ceval_111"
@@ -1241,9 +1317,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "微型计算机的发展以____技术为标志。\nA. 操作系统\nB. 微处理器\nC. 磁盘\nD. 软件\n\n只输出一个字母。\nA. 操作系统\nB. 微处理器\nC. 磁盘\nD. 软件",
       "review_id": "contamination:ceval_114",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "Reviewer paraphrase of computer_architecture: 微型计算机的发展以____技术为标志。\nA. 操作系统\nB. 微处理器\nC. 磁盘\nD. 软件\n\n只输出一个字母。 The candidate answers are summarized as 操作系统; 微处理器; 磁盘; 软件.",
       "subject": "computer_architecture",
       "suggested_contaminated": true,
       "task_id": "ceval_114"
@@ -1273,9 +1351,11 @@
         "source": "seeded-c-eval-copy"
       },
       "notes": "",
+      "question_text": "某计算机字长32位，其存储容量是1MB。若按字编址，它的寻址范围是____。\nA. 0～1M\nB. 0～512K\nC. 0～256K\nD. 0～256KB\n\n只输出一个字母。\nA. 0～1M\nB. 0～512K\nC. 0～256K\nD. 0～256KB",
       "review_id": "contamination:ceval_117",
       "reviewed_at_utc": "",
       "reviewer": "",
+      "source_text": "某计算机字长32位，其存储容量是1MB。若按字编址，它的寻址范围是____。\nA. 0～1M\nB. 0～512K\nC. 0～256K\nD. 0～256KB\n\n只输出一个字母。\nA. 0～1M\nB. 0～512K\nC. 0～256K\nD. 0～256KB",
       "subject": "computer_architecture",
       "suggested_contaminated": true,
       "task_id": "ceval_117"

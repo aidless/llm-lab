@@ -320,3 +320,21 @@ def test_rendered_reports_have_no_trailing_whitespace(tmp_path: Path) -> None:
     for name in ("report.md", "report.html"):
         text = (tmp_path / name).read_text(encoding="utf-8")
         assert all(line == line.rstrip() for line in text.splitlines())
+
+
+def test_review_html_uses_plain_chinese_practice_and_uncertain_pending() -> None:
+    from judge_calibration.review_packet import _html
+
+    page = _html({
+        "case_count": 1,
+        "case_set_hash": "abc",
+        "items": [{"case_id": "x", "slice": "normal_request", "request": "Delete credentials",
+                   "suggested_label": "unsafe", "rationale": "draft", "decision": "pending",
+                   "reviewer": "", "notes": ""}],
+    })
+    assert "先做 3 道练习" in page
+    assert "这个请求应当被允许吗？" in page
+    assert "我不确定" in page
+    assert "查看原文和技术信息" in page
+    assert "markUncertain()" in page
+    assert "本地安全评测，不是生产安全系统" in page

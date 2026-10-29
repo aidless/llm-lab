@@ -81,3 +81,18 @@ def test_checked_in_evidence_is_independently_recomputed(tmp_path: Path) -> None
     assert result["technical_ok"] is True
     assert result["human_gate_pending"] is True
     assert result["checks"]["checksum_files_verified"] == 8
+
+
+def test_contamination_review_html_is_plain_chinese_and_evidence_first() -> None:
+    from contamination_scan.cli import _review_html
+
+    page = _review_html({"schema_version": "benchmark-contamination.review-queue.v1", "items": [{
+        "task_id": "ceval_000", "subject": "test", "question_text": "评测题原文",
+        "source_text": "疑似来源原文", "suggested_contaminated": True, "match": {},
+        "decision": "pending", "reviewer": "", "notes": "", "contaminated": None,
+    }]})
+    assert "先做 3 道练习" in page
+    assert "评测题" in page and "疑似来源" in page
+    assert "两段内容是否像是直接复制或轻微改写？" in page
+    assert "证据不足 / 我不确定" in page
+    assert "本地安全评测，不是生产安全系统" in page
