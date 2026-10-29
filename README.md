@@ -105,6 +105,18 @@ For an evidence-based assessment of what is genuinely advanced, what is still
 a prototype, and which claims remain blocked, see
 [`PORTFOLIO_REVIEW.md`](PORTFOLIO_REVIEW.md).
 
+## Help with human review
+
+Independent reviewers are welcome. The three pending safety gates include
+plain-Chinese, local-only review pages with practice examples and an explicit
+“I am unsure” option. Review exports can be contributed by pull request; they
+remain untrusted community inputs until their schema, frozen-set hash,
+provenance and completeness are validated.
+
+See [`HUMAN_REVIEW_CONTRIBUTING.md`](HUMAN_REVIEW_CONTRIBUTING.md) for the
+review links, privacy rules and submission paths. Do not submit AI-generated
+labels or copy the bundled draft suggestions as human judgments.
+
 ## Architecture
 
 ```text
