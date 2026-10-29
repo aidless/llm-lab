@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evalops-gpu-sim"
+version = "0.9.0"
+description = "GPU simulation contract layer for vLLM/LMDeploy adapter smoke tests"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = [
+  "httpx>=0.25",
+  "pydantic>=2",
+  "rich>=13",
+  "typer>=0.9",
+  "pytest>=7",
+]
+
+[project.scripts]
+evalops-gpu-sim = "evalops_gpu_sim.cli:app"

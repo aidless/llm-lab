@@ -1,0 +1,14 @@
+{
+  "run_id": "gpu-sim-20261028",
+  "backend": "vllm",
+  "model_revision": "unknown",
+  "gpu_count": 0,
+  "vramp_gb": 0,
+  "tp_size": 1,
+  "success_rate": 1.0,
+  "throughput_tasks_per_sec": 9.5,
+  "p50_ms": 2100,
+  "p95_ms": 4200,
+  "result_agreement_with_ollama": 0.99,
+  "note": "Placeholder; replace with real GPU run"
+}
