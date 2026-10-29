@@ -27,6 +27,7 @@ packages = ["judge_calibration"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 timeout = 30
+pythonpath = ["."]
 
 [tool.mypy]
 mypy_path = ".."
