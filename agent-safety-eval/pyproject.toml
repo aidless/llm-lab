@@ -27,6 +27,7 @@ packages = ["agent_safety_eval"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 timeout = 30
+pythonpath = ["."]
 
 [tool.mypy]
 mypy_path = ".."
