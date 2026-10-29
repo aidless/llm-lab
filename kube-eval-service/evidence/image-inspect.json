@@ -1,27 +1,29 @@
 [
     {
-        "Id": "sha256:3622b3920051caacb3ecbd003dae0d2d5261a07382118ad68ccf935a8e071ab2",
+        "Id": "sha256:97e0d5190e50a98185a6e4571cf9ec2f7f9f3ae57f6404901756aaae0f33678f",
         "RepoTags": [
             "kube-eval-service:dev"
         ],
         "RepoDigests": [
-            "kube-eval-service@sha256:3622b3920051caacb3ecbd003dae0d2d5261a07382118ad68ccf935a8e071ab2"
+            "kube-eval-service@sha256:97e0d5190e50a98185a6e4571cf9ec2f7f9f3ae57f6404901756aaae0f33678f"
         ],
         "Comment": "buildkit.dockerfile.v0",
-        "Created": "2026-10-27T23:36:19.154914027-07:00",
+        "Created": "2026-10-28T19:33:31.316867297-07:00",
         "Config": {
             "User": "10001:10001",
             "ExposedPorts": {
+                "8000/tcp": {},
                 "8080/tcp": {}
             },
             "Env": [
-                "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "PATH=/root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
                 "LANG=C.UTF-8",
-                "GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",
-                "PYTHON_VERSION=3.12.14",
-                "PYTHON_SHA256=5c8462af5790baf43a321a1559dbe0db06d1be4300fb85fb53c40060668e548a",
+                "GPG_KEY=A035C8C19219BA821ECEA86B64E628F8D684696D",
+                "PYTHON_VERSION=3.11.17",
+                "PYTHON_SHA256=bfb74ad39efae27cda510f134ab408e00f9992c56851cfc0b1cdb5646da11599",
                 "PYTHONDONTWRITEBYTECODE=1",
                 "PYTHONUNBUFFERED=1",
+                "TZ=Asia/Shanghai",
                 "PIP_NO_CACHE_DIR=1",
                 "PYTHONPATH=/app"
             ],
@@ -31,37 +33,56 @@
                 "kube_eval_service.app"
             ],
             "WorkingDir": "/app",
-            "ArgsEscaped": true
+            "Labels": {
+                "com.docker.compose.project": "deploy",
+                "com.docker.compose.service": "backend",
+                "com.docker.compose.version": "5.5.1"
+            },
+            "ArgsEscaped": true,
+            "Healthcheck": {
+                "Test": [
+                    "CMD-SHELL",
+                    "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')\" || exit 1"
+                ],
+                "Interval": 30000000000,
+                "Timeout": 10000000000,
+                "StartPeriod": 40000000000,
+                "Retries": 3
+            }
         },
         "Architecture": "amd64",
         "Os": "linux",
-        "Size": 203925035,
+        "Size": 681206353,
         "RootFS": {
             "Type": "layers",
             "Layers": [
-                "sha256:a6dc765193a52cbaede3c93a9ff48b9540948dd0774bbe7031fcb5847606f9ac",
-                "sha256:7ca599ccfc97fa428fcf941eda7c2d643f066feb947020dcdbbf913cec34d5dc",
-                "sha256:b54011271bdbf69ae643cb5a4af6a5bc2f834ae8bc0833b736b52bbd2396e99f",
-                "sha256:c321a426ca693e386f4df5f198d7f32c2da49e29f53ff77d695ceb02dfb0a421",
-                "sha256:685fa7c59cfe13c48240bf2222fe62d37949e1307c70d4408aae76af35859304",
-                "sha256:e9d475ccd2a1e5397ebec7230442231e358f166daacfcff5e118f509bd43ee94",
-                "sha256:1605974dfd52c171560153c4ee896e1b8d9709e531d9b14779d8b01a9814d6e0",
-                "sha256:cd2c1fdb95d9ebdbd495ce68b1c2029c3c2829924a8eb3bd98a83a214095e8ea"
+                "sha256:a70f6272827f64e1427d048ced77491aab5d64ab95725e56920802ff391197d7",
+                "sha256:535a5d38abecfac4fa49da33fa942b53c53c463bd0d39a860967e46eb03faafe",
+                "sha256:6972161a9a77e7c1afb997daac15abc54f5b70c7b40b814601f53e038d8c398c",
+                "sha256:d86e9bd004831a6069b9a02e5caac80b73526315f52719079b4017b099956ed2",
+                "sha256:198adbb903a870cd5c2c133bcd8b3c9367009bd389b4295cd5df599f1badc64b",
+                "sha256:29acd803c0be19299f42b2fb5f21e0724dda20603f65946b8c20173d98cedec9",
+                "sha256:808a995068198dc844da4c7c60e28ae913868cdbc9325d97e4ff2f38b8978e04",
+                "sha256:459ae629680cf0d789ec29b6a1ef687a94516a93638c0d54c00372feb70c7e3c",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:f171cfe5d2fa0f9b8842bff8d0f7783d4ef522b34e0779156c90b9b68446c6b8",
+                "sha256:45b93445f594d939e6d8539dbc39a12061433f03a60ae1c7940b0b93537b1404",
+                "sha256:1b54ca5e53f7cc005a23b0e72102f4219e82569035119a3d2382194504720ca5"
             ]
         },
         "Metadata": {
-            "LastTagTime": "2026-10-28T06:36:19.509166973Z"
+            "LastTagTime": "2026-10-29T02:34:12.270538134Z"
         },
         "Descriptor": {
             "mediaType": "application/vnd.oci.image.index.v1+json",
-            "digest": "sha256:3622b3920051caacb3ecbd003dae0d2d5261a07382118ad68ccf935a8e071ab2",
+            "digest": "sha256:97e0d5190e50a98185a6e4571cf9ec2f7f9f3ae57f6404901756aaae0f33678f",
             "size": 856
         },
         "Identity": {
             "Build": [
                 {
-                    "Ref": "qdk1rz3uco4ijzcmscg510cg1",
-                    "CreatedAt": "2026-10-27T23:36:19.602169142-07:00"
+                    "Ref": "l2il2fg4k1uyladdqy5war3gz",
+                    "CreatedAt": "2026-10-28T19:34:12.302259714-07:00"
                 }
             ]
         }

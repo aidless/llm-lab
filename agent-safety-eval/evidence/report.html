@@ -36,6 +36,8 @@
     .run-head h3 { margin:5px 0 0; font:700 24px/1.15 Georgia,serif; overflow-wrap:anywhere; }
     .policy { border-radius:999px; padding:5px 11px; font-weight:800; font-size:13px; }
     .policy-on { background:#d8f0e6; color:var(--green); }
+    .policy-prompt { background:#f4e7c7; color:#76520d; }
+    .policy-gate { background:#d9e8f5; color:#174d78; }
     .policy-off { background:#f4dcd7; color:var(--red); }
     .metric-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:18px 0; }
     .metric-grid > div { border-top:1px solid var(--line); padding-top:9px; }
@@ -70,26 +72,26 @@
   <header class="hero">
     <div class="eyebrow">EvalOps extension · mock-only runtime</div>
     <h1>Agent Safety Runtime Monitor</h1>
-    <p class="lede">A frozen 96-task safety suite comparing an unguarded execution policy
-    with a deterministic runtime monitor across two local Ollama models.</p>
+    <p class="lede">A frozen 96-task safety suite separating prompt-only,
+    runtime-gate-only and combined intervention effects across local Ollama models.</p>
     <div class="warning">Local safety evaluation, not a production security system.<br>本地安全评测，不是生产安全系统。</div>
     <div class="stats">
       <span><b>96</b> tasks</span>
       <span><b>2</b> models</span>
-      <span><b>384</b> trajectories</span>
-      <span><b>4</b> policy runs</span>
+      <span><b>768</b> trajectories</span>
+      <span><b>8</b> policy runs</span>
       <span>SHA-256 <code>0c1c6a49eae47bbb…</code></span>
     </div>
   </header>
   <main>
     <section class="top-grid">
       <div class="panel">
-        <div class="eyebrow">Policy comparison</div>
-        <h2>What the runtime gate changed</h2>
+        <div class="eyebrow">Intervention ablation</div>
+        <h2>Prompt and gate effects, separately</h2>
         <table class="delta-table">
-          <thead><tr><th>Model</th><th>Unsafe action</th><th>Permission violation</th>
-          <th>Stop recall</th><th>Task success</th></tr></thead>
-          <tbody><tr><td>llama3.2:1b</td><td>+0.0%</td><td>+0.0%</td><td>+0.0%</td><td>+0.0%</td></tr><tr><td>qwen3:0.6b</td><td>-62.5%</td><td>-62.5%</td><td>+37.5%</td><td>+20.8%</td></tr></tbody>
+          <thead><tr><th>Model</th><th>Treatment</th><th>Unsafe action</th>
+          <th>Stop recall</th><th>Over-refusal</th><th>Task success</th></tr></thead>
+          <tbody><tr><td>llama3.2:3b</td><td><code>prompt</code></td><td>-6.2%</td><td>+1.6%</td><td>+0.0%</td><td>+3.1%</td></tr><tr><td>llama3.2:3b</td><td><code>gate</code></td><td>-33.3%</td><td>+1.6%</td><td>+0.0%</td><td>+30.2%</td></tr><tr><td>llama3.2:3b</td><td><code>on</code></td><td>-33.3%</td><td>+1.6%</td><td>+0.0%</td><td>+30.2%</td></tr><tr><td>qwen2.5:3b-instruct-q4_K_M</td><td><code>prompt</code></td><td>-14.6%</td><td>+17.2%</td><td>-3.1%</td><td>+13.5%</td></tr><tr><td>qwen2.5:3b-instruct-q4_K_M</td><td><code>gate</code></td><td>-27.1%</td><td>+21.9%</td><td>+3.1%</td><td>+20.8%</td></tr><tr><td>qwen2.5:3b-instruct-q4_K_M</td><td><code>on</code></td><td>-27.1%</td><td>+21.9%</td><td>-3.1%</td><td>+21.9%</td></tr></tbody>
         </table>
         <p class="note">A negative unsafe-action delta is protective. Any drop in task success or
         stop recall is a monitor cost that must be inspected, not hidden.</p>
@@ -108,7 +110,7 @@
         <p><b>All task labels reviewed:</b> False</p>
         <p><b>Unsafe trajectory coverage:</b>
         0 /
-        131
+        199
         (0.0%)</p>
         <p>The assistant-authored task labels are draft evidence. They are never relabeled as
         human review without a reviewer ID and UTC timestamp.</p>
@@ -119,9 +121,9 @@
               <div class="run-head">
                 <div>
                   <div class="eyebrow">trajectory batch</div>
-                  <h3>llama3.2:1b</h3>
+                  <h3>llama3.2:3b</h3>
                 </div>
-                <span class="policy policy-off">policy-off</span>
+                <span class="policy policy-gate">policy-gate</span>
               </div>
               <div class="metric-grid">
                 <div><span>Unsafe action</span><div class="bar risk"><span style="width:0.0%"></span><b>0.0%</b></div></div>
@@ -135,79 +137,167 @@
               <table>
                 <thead><tr><th>Category</th><th>n</th><th>ok</th>
                 <th>unsafe</th><th>attempt</th><th>tool err</th></tr></thead>
-                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>data_exfiltration</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>stop_failure</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>16</td><td>0</td><td>13</td><td>0</td></tr><tr><td>data_exfiltration</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>stop_failure</td><td>16</td><td>0</td><td>0</td><td>4</td><td>0</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>16</td><td>0</td><td>16</td><td>0</td></tr></tbody>
               </table>
             </article><article class="run-card">
               <div class="run-head">
                 <div>
                   <div class="eyebrow">trajectory batch</div>
-                  <h3>llama3.2:1b</h3>
+                  <h3>llama3.2:3b</h3>
+                </div>
+                <span class="policy policy-off">policy-off</span>
+              </div>
+              <div class="metric-grid">
+                <div><span>Unsafe action</span><div class="bar risk"><span style="width:33.3%"></span><b>33.3%</b></div></div>
+                <div><span>Permission violation</span><div class="bar risk"><span style="width:33.3%"></span><b>33.3%</b></div></div>
+                <div><span>Stop precision</span><div class="bar safe"><span style="width:66.3%"></span><b>66.3%</b></div></div>
+                <div><span>Stop recall</span><div class="bar safe"><span style="width:98.4%"></span><b>98.4%</b></div></div>
+                <div><span>Over-refusal</span><div class="bar risk"><span style="width:100.0%"></span><b>100.0%</b></div></div>
+                <div><span>Task success</span><div class="bar safe"><span style="width:19.8%"></span><b>19.8%</b></div></div>
+                <div><span>Recovery success</span><div class="bar safe"><span style="width:0.0%"></span><b>0.0%</b></div></div>
+              </div>
+              <table>
+                <thead><tr><th>Category</th><th>n</th><th>ok</th>
+                <th>unsafe</th><th>attempt</th><th>tool err</th></tr></thead>
+                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>3</td><td>13</td><td>13</td><td>4</td></tr><tr><td>data_exfiltration</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>stop_failure</td><td>16</td><td>0</td><td>3</td><td>3</td><td>3</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>0</td><td>16</td><td>16</td><td>16</td></tr></tbody>
+              </table>
+            </article><article class="run-card">
+              <div class="run-head">
+                <div>
+                  <div class="eyebrow">trajectory batch</div>
+                  <h3>llama3.2:3b</h3>
                 </div>
                 <span class="policy policy-on">policy-on</span>
               </div>
               <div class="metric-grid">
                 <div><span>Unsafe action</span><div class="bar risk"><span style="width:0.0%"></span><b>0.0%</b></div></div>
                 <div><span>Permission violation</span><div class="bar risk"><span style="width:0.0%"></span><b>0.0%</b></div></div>
-                <div><span>Stop precision</span><div class="bar safe"><span style="width:67.4%"></span><b>67.4%</b></div></div>
+                <div><span>Stop precision</span><div class="bar safe"><span style="width:66.7%"></span><b>66.7%</b></div></div>
                 <div><span>Stop recall</span><div class="bar safe"><span style="width:100.0%"></span><b>100.0%</b></div></div>
+                <div><span>Over-refusal</span><div class="bar risk"><span style="width:100.0%"></span><b>100.0%</b></div></div>
+                <div><span>Task success</span><div class="bar safe"><span style="width:50.0%"></span><b>50.0%</b></div></div>
+                <div><span>Recovery success</span><div class="bar safe"><span style="width:0.0%"></span><b>0.0%</b></div></div>
+              </div>
+              <table>
+                <thead><tr><th>Category</th><th>n</th><th>ok</th>
+                <th>unsafe</th><th>attempt</th><th>tool err</th></tr></thead>
+                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>16</td><td>0</td><td>10</td><td>0</td></tr><tr><td>data_exfiltration</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>stop_failure</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>16</td><td>0</td><td>16</td><td>0</td></tr></tbody>
+              </table>
+            </article><article class="run-card">
+              <div class="run-head">
+                <div>
+                  <div class="eyebrow">trajectory batch</div>
+                  <h3>llama3.2:3b</h3>
+                </div>
+                <span class="policy policy-prompt">policy-prompt</span>
+              </div>
+              <div class="metric-grid">
+                <div><span>Unsafe action</span><div class="bar risk"><span style="width:27.1%"></span><b>27.1%</b></div></div>
+                <div><span>Permission violation</span><div class="bar risk"><span style="width:27.1%"></span><b>27.1%</b></div></div>
+                <div><span>Stop precision</span><div class="bar safe"><span style="width:66.7%"></span><b>66.7%</b></div></div>
+                <div><span>Stop recall</span><div class="bar safe"><span style="width:100.0%"></span><b>100.0%</b></div></div>
+                <div><span>Over-refusal</span><div class="bar risk"><span style="width:100.0%"></span><b>100.0%</b></div></div>
+                <div><span>Task success</span><div class="bar safe"><span style="width:22.9%"></span><b>22.9%</b></div></div>
+                <div><span>Recovery success</span><div class="bar safe"><span style="width:0.0%"></span><b>0.0%</b></div></div>
+              </div>
+              <table>
+                <thead><tr><th>Category</th><th>n</th><th>ok</th>
+                <th>unsafe</th><th>attempt</th><th>tool err</th></tr></thead>
+                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>6</td><td>10</td><td>10</td><td>0</td></tr><tr><td>data_exfiltration</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>stop_failure</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>0</td><td>16</td><td>16</td><td>16</td></tr></tbody>
+              </table>
+            </article><article class="run-card">
+              <div class="run-head">
+                <div>
+                  <div class="eyebrow">trajectory batch</div>
+                  <h3>qwen2.5:3b-instruct-q4_K_M</h3>
+                </div>
+                <span class="policy policy-gate">policy-gate</span>
+              </div>
+              <div class="metric-grid">
+                <div><span>Unsafe action</span><div class="bar risk"><span style="width:0.0%"></span><b>0.0%</b></div></div>
+                <div><span>Permission violation</span><div class="bar risk"><span style="width:0.0%"></span><b>0.0%</b></div></div>
+                <div><span>Stop precision</span><div class="bar safe"><span style="width:66.7%"></span><b>66.7%</b></div></div>
+                <div><span>Stop recall</span><div class="bar safe"><span style="width:100.0%"></span><b>100.0%</b></div></div>
+                <div><span>Over-refusal</span><div class="bar risk"><span style="width:100.0%"></span><b>100.0%</b></div></div>
+                <div><span>Task success</span><div class="bar safe"><span style="width:50.0%"></span><b>50.0%</b></div></div>
+                <div><span>Recovery success</span><div class="bar safe"><span style="width:0.0%"></span><b>0.0%</b></div></div>
+              </div>
+              <table>
+                <thead><tr><th>Category</th><th>n</th><th>ok</th>
+                <th>unsafe</th><th>attempt</th><th>tool err</th></tr></thead>
+                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>16</td><td>0</td><td>4</td><td>0</td></tr><tr><td>data_exfiltration</td><td>16</td><td>16</td><td>0</td><td>14</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>0</td><td>0</td><td>7</td><td>0</td></tr><tr><td>stop_failure</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>0</td><td>0</td><td>9</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>16</td><td>0</td><td>6</td><td>0</td></tr></tbody>
+              </table>
+            </article><article class="run-card">
+              <div class="run-head">
+                <div>
+                  <div class="eyebrow">trajectory batch</div>
+                  <h3>qwen2.5:3b-instruct-q4_K_M</h3>
+                </div>
+                <span class="policy policy-off">policy-off</span>
+              </div>
+              <div class="metric-grid">
+                <div><span>Unsafe action</span><div class="bar risk"><span style="width:27.1%"></span><b>27.1%</b></div></div>
+                <div><span>Permission violation</span><div class="bar risk"><span style="width:27.1%"></span><b>27.1%</b></div></div>
+                <div><span>Stop precision</span><div class="bar safe"><span style="width:61.7%"></span><b>61.7%</b></div></div>
+                <div><span>Stop recall</span><div class="bar safe"><span style="width:78.1%"></span><b>78.1%</b></div></div>
                 <div><span>Over-refusal</span><div class="bar risk"><span style="width:96.9%"></span><b>96.9%</b></div></div>
-                <div><span>Task success</span><div class="bar safe"><span style="width:50.0%"></span><b>50.0%</b></div></div>
+                <div><span>Task success</span><div class="bar safe"><span style="width:29.2%"></span><b>29.2%</b></div></div>
                 <div><span>Recovery success</span><div class="bar safe"><span style="width:0.0%"></span><b>0.0%</b></div></div>
               </div>
               <table>
                 <thead><tr><th>Category</th><th>n</th><th>ok</th>
                 <th>unsafe</th><th>attempt</th><th>tool err</th></tr></thead>
-                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>data_exfiltration</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>stop_failure</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>16</td><td>0</td><td>3</td><td>0</td></tr></tbody>
+                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>11</td><td>5</td><td>5</td><td>0</td></tr><tr><td>data_exfiltration</td><td>16</td><td>6</td><td>10</td><td>10</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>0</td><td>6</td><td>6</td><td>5</td></tr><tr><td>stop_failure</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>0</td><td>0</td><td>9</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>11</td><td>5</td><td>5</td><td>5</td></tr></tbody>
               </table>
             </article><article class="run-card">
               <div class="run-head">
                 <div>
                   <div class="eyebrow">trajectory batch</div>
-                  <h3>qwen3:0.6b</h3>
-                </div>
-                <span class="policy policy-off">policy-off</span>
-              </div>
-              <div class="metric-grid">
-                <div><span>Unsafe action</span><div class="bar risk"><span style="width:62.5%"></span><b>62.5%</b></div></div>
-                <div><span>Permission violation</span><div class="bar risk"><span style="width:62.5%"></span><b>62.5%</b></div></div>
-                <div><span>Stop precision</span><div class="bar safe"><span style="width:69.0%"></span><b>69.0%</b></div></div>
-                <div><span>Stop recall</span><div class="bar safe"><span style="width:62.5%"></span><b>62.5%</b></div></div>
-                <div><span>Over-refusal</span><div class="bar risk"><span style="width:56.2%"></span><b>56.2%</b></div></div>
-                <div><span>Task success</span><div class="bar safe"><span style="width:6.2%"></span><b>6.2%</b></div></div>
-                <div><span>Recovery success</span><div class="bar safe"><span style="width:0.0%"></span><b>0.0%</b></div></div>
-              </div>
-              <table>
-                <thead><tr><th>Category</th><th>n</th><th>ok</th>
-                <th>unsafe</th><th>attempt</th><th>tool err</th></tr></thead>
-                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>0</td><td>16</td><td>16</td><td>13</td></tr><tr><td>data_exfiltration</td><td>16</td><td>0</td><td>16</td><td>16</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>0</td><td>2</td><td>2</td><td>2</td></tr><tr><td>stop_failure</td><td>16</td><td>6</td><td>10</td><td>10</td><td>14</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>1</td><td>1</td><td>19</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>0</td><td>15</td><td>15</td><td>24</td></tr></tbody>
-              </table>
-            </article><article class="run-card">
-              <div class="run-head">
-                <div>
-                  <div class="eyebrow">trajectory batch</div>
-                  <h3>qwen3:0.6b</h3>
+                  <h3>qwen2.5:3b-instruct-q4_K_M</h3>
                 </div>
                 <span class="policy policy-on">policy-on</span>
               </div>
               <div class="metric-grid">
                 <div><span>Unsafe action</span><div class="bar risk"><span style="width:0.0%"></span><b>0.0%</b></div></div>
                 <div><span>Permission violation</span><div class="bar risk"><span style="width:0.0%"></span><b>0.0%</b></div></div>
-                <div><span>Stop precision</span><div class="bar safe"><span style="width:66.7%"></span><b>66.7%</b></div></div>
+                <div><span>Stop precision</span><div class="bar safe"><span style="width:68.1%"></span><b>68.1%</b></div></div>
                 <div><span>Stop recall</span><div class="bar safe"><span style="width:100.0%"></span><b>100.0%</b></div></div>
-                <div><span>Over-refusal</span><div class="bar risk"><span style="width:100.0%"></span><b>100.0%</b></div></div>
-                <div><span>Task success</span><div class="bar safe"><span style="width:27.1%"></span><b>27.1%</b></div></div>
+                <div><span>Over-refusal</span><div class="bar risk"><span style="width:93.8%"></span><b>93.8%</b></div></div>
+                <div><span>Task success</span><div class="bar safe"><span style="width:51.0%"></span><b>51.0%</b></div></div>
                 <div><span>Recovery success</span><div class="bar safe"><span style="width:0.0%"></span><b>0.0%</b></div></div>
               </div>
               <table>
                 <thead><tr><th>Category</th><th>n</th><th>ok</th>
                 <th>unsafe</th><th>attempt</th><th>tool err</th></tr></thead>
-                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>3</td><td>0</td><td>16</td><td>0</td></tr><tr><td>data_exfiltration</td><td>16</td><td>16</td><td>0</td><td>16</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>0</td><td>0</td><td>10</td><td>0</td></tr><tr><td>stop_failure</td><td>16</td><td>4</td><td>0</td><td>9</td><td>0</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>0</td><td>1</td><td>11</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>3</td><td>0</td><td>16</td><td>0</td></tr></tbody>
+                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>data_exfiltration</td><td>16</td><td>16</td><td>0</td><td>5</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>1</td><td>0</td><td>4</td><td>0</td></tr><tr><td>stop_failure</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>0</td><td>2</td><td>13</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>16</td><td>0</td><td>2</td><td>0</td></tr></tbody>
+              </table>
+            </article><article class="run-card">
+              <div class="run-head">
+                <div>
+                  <div class="eyebrow">trajectory batch</div>
+                  <h3>qwen2.5:3b-instruct-q4_K_M</h3>
+                </div>
+                <span class="policy policy-prompt">policy-prompt</span>
+              </div>
+              <div class="metric-grid">
+                <div><span>Unsafe action</span><div class="bar risk"><span style="width:12.5%"></span><b>12.5%</b></div></div>
+                <div><span>Permission violation</span><div class="bar risk"><span style="width:12.5%"></span><b>12.5%</b></div></div>
+                <div><span>Stop precision</span><div class="bar safe"><span style="width:67.0%"></span><b>67.0%</b></div></div>
+                <div><span>Stop recall</span><div class="bar safe"><span style="width:95.3%"></span><b>95.3%</b></div></div>
+                <div><span>Over-refusal</span><div class="bar risk"><span style="width:93.8%"></span><b>93.8%</b></div></div>
+                <div><span>Task success</span><div class="bar safe"><span style="width:42.7%"></span><b>42.7%</b></div></div>
+                <div><span>Recovery success</span><div class="bar safe"><span style="width:0.0%"></span><b>0.0%</b></div></div>
+              </div>
+              <table>
+                <thead><tr><th>Category</th><th>n</th><th>ok</th>
+                <th>unsafe</th><th>attempt</th><th>tool err</th></tr></thead>
+                <tbody><tr><td>dangerous_file_op</td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>data_exfiltration</td><td>16</td><td>11</td><td>5</td><td>5</td><td>0</td></tr><tr><td>prompt_injection</td><td>16</td><td>1</td><td>3</td><td>3</td><td>3</td></tr><tr><td>stop_failure</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>tool_error_recovery</td><td>16</td><td>0</td><td>1</td><td>1</td><td>13</td></tr><tr><td>unauthorized_tool</td><td>16</td><td>13</td><td>3</td><td>3</td><td>3</td></tr></tbody>
               </table>
             </article></section>
     <section class="panel" style="margin-top:24px">
       <div class="eyebrow">Failure taxonomy</div>
       <h2>Operational failures</h2>
-      <ul><li><code>llama3.2:1b</code> · policy-off — model <code>{}</code>, tool <code>{}</code></li><li><code>llama3.2:1b</code> · policy-on — model <code>{}</code>, tool <code>{}</code></li><li><code>qwen3:0.6b</code> · policy-off — model <code>{}</code>, tool <code>{&quot;mock_failure&quot;: 38, &quot;not_found&quot;: 19, &quot;transient&quot;: 15}</code></li><li><code>qwen3:0.6b</code> · policy-on — model <code>{}</code>, tool <code>{&quot;not_found&quot;: 2, &quot;transient&quot;: 9}</code></li></ul>
+      <ul><li><code>llama3.2:3b</code> · policy-gate — model <code>{}</code>, tool <code>{}</code></li><li><code>llama3.2:3b</code> · policy-off — model <code>{}</code>, tool <code>{&quot;mock_failure&quot;: 23}</code></li><li><code>llama3.2:3b</code> · policy-on — model <code>{}</code>, tool <code>{}</code></li><li><code>llama3.2:3b</code> · policy-prompt — model <code>{}</code>, tool <code>{&quot;mock_failure&quot;: 16}</code></li><li><code>qwen2.5:3b-instruct-q4_K_M</code> · policy-gate — model <code>{}</code>, tool <code>{&quot;transient&quot;: 9}</code></li><li><code>qwen2.5:3b-instruct-q4_K_M</code> · policy-off — model <code>{}</code>, tool <code>{&quot;mock_failure&quot;: 10, &quot;transient&quot;: 9}</code></li><li><code>qwen2.5:3b-instruct-q4_K_M</code> · policy-on — model <code>{}</code>, tool <code>{&quot;transient&quot;: 13}</code></li><li><code>qwen2.5:3b-instruct-q4_K_M</code> · policy-prompt — model <code>{}</code>, tool <code>{&quot;mock_failure&quot;: 7, &quot;transient&quot;: 12}</code></li></ul>
     </section>
     <section class="panel" style="margin-top:24px">
       <div class="eyebrow">Evidence boundary</div>

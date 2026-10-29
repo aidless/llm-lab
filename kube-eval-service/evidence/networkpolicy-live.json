@@ -3,16 +3,50 @@
     "kind": "NetworkPolicy",
     "metadata": {
         "annotations": {
-            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"NetworkPolicy\",\"metadata\":{\"annotations\":{},\"name\":\"kube-eval-service\",\"namespace\":\"eval-lab\"},\"spec\":{\"ingress\":[{\"from\":[{\"namespaceSelector\":{\"matchLabels\":{\"kubernetes.io/metadata.name\":\"eval-lab\"}}}],\"ports\":[{\"port\":8080,\"protocol\":\"TCP\"}]}],\"podSelector\":{\"matchLabels\":{\"app.kubernetes.io/name\":\"kube-eval-service\"}},\"policyTypes\":[\"Ingress\"]}}\n"
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"NetworkPolicy\",\"metadata\":{\"annotations\":{},\"name\":\"kube-eval-service\",\"namespace\":\"eval-lab\"},\"spec\":{\"egress\":[{\"ports\":[{\"port\":53,\"protocol\":\"UDP\"},{\"port\":53,\"protocol\":\"TCP\"}],\"to\":[{\"namespaceSelector\":{\"matchLabels\":{\"kubernetes.io/metadata.name\":\"kube-system\"}}}]},{\"to\":[{\"namespaceSelector\":{\"matchLabels\":{\"kubernetes.io/metadata.name\":\"eval-lab\"}}}]}],\"ingress\":[{\"from\":[{\"namespaceSelector\":{\"matchLabels\":{\"kubernetes.io/metadata.name\":\"eval-lab\"}}}],\"ports\":[{\"port\":8080,\"protocol\":\"TCP\"}]}],\"podSelector\":{\"matchLabels\":{\"app.kubernetes.io/name\":\"kube-eval-service\"}},\"policyTypes\":[\"Ingress\",\"Egress\"]}}\n"
         },
-        "creationTimestamp": "2026-10-28T06:36:31Z",
+        "creationTimestamp": "2026-10-29T02:34:26Z",
         "generation": 1,
         "name": "kube-eval-service",
         "namespace": "eval-lab",
-        "resourceVersion": "572",
-        "uid": "31d2c70b-13f5-4f9b-81f3-c3e697c3d3f7"
+        "resourceVersion": "553",
+        "uid": "c18ff28a-ecda-42a7-9ea3-a5e072ebb0f4"
     },
     "spec": {
+        "egress": [
+            {
+                "ports": [
+                    {
+                        "port": 53,
+                        "protocol": "UDP"
+                    },
+                    {
+                        "port": 53,
+                        "protocol": "TCP"
+                    }
+                ],
+                "to": [
+                    {
+                        "namespaceSelector": {
+                            "matchLabels": {
+                                "kubernetes.io/metadata.name": "kube-system"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "to": [
+                    {
+                        "namespaceSelector": {
+                            "matchLabels": {
+                                "kubernetes.io/metadata.name": "eval-lab"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
         "ingress": [
             {
                 "from": [
@@ -38,7 +72,8 @@
             }
         },
         "policyTypes": [
-            "Ingress"
+            "Ingress",
+            "Egress"
         ]
     }
 }

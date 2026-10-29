@@ -91,6 +91,11 @@ def _probe_backend(
     process["stderr_log"] = f"{backend}-server-logs/server.stderr.log"
     return {
         "backend": backend,
+        "backend_contract_only": True,
+        "implementation": "scripts/fake_openai_server.py",
+        "execution_kind": "deterministic_openai_compatible_fixture",
+        "real_backend_executed": False,
+        "generated_serve_command_executed": False,
         "generated_serve_command": build_serve_command(config),
         "generated_serve_command_shell": shell_join(build_serve_command(config)),
         "managed_process": {
@@ -143,7 +148,8 @@ def main() -> int:
         "limitations": [
             "This is a localhost OpenAI-compatible fixture, not a real vLLM or LMDeploy server.",
             "The host has no usable NVIDIA GPU and neither serving package was executed.",
-            "Passing this smoke proves the adapter and process lifecycle only.",
+            "Passing this smoke proves the adapter, fixture compatibility and process lifecycle only.",
+            "The generated vLLM/LMDeploy commands are displayed but intentionally not executed.",
         ],
     }
     (evidence / "report.json").write_text(
@@ -160,13 +166,14 @@ def main() -> int:
         "",
         "## Backend results",
         "",
-        "| Backend | Process ready | Probe | Generated command |",
-        "|---|---:|---:|---|",
+        "| Backend contract label | Fixture | Real backend executed | Process ready | Probe | Generated command (not executed) |",
+        "|---|---|---:|---:|---:|---|",
     ]
     for item in results:
         command = item["generated_serve_command_shell"].replace("|", "\\|")
         lines.append(
-            f"| `{item['backend']}` | {item['managed_process']['ready']} | {item['probe']['ok']} | `{command}` |"
+            f"| `{item['backend']}` | `{item['implementation']}` | False | "
+            f"{item['managed_process']['ready']} | {item['probe']['ok']} | `{command}` |"
         )
     lines += [
         "",

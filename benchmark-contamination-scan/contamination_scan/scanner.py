@@ -16,9 +16,31 @@ class Match:
     ngram_score: float
     semantic_score: float
     source: str
+    lexical_match: dict[str, Any] | None = None
+    semantic_match: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "document_id": self.document_id,
+            "exact": self.exact,
+            "ngram_score": self.ngram_score,
+            "semantic_score": self.semantic_score,
+            "source": self.source,
+            "lexical_match": self.lexical_match,
+            "semantic_match": self.semantic_match,
+        }
+
+    def lexical_evidence(self) -> dict[str, Any]:
+        return self.lexical_match or {
+            "document_id": self.document_id,
+            "exact": self.exact,
+            "ngram_score": self.ngram_score,
+            "semantic_score": self.semantic_score,
+            "source": self.source,
+        }
+
+    def semantic_evidence(self) -> dict[str, Any]:
+        return self.semantic_match or {
             "document_id": self.document_id,
             "exact": self.exact,
             "ngram_score": self.ngram_score,
@@ -51,21 +73,41 @@ def best_match(
     ngram_n: int,
 ) -> Match:
     normalized_task = normalize_text(task_text)
-    best = Match("", False, 0.0, 0.0, "")
+    best_lexical: dict[str, Any] | None = None
+    best_semantic: dict[str, Any] | None = None
     for document, vector in zip(documents, document_vectors, strict=True):
         document_text = str(document["text"])
         exact = normalized_task in normalize_text(document_text)
         ngram_score = ngram_containment(task_text, document_text, ngram_n)
         semantic_score = cosine(task_vector, vector)
-        if (exact and not best.exact) or ngram_score > best.ngram_score or semantic_score > best.semantic_score:
-            best = Match(
-                document_id=str(document["id"]),
-                exact=exact,
-                ngram_score=ngram_score,
-                semantic_score=semantic_score,
-                source=str(document.get("source", "")),
-            )
-    return best
+        candidate = {
+            "document_id": str(document["id"]),
+            "exact": exact,
+            "ngram_score": ngram_score,
+            "semantic_score": semantic_score,
+            "source": str(document.get("source", "")),
+        }
+        lexical_rank = (exact, ngram_score)
+        current_lexical_rank = (
+            bool(best_lexical["exact"]),
+            float(best_lexical["ngram_score"]),
+        ) if best_lexical is not None else (False, -1.0)
+        if best_lexical is None or lexical_rank > current_lexical_rank:
+            best_lexical = candidate
+        if best_semantic is None or semantic_score > float(best_semantic["semantic_score"]):
+            best_semantic = candidate
+    if best_lexical is None or best_semantic is None:
+        return Match("", False, 0.0, 0.0, "")
+    primary = best_lexical if best_lexical["exact"] or best_lexical["ngram_score"] > 0 else best_semantic
+    return Match(
+        document_id=str(primary["document_id"]),
+        exact=bool(primary["exact"]),
+        ngram_score=float(primary["ngram_score"]),
+        semantic_score=float(primary["semantic_score"]),
+        source=str(primary["source"]),
+        lexical_match=best_lexical,
+        semantic_match=best_semantic,
+    )
 
 
 def is_suspect(
@@ -74,4 +116,10 @@ def is_suspect(
     ngram_threshold: float,
     semantic_threshold: float,
 ) -> bool:
-    return match.exact or match.ngram_score >= ngram_threshold or match.semantic_score >= semantic_threshold
+    lexical = match.lexical_evidence()
+    semantic = match.semantic_evidence()
+    return bool(
+        lexical["exact"]
+        or float(lexical["ngram_score"]) >= ngram_threshold
+        or float(semantic["semantic_score"]) >= semantic_threshold
+    )

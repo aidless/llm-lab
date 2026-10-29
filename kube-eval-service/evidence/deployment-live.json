@@ -4,9 +4,9 @@
     "metadata": {
         "annotations": {
             "deployment.kubernetes.io/revision": "1",
-            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/name\":\"kube-eval-service\",\"app.kubernetes.io/part-of\":\"eval-lab\"},\"name\":\"kube-eval-service\",\"namespace\":\"eval-lab\"},\"spec\":{\"replicas\":1,\"revisionHistoryLimit\":2,\"selector\":{\"matchLabels\":{\"app.kubernetes.io/name\":\"kube-eval-service\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":1,\"maxUnavailable\":0},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"app.kubernetes.io/name\":\"kube-eval-service\",\"app.kubernetes.io/part-of\":\"eval-lab\"}},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"envFrom\":[{\"configMapRef\":{\"name\":\"kube-eval-config\"}}],\"image\":\"kube-eval-service:dev\",\"imagePullPolicy\":\"Never\",\"livenessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/healthz\",\"port\":\"http\"},\"initialDelaySeconds\":5,\"periodSeconds\":5,\"timeoutSeconds\":2},\"name\":\"service\",\"ports\":[{\"containerPort\":8080,\"name\":\"http\",\"protocol\":\"TCP\"}],\"readinessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/readyz\",\"port\":\"http\"},\"initialDelaySeconds\":2,\"periodSeconds\":3,\"timeoutSeconds\":2},\"resources\":{\"limits\":{\"cpu\":\"500m\",\"memory\":\"256Mi\"},\"requests\":{\"cpu\":\"50m\",\"memory\":\"64Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"readOnlyRootFilesystem\":true},\"volumeMounts\":[{\"mountPath\":\"/tmp\",\"name\":\"tmp\"}]}],\"securityContext\":{\"fsGroup\":10001,\"runAsGroup\":10001,\"runAsNonRoot\":true,\"runAsUser\":10001,\"seccompProfile\":{\"type\":\"RuntimeDefault\"}},\"terminationGracePeriodSeconds\":20,\"volumes\":[{\"emptyDir\":{\"sizeLimit\":\"32Mi\"},\"name\":\"tmp\"}]}}}}\n"
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/name\":\"kube-eval-service\",\"app.kubernetes.io/part-of\":\"eval-lab\"},\"name\":\"kube-eval-service\",\"namespace\":\"eval-lab\"},\"spec\":{\"replicas\":1,\"revisionHistoryLimit\":2,\"selector\":{\"matchLabels\":{\"app.kubernetes.io/name\":\"kube-eval-service\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":1,\"maxUnavailable\":0},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"app.kubernetes.io/name\":\"kube-eval-service\",\"app.kubernetes.io/part-of\":\"eval-lab\"}},\"spec\":{\"automountServiceAccountToken\":false,\"containers\":[{\"env\":[{\"name\":\"EVAL_ROLE\",\"value\":\"api\"}],\"envFrom\":[{\"configMapRef\":{\"name\":\"kube-eval-config\"}}],\"image\":\"kube-eval-service:dev\",\"imagePullPolicy\":\"Never\",\"livenessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/healthz\",\"port\":\"http\"},\"initialDelaySeconds\":5,\"periodSeconds\":5,\"timeoutSeconds\":2},\"name\":\"service\",\"ports\":[{\"containerPort\":8080,\"name\":\"http\",\"protocol\":\"TCP\"}],\"readinessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/readyz\",\"port\":\"http\"},\"initialDelaySeconds\":2,\"periodSeconds\":3,\"timeoutSeconds\":2},\"resources\":{\"limits\":{\"cpu\":\"500m\",\"memory\":\"256Mi\"},\"requests\":{\"cpu\":\"50m\",\"memory\":\"64Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"readOnlyRootFilesystem\":true},\"volumeMounts\":[{\"mountPath\":\"/data\",\"name\":\"data\"},{\"mountPath\":\"/tmp\",\"name\":\"tmp\"}]}],\"securityContext\":{\"fsGroup\":10001,\"runAsGroup\":10001,\"runAsNonRoot\":true,\"runAsUser\":10001,\"seccompProfile\":{\"type\":\"RuntimeDefault\"}},\"terminationGracePeriodSeconds\":20,\"volumes\":[{\"name\":\"data\",\"persistentVolumeClaim\":{\"claimName\":\"kube-eval-data\"}},{\"emptyDir\":{\"sizeLimit\":\"32Mi\"},\"name\":\"tmp\"}]}}}}\n"
         },
-        "creationTimestamp": "2026-10-28T06:36:30Z",
+        "creationTimestamp": "2026-10-29T02:34:26Z",
         "generation": 1,
         "labels": {
             "app.kubernetes.io/name": "kube-eval-service",
@@ -14,8 +14,8 @@
         },
         "name": "kube-eval-service",
         "namespace": "eval-lab",
-        "resourceVersion": "589",
-        "uid": "839b4028-e995-4241-8fa4-efd9d480f9c2"
+        "resourceVersion": "611",
+        "uid": "7ebeb30f-9ada-488e-9ab8-63db7e0232a8"
     },
     "spec": {
         "progressDeadlineSeconds": 600,
@@ -44,6 +44,12 @@
                 "automountServiceAccountToken": false,
                 "containers": [
                     {
+                        "env": [
+                            {
+                                "name": "EVAL_ROLE",
+                                "value": "api"
+                            }
+                        ],
                         "envFrom": [
                             {
                                 "configMapRef": {
@@ -108,6 +114,10 @@
                         "terminationMessagePolicy": "File",
                         "volumeMounts": [
                             {
+                                "mountPath": "/data",
+                                "name": "data"
+                            },
+                            {
                                 "mountPath": "/tmp",
                                 "name": "tmp"
                             }
@@ -129,6 +139,12 @@
                 "terminationGracePeriodSeconds": 20,
                 "volumes": [
                     {
+                        "name": "data",
+                        "persistentVolumeClaim": {
+                            "claimName": "kube-eval-data"
+                        }
+                    },
+                    {
                         "emptyDir": {
                             "sizeLimit": "32Mi"
                         },
@@ -142,17 +158,17 @@
         "availableReplicas": 1,
         "conditions": [
             {
-                "lastTransitionTime": "2026-10-28T06:36:35Z",
-                "lastUpdateTime": "2026-10-28T06:36:35Z",
+                "lastTransitionTime": "2026-10-29T02:34:35Z",
+                "lastUpdateTime": "2026-10-29T02:34:35Z",
                 "message": "Deployment has minimum availability.",
                 "reason": "MinimumReplicasAvailable",
                 "status": "True",
                 "type": "Available"
             },
             {
-                "lastTransitionTime": "2026-10-28T06:36:30Z",
-                "lastUpdateTime": "2026-10-28T06:36:35Z",
-                "message": "ReplicaSet \"kube-eval-service-7b686ccf5\" has successfully progressed.",
+                "lastTransitionTime": "2026-10-29T02:34:26Z",
+                "lastUpdateTime": "2026-10-29T02:34:35Z",
+                "message": "ReplicaSet \"kube-eval-service-69568cf5c4\" has successfully progressed.",
                 "reason": "NewReplicaSetAvailable",
                 "status": "True",
                 "type": "Progressing"

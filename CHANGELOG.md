@@ -23,7 +23,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) once 
   covering prompt injection, unauthorized tools, dangerous file operations,
   data exfiltration, stop failures and tool-error recovery. It records every
   step, tool argument, policy decision, stop reason and trajectory hash; runs
-  `policy-off`/`policy-on` comparisons; and keeps human review as a separate
+  the `off`/`prompt`/`gate`/`on` ablation; and keeps human review as a separate
   gate requiring at least 100 validated records.
 - **Safety Judge Calibration.** Two local judges on 200 frozen requests across
   prompt-injection, unauthorized-request and normal-request slices, with FPR,
@@ -44,6 +44,30 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) once 
 - **Portfolio CI and verification.** A matrix-independent CI job runs tests,
   ruff, mypy and the checked-in evidence verifiers for all five packages.
 
+- **Four-arm safety ablation.** Agent Safety Runtime Monitor now separates the
+  interventions instead of comparing a single `policy-off`/`policy-on` pair:
+  `off` (no prompt, no gate), `prompt` (safety prompt only), `gate` (runtime
+  gate only) and `on` (both). Each model therefore produces four runs
+  (2 models x 4 arms x 96 tasks = 768 trajectories), and the report schema
+  `agent-safety.suite-report.v2` compares `prompt`, `gate` and `on` against
+  `off` so the independent contribution of each intervention is visible.
+  `--workers` runs model calls concurrently while keeping every task's
+  trajectory, tool arguments and decisions per-task.
+- **Judge robustness probes.** Safety Judge Calibration now runs repeat
+  consistency (same case judged N times), four presentation perturbations
+  (`authority`, `verbose`, `order_prefix`, `order_suffix`) and a direct
+  order-position comparison. New HOLD conditions cover repeat label
+  inconsistency, variant label flip rate, per-judge FPR/FNR deltas against
+  baseline and order-presentation flip rate.
+- **Declared variant scope.** `--variant-max-cases` limits non-baseline
+  variants to a frozen subset. The report records `variant_scope` and the gate
+  separates `{variant}:declared_scope_coverage` (integrity: the run covered
+  what it declared) from `{variant}:full_case_coverage` (scope: the variant
+  covered all 200 cases), so a reduced-scope run stays `HOLD`.
+- **Kubernetes job queue.** Kube Eval Service gained a SQLite-backed durable
+  queue with idempotency keys, worker leases, bounded attempts, atomic cancel,
+  PVC persistence, PDB and a worker NetworkPolicy with deny-all ingress.
+
 - **Auditable batch EvalOps (`llm_lab evalops`).** Frozen JSONL task sets with
   SHA-256 manifests; strict multiple-choice parsing; deterministic,
   OpenAI-compatible/Ollama, and fault-injection adapters; bounded concurrency;
@@ -58,6 +82,36 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) once 
 
 ### Fixed
 
+- **Kube `/v1/evaluate` bypassed the configured API token.** The evaluate
+  endpoint now uses the same optional bearer/`X-Eval-Token` dependency as the
+  durable job endpoints. Agent Safety also defaults to three workers and a
+  180-second model timeout after an eight-worker CPU run produced transport
+  timeouts; the checked-in evidence is the subsequent successful
+  low-concurrency run.
+- **Judge evidence verification assumed the wrong default models.** The
+  standalone verifier pinned the calibration CLI's 8B defaults even when the
+  run used its published 3B CPU models, producing thousands of false identity
+  errors. It now infers identities from raw records unless `--judges` is
+  supplied, requires `environment.json` to match, and requires `SHA256SUMS` to
+  cover every evidence file exactly.
+- **Contamination evidence could be split across two documents.** `Match` now
+  keeps `lexical_match` and `semantic_match` separately. Previously a
+  higher-scoring semantic hit in one corpus document could overwrite an exact
+  or n-gram hit in another, so `is_suspect()` and the independent verifier
+  disagreed with the evidence. `verify_evidence.py` and `write_review_queue()`
+  now recompute from the joint evidence, and a regression test pins the
+  exact-in-A / semantic-in-B case.
+- **Agent Safety could pass with zero successful trajectories.** The verifier
+  now recomputes the expected trajectory count from `run-meta.json` (rather
+  than assuming a fixed model count) and fails when every trajectory is a
+  model error, when the model error rate exceeds 5%, or when no trajectory
+  produced a tool call. A full 768-trajectory run that was entirely transport
+  errors previously reported `technical_ok: true`.
+- **Kube NetworkPolicy verifier false negative.** A worker policy with an
+  empty or omitted `ingress` list is a deny-all rule, but the verifier treated
+  the missing key as a failure. It now accepts the omit/empty forms while
+  still requiring `policyTypes` to contain both `Ingress` and `Egress` and
+  rejecting any non-empty ingress rule.
 - **Machine-readable CLI JSON.** `--json` now writes through `typer.echo`
   rather than Rich, so long values are not terminal-width wrapped and the
   output remains valid JSON in a pipe.

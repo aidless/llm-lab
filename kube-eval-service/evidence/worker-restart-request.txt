@@ -1,0 +1,1 @@
+pod "kube-eval-worker-f97d5ddc8-qk9gz" deleted from eval-lab namespace

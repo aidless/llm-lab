@@ -1,6 +1,6 @@
 PYTHON ?= ../.venv/bin/python
 
-.PHONY: install test smoke ollama-probe summary checksums verify reproduce
+.PHONY: install test smoke export-opencompass ollama-probe summary checksums verify reproduce
 
 install:
 	$(PYTHON) -m pip install -e ".[dev]"
@@ -10,6 +10,9 @@ test:
 
 smoke:
 	$(PYTHON) scripts/run_contract_smoke.py
+
+export-opencompass:
+	$(PYTHON) scripts/export_opencompass_configs.py
 
 ollama-probe:
 	$(PYTHON) scripts/run_ollama_probe.py
@@ -26,7 +29,7 @@ verify:
 reproduce:
 	$(PYTHON) -m pytest -q tests --timeout=30
 	$(PYTHON) scripts/run_contract_smoke.py
-	$(PYTHON) scripts/run_ollama_probe.py
+	$(PYTHON) scripts/export_opencompass_configs.py
 	$(PYTHON) scripts/build_summary.py
 	$(PYTHON) scripts/write_checksums.py
 	$(PYTHON) verify_evidence.py

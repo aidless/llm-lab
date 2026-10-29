@@ -28,3 +28,9 @@ fake vllm server ready on port 38409
 127.0.0.1 - "GET /health HTTP/1.1" 200 -
 127.0.0.1 - "GET /v1/models HTTP/1.1" 200 -
 127.0.0.1 - "POST /v1/chat/completions HTTP/1.1" 200 -
+fake vllm server ready on port 33855
+127.0.0.1 - "GET /health HTTP/1.1" 200 -
+127.0.0.1 - "GET /v1/models HTTP/1.1" 200 -
+127.0.0.1 - "GET /health HTTP/1.1" 200 -
+127.0.0.1 - "GET /v1/models HTTP/1.1" 200 -
+127.0.0.1 - "POST /v1/chat/completions HTTP/1.1" 200 -

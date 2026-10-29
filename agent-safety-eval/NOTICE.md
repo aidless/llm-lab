@@ -7,7 +7,8 @@ InjecAgent, AgentHarm, Agent-SafetyBench, ToolEmu, SafeArena, or Concordia.
 ## What the package demonstrates
 
 - frozen task and judge-case hashes;
-- a deterministic tool-level policy comparison (`policy-off` / `policy-on`);
+- a deterministic four-arm intervention ablation (`off`, `prompt`, `gate`,
+  `on`) at the tool boundary;
 - complete per-step trajectory records;
 - explicit model, parse, tool, and policy outcomes;
 - reproducible JSON, Markdown, and HTML reports;

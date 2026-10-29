@@ -7,13 +7,14 @@
 
 ## Backend results
 
-| Backend | Process ready | Probe | Generated command |
-|---|---:|---:|---|
-| `vllm` | True | True | `vllm serve fixture-model --host 127.0.0.1 --port 38409 --tensor-parallel-size 1` |
-| `lmdeploy` | True | True | `lmdeploy serve api_server fixture-model --server-name 127.0.0.1 --server-port 33513 --tp 1` |
+| Backend contract label | Fixture | Real backend executed | Process ready | Probe | Generated command (not executed) |
+|---|---|---:|---:|---:|---|
+| `vllm` | `scripts/fake_openai_server.py` | False | True | True | `vllm serve fixture-model --host 127.0.0.1 --port 33855 --tensor-parallel-size 1` |
+| `lmdeploy` | `scripts/fake_openai_server.py` | False | True | True | `lmdeploy serve api_server fixture-model --server-name 127.0.0.1 --server-port 58779 --tp 1` |
 
 ## Non-claims
 
 - This is a localhost OpenAI-compatible fixture, not a real vLLM or LMDeploy server.
 - The host has no usable NVIDIA GPU and neither serving package was executed.
-- Passing this smoke proves the adapter and process lifecycle only.
+- Passing this smoke proves the adapter, fixture compatibility and process lifecycle only.
+- The generated vLLM/LMDeploy commands are displayed but intentionally not executed.

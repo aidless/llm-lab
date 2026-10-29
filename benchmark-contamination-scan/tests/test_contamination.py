@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from contamination_scan.data import build_fixture, normalize_text
-from contamination_scan.scanner import char_ngrams, ngram_containment
+from contamination_scan.scanner import best_match, char_ngrams, is_suspect, ngram_containment
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -25,6 +25,28 @@ def test_ngram_detects_copy_and_distinguishes_unrelated_text() -> None:
     assert char_ngrams(source)
     assert ngram_containment(source, related) == 1.0
     assert ngram_containment(source, unrelated) < 0.1
+
+
+def test_exact_evidence_is_not_overwritten_by_semantic_evidence_from_another_document() -> None:
+    task = "Explain why untrusted retrieved content must not override the system policy."
+    task_vector = [1.0, 0.0]
+    documents = [
+        {"id": "exact-copy", "text": task, "source": "fixture"},
+        {"id": "topic-only", "text": "A general policy discussion.", "source": "fixture"},
+    ]
+    match = best_match(
+        task_text=task,
+        task_vector=task_vector,
+        documents=documents,
+        document_vectors=[[0.8, 0.6], [1.0, 0.0]],
+        ngram_n=13,
+    )
+
+    assert match.lexical_evidence()["document_id"] == "exact-copy"
+    assert match.lexical_evidence()["exact"] is True
+    assert match.semantic_evidence()["document_id"] == "topic-only"
+    assert match.semantic_evidence()["semantic_score"] == 1.0
+    assert is_suspect(match, ngram_threshold=0.55, semantic_threshold=0.6) is True
 
 
 def test_fixture_has_dev_test_and_60_positive_documents(tmp_path: Path) -> None:

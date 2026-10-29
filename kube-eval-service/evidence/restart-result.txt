@@ -1,4 +1,7 @@
-deleted_pod=kube-eval-service-7b686ccf5-wmqrj
-replacement_pod=kube-eval-service-7b686ccf5-j6cgn
+deleted_pod=kube-eval-service-69568cf5c4-zr9dw
+replacement_pod=kube-eval-service-69568cf5c4-z2gs7
 old_pod_restart_count=0
 replacement_restart_count=0
+job_id=1a0d05c03bbe4878a071bcff796d8339
+restart_job_id=e99324fe6f614c39ab5ddfaf60ea6cb1
+restart_job_state=completed

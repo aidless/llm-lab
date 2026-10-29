@@ -1,0 +1,219 @@
+{
+  "claims": {
+    "cpu_reported_as_gpu": false,
+    "gpu_execution": false,
+    "gpu_throughput": false,
+    "official_ceval_leaderboard": false,
+    "official_interface_static_contract": true,
+    "official_opencompass_execution": false,
+    "official_opencompass_runtime_contract": false,
+    "opencompass_config_exported": true
+  },
+  "dataset": {
+    "answers": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "data_type": "mcq",
+    "exported_path": "eval-infra-adapters/opencompass-export/data/ceval-201qa.jsonl",
+    "infer_method": "gen",
+    "jsonl_sha256": "a76b144743ebdff4cb45908a6e7d23253c84e7bd1fc5321ade2eeaf09fc2a802",
+    "meta_sha256": "eef85425a5892db89bb1228b449e51eae0b98bf8cb825c04b5982404356575a3",
+    "official_ceval_test_set": false,
+    "rows": 201,
+    "source": "evalops/ceval-201/opencompass/ceval-201qa.jsonl"
+  },
+  "endpoint": {
+    "api_key_env": "EVAL_INFRA_OPENAI_API_KEY",
+    "api_key_exported": false,
+    "base_url": "http://127.0.0.1:8000/v1",
+    "credentials_embedded": false,
+    "endpoint_called": false,
+    "host": "127.0.0.1",
+    "host_scope": "loopback",
+    "scheme": "http"
+  },
+  "files": [
+    {
+      "bytes": 1884,
+      "path": "README.md",
+      "sha256": "e1e103180f8708cf8b1b2691cbe141546b6d9f57db7d877afeb5f692a5bc339e"
+    },
+    {
+      "bytes": 71040,
+      "path": "data/ceval-201qa.jsonl",
+      "sha256": "a76b144743ebdff4cb45908a6e7d23253c84e7bd1fc5321ade2eeaf09fc2a802"
+    },
+    {
+      "bytes": 355,
+      "path": "data/ceval-201qa.jsonl.meta.json",
+      "sha256": "eef85425a5892db89bb1228b449e51eae0b98bf8cb825c04b5982404356575a3"
+    },
+    {
+      "bytes": 585,
+      "path": "dataset_ceval_201.py",
+      "sha256": "173595bf66be35cb839e1378b1a16bfeed312ca132d8d498d0294efe0994d794"
+    },
+    {
+      "bytes": 174,
+      "path": "env.example",
+      "sha256": "281d4d394c78934f6a25f5d65a1e6c9d95df314c17a7975f949f30b8b710e128"
+    },
+    {
+      "bytes": 1662,
+      "path": "eval-infra-openai-api.py",
+      "sha256": "f5a1c63c3de518cd68cc6f6c6bfccd831cf4f7bc6126eb22d1287a135ccbd6d9"
+    },
+    {
+      "bytes": 1257,
+      "path": "model_openai_api.py",
+      "sha256": "f4c248848ecb003e7222a33d4700b347ae17e3ec2db32bf0fc53816fea7d3613"
+    },
+    {
+      "bytes": 2080,
+      "path": "official-api-contract.json",
+      "sha256": "17e402d3259ae09305e09d927867691c31d5e8d002bc44e1fbd79ecd22d2d0c6"
+    }
+  ],
+  "generated_at_utc": "2026-10-29T09:16:45Z",
+  "gpu_acceptance": {
+    "device_details": [],
+    "gpu_available": false,
+    "real_gpu_executed": false,
+    "reason": "nvidia-smi unavailable; no GPU experiment requested or executed",
+    "status": "BLOCKED_ENVIRONMENT"
+  },
+  "limitations": [
+    "The export validates config/data contracts but does not execute OpenCompass.",
+    "No endpoint, model, GPU, latency, throughput or leaderboard result is produced.",
+    "The 201-row public validation subset is not the official C-Eval test set."
+  ],
+  "model": {
+    "config_type": "opencompass.models.OpenAISDK",
+    "gpu_requested": false,
+    "served_model_name": "Qwen/Qwen2.5-1.5B-Instruct"
+  },
+  "official_interface_contract": {
+    "mode": "pinned_official_source_static",
+    "runtime_probe": {
+      "gpu_executed": false,
+      "inference_executed": false,
+      "reason": "official OpenCompass runtime is not installed",
+      "status": "NOT_RUN"
+    },
+    "snapshot": {
+      "dataset_interface": {
+        "config_expansion": "opencompass.utils.run.try_fill_in_custom_cfgs converts dicts without type through make_custom_dataset_config",
+        "config_type": "CustomDataset",
+        "import": "opencompass.datasets.CustomDataset",
+        "quick_config_keys": [
+          "path",
+          "meta_path",
+          "data_type",
+          "infer_method",
+          "abbr"
+        ]
+      },
+      "model_interface": {
+        "config_type": "OpenAISDK",
+        "import": "opencompass.models.OpenAISDK",
+        "openai_api_base_contract": "OpenAI SDK base URL ending in /v1",
+        "required_export_keys": [
+          "type",
+          "path",
+          "key",
+          "openai_api_base",
+          "max_seq_len",
+          "max_out_len",
+          "batch_size",
+          "run_cfg"
+        ]
+      },
+      "release_url": "https://github.com/open-compass/opencompass/releases/tag/0.5.4",
+      "source_archive": {
+        "sha256": "6584bde074465a28e75ca8543c4dfc4147629925e118027968064389d2919ee0",
+        "url": "https://codeload.github.com/open-compass/opencompass/tar.gz/refs/tags/0.5.4"
+      },
+      "source_files": [
+        {
+          "path": "opencompass/models/openai_api.py",
+          "sha256": "64f00bbc0b6abfda8c6a438ec48d9546de08921d81b62b6bef1057988e2e7d6a"
+        },
+        {
+          "path": "opencompass/datasets/custom.py",
+          "sha256": "d98f2a5e0b7d06c60ef32aec5598a4f44f5c3dbfd99a3c8a2673bdcdcbf631c2"
+        },
+        {
+          "path": "opencompass/utils/run.py",
+          "sha256": "c060790b28c85665e3149663c8b59fdc54235225bc1210eef375d47a3b09067c"
+        }
+      ],
+      "version": "0.5.4"
+    },
+    "status": "PASS_STATIC"
+  },
+  "opencompass_version": "0.5.4",
+  "preserved_existing_evidence": {
+    "artifacts": [
+      {
+        "concurrency": 1,
+        "path": "evalops/evidence-20261027/ollama-201-c1/report.json",
+        "sha256": "3a127e2b2e002cc011f3997f020810b7b36f1c005fca1c5f97dbbff88f019f32"
+      },
+      {
+        "concurrency": 1,
+        "path": "evalops/evidence-20261027/ollama-201-c1/run-meta.json",
+        "sha256": "32c41ece76ef1e27477d894a9caf6c4ac97060bff30d31dbbf43c74f320afeaf"
+      },
+      {
+        "concurrency": 4,
+        "path": "evalops/evidence-20261027/ollama-201-c4/report.json",
+        "sha256": "93a1ba61ab29ffc203526fbe06eb420a57b6b2bfd0e6e72f72d398b6e1bafdd2"
+      },
+      {
+        "concurrency": 4,
+        "path": "evalops/evidence-20261027/ollama-201-c4/run-meta.json",
+        "sha256": "093060998e1abc173e1fb4b53399f64a83b9b903b7346f60c521be71fc52692c"
+      },
+      {
+        "concurrency": 8,
+        "path": "evalops/evidence-20261027/ollama-201-c8/report.json",
+        "sha256": "60548dc9a3d6ec61c5aac8f24bc0c07e185625bacabc254ef87a00ad5b75b107"
+      },
+      {
+        "concurrency": 8,
+        "path": "evalops/evidence-20261027/ollama-201-c8/run-meta.json",
+        "sha256": "2f07e678b9c63c1d8d4425d621322092d8f27e6fab997aa56656e69dc77eb1c1"
+      }
+    ],
+    "runs": [
+      {
+        "concurrency": 1,
+        "correct": 108,
+        "success": 201,
+        "tasks": 201
+      },
+      {
+        "concurrency": 4,
+        "correct": 107,
+        "success": 201,
+        "tasks": 201
+      },
+      {
+        "concurrency": 8,
+        "correct": 108,
+        "success": 201,
+        "tasks": 201
+      }
+    ],
+    "status": "PRESERVED",
+    "summary_path": "evalops/evidence-20261027/summary.json",
+    "summary_sha256": "b7cd247c32710541322ad28082c5b471a1c61b0445c8480fee3bbfb2727e45df",
+    "tasks_path": "evalops/ceval-201/tasks-v1.jsonl",
+    "tasks_sha256": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657"
+  },
+  "schema_version": "eval-infra.opencompass-export.v1",
+  "status": "READY_TO_RUN_EXTERNALLY"
+}

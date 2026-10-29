@@ -1,9 +1,13 @@
 {
   "boundary": "本地安全评测，不是生产安全系统。 Local CPU evidence only; no production security or GPU serving claim.",
-  "captured_at_utc": "2026-10-28T08:43:52Z",
+  "captured_at_utc": "2026-10-29T09:16:53Z",
   "claims": {
+    "fake_openai_fixture": true,
     "gpu_throughput": false,
+    "official_ceval_leaderboard": false,
+    "official_opencompass_execution": false,
     "openai_compatible_contract": true,
+    "opencompass_config_exported": true,
     "production_slo": false,
     "real_lmdeploy_execution": false,
     "real_local_ollama_probe": true,
@@ -14,8 +18,10 @@
       "vllm",
       "lmdeploy"
     ],
+    "implementation": "deterministic_openai_compatible_fixture",
     "ok": true,
-    "source_sha256": "73e76ce6480db337296390704f4471000104defc791f2cb0ff3978d34582c6b1"
+    "real_backends_executed": false,
+    "source_sha256": "e93580231ff25153ef2c4ea39011d208136b073973c98eabcfcb9bc102a4f5e1"
   },
   "gpu_acceptance": {
     "gpu_available": false,
@@ -33,6 +39,7 @@
   "limitations": [
     "The vLLM and LMDeploy contract smoke uses a deterministic localhost fixture.",
     "The 201-task C=1/4/8 measurements were collected with Ollama on CPU.",
+    "The OpenCompass export is statically checked against a pinned official API; the external runner was not executed here.",
     "No GPU, multi-GPU, OOM, production latency or official leaderboard claim is made."
   ],
   "ollama_201": {
@@ -137,6 +144,111 @@
     "source": "evalops/evidence-20261027/summary.json",
     "source_sha256": "b7cd247c32710541322ad28082c5b471a1c61b0445c8480fee3bbfb2727e45df",
     "task_set_hash": "33fdba0a807b721548cdac4a6339443c6edcd4bff00e895f62b77a3361bb9657"
+  },
+  "opencompass_export": {
+    "claims": {
+      "cpu_reported_as_gpu": false,
+      "gpu_execution": false,
+      "gpu_throughput": false,
+      "official_ceval_leaderboard": false,
+      "official_interface_static_contract": true,
+      "official_opencompass_execution": false,
+      "official_opencompass_runtime_contract": false,
+      "opencompass_config_exported": true
+    },
+    "combined_config": "opencompass-export/eval-infra-openai-api.py",
+    "dataset": {
+      "answers": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "data_type": "mcq",
+      "exported_path": "eval-infra-adapters/opencompass-export/data/ceval-201qa.jsonl",
+      "infer_method": "gen",
+      "jsonl_sha256": "a76b144743ebdff4cb45908a6e7d23253c84e7bd1fc5321ade2eeaf09fc2a802",
+      "meta_sha256": "eef85425a5892db89bb1228b449e51eae0b98bf8cb825c04b5982404356575a3",
+      "official_ceval_test_set": false,
+      "rows": 201,
+      "source": "evalops/ceval-201/opencompass/ceval-201qa.jsonl"
+    },
+    "endpoint": {
+      "api_key_env": "EVAL_INFRA_OPENAI_API_KEY",
+      "api_key_exported": false,
+      "base_url": "http://127.0.0.1:8000/v1",
+      "credentials_embedded": false,
+      "endpoint_called": false,
+      "host": "127.0.0.1",
+      "host_scope": "loopback",
+      "scheme": "http"
+    },
+    "limitations": [
+      "The export validates config/data contracts but does not execute OpenCompass.",
+      "No endpoint, model, GPU, latency, throughput or leaderboard result is produced.",
+      "The 201-row public validation subset is not the official C-Eval test set."
+    ],
+    "official_interface_contract": {
+      "mode": "pinned_official_source_static",
+      "runtime_probe": {
+        "gpu_executed": false,
+        "inference_executed": false,
+        "reason": "official OpenCompass runtime is not installed",
+        "status": "NOT_RUN"
+      },
+      "snapshot": {
+        "dataset_interface": {
+          "config_expansion": "opencompass.utils.run.try_fill_in_custom_cfgs converts dicts without type through make_custom_dataset_config",
+          "config_type": "CustomDataset",
+          "import": "opencompass.datasets.CustomDataset",
+          "quick_config_keys": [
+            "path",
+            "meta_path",
+            "data_type",
+            "infer_method",
+            "abbr"
+          ]
+        },
+        "model_interface": {
+          "config_type": "OpenAISDK",
+          "import": "opencompass.models.OpenAISDK",
+          "openai_api_base_contract": "OpenAI SDK base URL ending in /v1",
+          "required_export_keys": [
+            "type",
+            "path",
+            "key",
+            "openai_api_base",
+            "max_seq_len",
+            "max_out_len",
+            "batch_size",
+            "run_cfg"
+          ]
+        },
+        "release_url": "https://github.com/open-compass/opencompass/releases/tag/0.5.4",
+        "source_archive": {
+          "sha256": "6584bde074465a28e75ca8543c4dfc4147629925e118027968064389d2919ee0",
+          "url": "https://codeload.github.com/open-compass/opencompass/tar.gz/refs/tags/0.5.4"
+        },
+        "source_files": [
+          {
+            "path": "opencompass/models/openai_api.py",
+            "sha256": "64f00bbc0b6abfda8c6a438ec48d9546de08921d81b62b6bef1057988e2e7d6a"
+          },
+          {
+            "path": "opencompass/datasets/custom.py",
+            "sha256": "d98f2a5e0b7d06c60ef32aec5598a4f44f5c3dbfd99a3c8a2673bdcdcbf631c2"
+          },
+          {
+            "path": "opencompass/utils/run.py",
+            "sha256": "c060790b28c85665e3149663c8b59fdc54235225bc1210eef375d47a3b09067c"
+          }
+        ],
+        "version": "0.5.4"
+      },
+      "status": "PASS_STATIC"
+    },
+    "source_sha256": "7a3f67f8e5ad4cb276f2dc51bfcb82408e55a13b214c0564a54c73c9c49a87c5",
+    "status": "READY_TO_RUN_EXTERNALLY"
   },
   "real_ollama_probe": {
     "model": "llama3.2:1b",

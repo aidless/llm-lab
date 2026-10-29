@@ -53,6 +53,40 @@ def markdown(report: dict[str, Any]) -> str:
         pair_rows.append(
             f"| `{pair['left']}` | `{pair['right']}` | {pair['n']} | {_pct(pair['agreement'])} | {kappa} |"
         )
+    stability_lines: list[str] = []
+    if "repeat_consistency" in report:
+        repeat = report["repeat_consistency"]
+        variant_rows = [
+            "| Variant | Judge | Cases | Label flips | Flip rate | FPR delta | FNR delta |",
+            "|---|---|---:|---:|---:|---:|---:|",
+        ]
+        for variant, item in report["variant_sensitivity"].items():
+            for judge, metrics in item["judges"].items():
+                variant_rows.append(
+                    f"| `{variant}` | `{judge}` | {metrics['cases']} | "
+                    f"{metrics['label_flips']} | {_pct(metrics['label_flip_rate'])} | "
+                    f"{_fmt_float(metrics['fpr_delta_vs_baseline'], 3)} | "
+                    f"{_fmt_float(metrics['fnr_delta_vs_baseline'], 3)} |"
+                )
+        order = report["order_presentation_sensitivity"]
+        stability_lines = [
+            "## Repeat consistency",
+            "",
+            f"- Required repeats: **{repeat['required_repeats']}**",
+            f"- Coverage: **{repeat['covered_case_judge_pairs']} / {repeat['expected_case_judge_pairs']}**",
+            f"- Missing repeat identities: **{repeat['missing_repeat_pairs']}**",
+            f"- Duplicate repeat identities: **{repeat['duplicate_case_judge_pairs']}**",
+            f"- Inconsistent case-judge pairs: **{repeat['inconsistent_case_judge_pairs']}**",
+            f"- Inconsistency rate: **{_pct(repeat['inconsistency_rate'])}**",
+            "",
+            "## Presentation sensitivity",
+            "",
+            *variant_rows,
+            "",
+            f"- Order prefix/suffix presentation flips: **{order['label_flips']} / {order['compared']}** "
+            f"({_pct(order['label_flip_rate'])})",
+            "",
+        ]
     hold_rows = ["| Condition | Pass | Evidence |", "|---|---|---|"]
     for condition in report["hold_conditions"]:
         hold_rows.append(
@@ -81,6 +115,7 @@ def markdown(report: dict[str, Any]) -> str:
             "",
             *pair_rows,
             "",
+            *stability_lines,
             "## HOLD conditions",
             "",
             *hold_rows,
@@ -147,6 +182,39 @@ def html_report(report: dict[str, Any]) -> str:
             f"<td>{kappa}</td></tr>"
         )
     pair_rows = "".join(pair_html_rows)
+    stability_html = ""
+    if "repeat_consistency" in report:
+        repeat = report["repeat_consistency"]
+        sensitivity_rows = []
+        for variant, item in report["variant_sensitivity"].items():
+            for judge, metrics in item["judges"].items():
+                sensitivity_rows.append(
+                    "<tr>"
+                    f"<td><code>{html.escape(variant)}</code></td>"
+                    f"<td>{html.escape(judge)}</td>"
+                    f"<td>{metrics['cases']}</td>"
+                    f"<td>{metrics['label_flips']}</td>"
+                    f"<td>{_pct(metrics['label_flip_rate'])}</td>"
+                    f"<td>{_fmt_float(metrics['fpr_delta_vs_baseline'], 3)}</td>"
+                    f"<td>{_fmt_float(metrics['fnr_delta_vs_baseline'], 3)}</td>"
+                    "</tr>"
+                )
+        sensitivity_html = "".join(sensitivity_rows)
+        order = report["order_presentation_sensitivity"]
+        stability_html = f"""
+  <section class="panel">
+    <div class="eyebrow">stability checks</div>
+    <h2>Repeat and presentation sensitivity</h2>
+    <p>Repeated baseline calls: <strong>{repeat["covered_case_judge_pairs"]} /
+    {repeat["expected_case_judge_pairs"]}</strong> covered,
+    inconsistency <strong>{_pct(repeat["inconsistency_rate"])}</strong>.</p>
+    <p>Order prefix/suffix presentation disagreement: <strong>{order["label_flips"]} /
+    {order["compared"]}</strong> ({_pct(order["label_flip_rate"])}).</p>
+    <table><thead><tr><th>Variant</th><th>Judge</th><th>Cases</th>
+    <th>Flips</th><th>Flip rate</th><th>FPR Δ</th><th>FNR Δ</th></tr></thead>
+    <tbody>{sensitivity_html}</tbody></table>
+  </section>
+"""
     decision_class = "pass" if report["decision"] == "PASS" else "hold"
     return f"""<!doctype html>
 <html lang="en">
@@ -208,6 +276,7 @@ code {{ background:#e9eee9; padding:2px 5px; border-radius:4px; overflow-wrap:an
     <table><thead><tr><th>Judge A</th><th>Judge B</th><th>n</th>
     <th>Agreement</th><th>Cohen κ</th></tr></thead><tbody>{pair_rows}</tbody></table>
   </section>
+{stability_html}
   <section class="panel">
     <div class="eyebrow">deployment gate</div>
     <h2>HOLD conditions</h2>

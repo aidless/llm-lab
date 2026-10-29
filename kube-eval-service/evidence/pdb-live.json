@@ -1,0 +1,40 @@
+{
+    "apiVersion": "policy/v1",
+    "kind": "PodDisruptionBudget",
+    "metadata": {
+        "annotations": {
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"policy/v1\",\"kind\":\"PodDisruptionBudget\",\"metadata\":{\"annotations\":{},\"name\":\"kube-eval-service\",\"namespace\":\"eval-lab\"},\"spec\":{\"minAvailable\":0,\"selector\":{\"matchLabels\":{\"app.kubernetes.io/name\":\"kube-eval-service\"}}}}\n"
+        },
+        "creationTimestamp": "2026-10-29T02:34:27Z",
+        "generation": 1,
+        "name": "kube-eval-service",
+        "namespace": "eval-lab",
+        "resourceVersion": "608",
+        "uid": "f7f30bef-5942-4244-a157-32df4fb90563"
+    },
+    "spec": {
+        "minAvailable": 0,
+        "selector": {
+            "matchLabels": {
+                "app.kubernetes.io/name": "kube-eval-service"
+            }
+        }
+    },
+    "status": {
+        "conditions": [
+            {
+                "lastTransitionTime": "2026-10-29T02:34:35Z",
+                "message": "",
+                "observedGeneration": 1,
+                "reason": "SufficientPods",
+                "status": "True",
+                "type": "DisruptionAllowed"
+            }
+        ],
+        "currentHealthy": 1,
+        "desiredHealthy": 0,
+        "disruptionsAllowed": 1,
+        "expectedPods": 1,
+        "observedGeneration": 1
+    }
+}

@@ -2,15 +2,15 @@
     "apiVersion": "v1",
     "kind": "Pod",
     "metadata": {
-        "creationTimestamp": "2026-10-28T06:36:30Z",
-        "generateName": "kube-eval-service-7b686ccf5-",
+        "creationTimestamp": "2026-10-29T02:34:26Z",
+        "generateName": "kube-eval-service-69568cf5c4-",
         "generation": 1,
         "labels": {
             "app.kubernetes.io/name": "kube-eval-service",
             "app.kubernetes.io/part-of": "eval-lab",
-            "pod-template-hash": "7b686ccf5"
+            "pod-template-hash": "69568cf5c4"
         },
-        "name": "kube-eval-service-7b686ccf5-wmqrj",
+        "name": "kube-eval-service-69568cf5c4-zr9dw",
         "namespace": "eval-lab",
         "ownerReferences": [
             {
@@ -18,17 +18,23 @@
                 "blockOwnerDeletion": true,
                 "controller": true,
                 "kind": "ReplicaSet",
-                "name": "kube-eval-service-7b686ccf5",
-                "uid": "81d2fa0f-a140-4564-8aaa-59335b1de612"
+                "name": "kube-eval-service-69568cf5c4",
+                "uid": "9472498d-0019-48d7-8660-3223de033ff9"
             }
         ],
-        "resourceVersion": "585",
-        "uid": "8e98bd64-65e2-4a98-a20e-82eb57dbf040"
+        "resourceVersion": "606",
+        "uid": "905fd4e1-7365-4278-922c-7c01e24e477a"
     },
     "spec": {
         "automountServiceAccountToken": false,
         "containers": [
             {
+                "env": [
+                    {
+                        "name": "EVAL_ROLE",
+                        "value": "api"
+                    }
+                ],
                 "envFrom": [
                     {
                         "configMapRef": {
@@ -93,6 +99,10 @@
                 "terminationMessagePolicy": "File",
                 "volumeMounts": [
                     {
+                        "mountPath": "/data",
+                        "name": "data"
+                    },
+                    {
                         "mountPath": "/tmp",
                         "name": "tmp"
                     }
@@ -101,7 +111,7 @@
         ],
         "dnsPolicy": "ClusterFirst",
         "enableServiceLinks": true,
-        "nodeName": "eval-lab-smoke-1793169340-control-plane",
+        "nodeName": "eval-lab-final-20261028c-control-plane",
         "preemptionPolicy": "PreemptLowerPriority",
         "priority": 0,
         "restartPolicy": "Always",
@@ -134,6 +144,12 @@
         ],
         "volumes": [
             {
+                "name": "data",
+                "persistentVolumeClaim": {
+                    "claimName": "kube-eval-data"
+                }
+            },
+            {
                 "emptyDir": {
                     "sizeLimit": "32Mi"
                 },
@@ -149,35 +165,35 @@
         "conditions": [
             {
                 "lastProbeTime": null,
-                "lastTransitionTime": "2026-10-28T06:36:31Z",
+                "lastTransitionTime": "2026-10-29T02:34:32Z",
                 "observedGeneration": 1,
                 "status": "True",
                 "type": "PodReadyToStartContainers"
             },
             {
                 "lastProbeTime": null,
-                "lastTransitionTime": "2026-10-28T06:36:30Z",
+                "lastTransitionTime": "2026-10-29T02:34:31Z",
                 "observedGeneration": 1,
                 "status": "True",
                 "type": "Initialized"
             },
             {
                 "lastProbeTime": null,
-                "lastTransitionTime": "2026-10-28T06:36:35Z",
+                "lastTransitionTime": "2026-10-29T02:34:35Z",
                 "observedGeneration": 1,
                 "status": "True",
                 "type": "Ready"
             },
             {
                 "lastProbeTime": null,
-                "lastTransitionTime": "2026-10-28T06:36:35Z",
+                "lastTransitionTime": "2026-10-29T02:34:35Z",
                 "observedGeneration": 1,
                 "status": "True",
                 "type": "ContainersReady"
             },
             {
                 "lastProbeTime": null,
-                "lastTransitionTime": "2026-10-28T06:36:30Z",
+                "lastTransitionTime": "2026-10-29T02:34:31Z",
                 "observedGeneration": 1,
                 "status": "True",
                 "type": "PodScheduled"
@@ -189,9 +205,9 @@
                     "cpu": "50m",
                     "memory": "64Mi"
                 },
-                "containerID": "containerd://e5f70c1fd1cf5615ae42a68ff9401a984c9723daae4b30d8c940c681bb95a8d5",
+                "containerID": "containerd://020d2e6f2b2b4873661492fb46a70229deff0ebec3bb6483d098795522d0b625",
                 "image": "docker.io/library/kube-eval-service:dev",
-                "imageID": "docker.io/library/import-2026-10-28@sha256:707e617dadb721ef62554f762b028b645fae236448689ecb48efd31087f4ef47",
+                "imageID": "docker.io/library/import-2026-10-29@sha256:5af679744b843bbe026c5120177083a996d796c12753ae5ad58692022b920e45",
                 "lastState": {},
                 "name": "service",
                 "ready": true,
@@ -209,7 +225,7 @@
                 "started": true,
                 "state": {
                     "running": {
-                        "startedAt": "2026-10-28T06:36:31Z"
+                        "startedAt": "2026-10-29T02:34:32Z"
                     }
                 },
                 "user": {
@@ -223,24 +239,28 @@
                 },
                 "volumeMounts": [
                     {
+                        "mountPath": "/data",
+                        "name": "data"
+                    },
+                    {
                         "mountPath": "/tmp",
                         "name": "tmp"
                     }
                 ]
             }
         ],
-        "hostIP": "172.22.0.3",
+        "hostIP": "172.22.0.2",
         "hostIPs": [
             {
-                "ip": "172.22.0.3"
+                "ip": "172.22.0.2"
             }
         ],
         "observedGeneration": 1,
         "phase": "Running",
-        "podIP": "10.244.0.5",
+        "podIP": "10.244.0.6",
         "podIPs": [
             {
-                "ip": "10.244.0.5"
+                "ip": "10.244.0.6"
             }
         ],
         "qosClass": "Burstable",
@@ -254,6 +274,6 @@
                 "memory": "64Mi"
             }
         },
-        "startTime": "2026-10-28T06:36:30Z"
+        "startTime": "2026-10-29T02:34:31Z"
     }
 }

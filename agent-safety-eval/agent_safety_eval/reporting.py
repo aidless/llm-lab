@@ -26,6 +26,13 @@ METRIC_KEYS = (
     "recovery_success_rate",
 )
 
+ARM_DESCRIPTIONS = {
+    "off": "no policy prompt; runtime gate disabled",
+    "prompt": "policy prompt only; runtime gate disabled",
+    "gate": "no policy prompt; runtime gate enabled",
+    "on": "policy prompt and runtime gate enabled",
+}
+
 
 def _fmt_rate(value: Any) -> str:
     if value is None:
@@ -57,25 +64,30 @@ def build_combined_report(
     comparisons: list[dict[str, Any]] = []
     for model in sorted({str(run["model"]) for run in runs}):
         off = grouped.get((model, "off"))
-        on = grouped.get((model, "on"))
-        if not off or not on:
+        if not off:
             continue
-        deltas: dict[str, float | None] = {}
-        for key in METRIC_KEYS:
-            before = off["metrics"].get(key)
-            after = on["metrics"].get(key)
-            deltas[key] = float(after) - float(before) if before is not None and after is not None else None
-        comparisons.append(
-            {
-                "model": model,
-                "policy_off_config_hash": off["config_hash"],
-                "policy_on_config_hash": on["config_hash"],
-                "metric_deltas": deltas,
-            }
-        )
+        for treatment_arm in ("prompt", "gate", "on"):
+            treatment = grouped.get((model, treatment_arm))
+            if not treatment:
+                continue
+            deltas: dict[str, float | None] = {}
+            for key in METRIC_KEYS:
+                before = off["metrics"].get(key)
+                after = treatment["metrics"].get(key)
+                deltas[key] = float(after) - float(before) if before is not None and after is not None else None
+            comparisons.append(
+                {
+                    "model": model,
+                    "baseline_arm": "off",
+                    "treatment_arm": treatment_arm,
+                    "baseline_config_hash": off["config_hash"],
+                    "treatment_config_hash": treatment["config_hash"],
+                    "metric_deltas": deltas,
+                }
+            )
 
     return {
-        "schema_version": "agent-safety.suite-report.v1",
+        "schema_version": "agent-safety.suite-report.v2",
         "dataset": {
             "task_count": task_count,
             "task_set_hash": task_hash,
@@ -83,6 +95,7 @@ def build_combined_report(
         },
         "runs": runs,
         "policy_comparisons": comparisons,
+        "arms": ARM_DESCRIPTIONS,
         "human_review": review_summary
         or {
             "reviewed_records": 0,
@@ -141,17 +154,18 @@ def markdown_report(report: dict[str, Any]) -> str:
         )
     lines += [
         "",
-        "## Policy-off → policy-on deltas",
+        "## Intervention deltas versus no intervention",
         "",
-        "| Model | Unsafe action | Permission violation | Stop recall | Task success |",
-        "|---|---:|---:|---:|---:|",
+        "| Model | Treatment | Unsafe action | Stop recall | Over-refusal | Task success |",
+        "|---|---|---:|---:|---:|---:|",
     ]
     for comparison in report["policy_comparisons"]:
         delta = comparison["metric_deltas"]
         lines.append(
-            f"| `{comparison['model']}` | {_fmt_delta(delta.get('unsafe_action_rate'))} | "
-            f"{_fmt_delta(delta.get('permission_violation_rate'))} | "
+            f"| `{comparison['model']}` | `{comparison['treatment_arm']}` | "
+            f"{_fmt_delta(delta.get('unsafe_action_rate'))} | "
             f"{_fmt_delta(delta.get('stop_recall'))} | "
+            f"{_fmt_delta(delta.get('over_refusal_rate'))} | "
             f"{_fmt_delta(delta.get('task_success_rate'))} |"
         )
     review = report["human_review"]
@@ -270,9 +284,10 @@ def html_report(report: dict[str, Any]) -> str:
         comparison_rows.append(
             "<tr>"
             f"<td>{html.escape(item['model'])}</td>"
+            f"<td><code>{html.escape(item['treatment_arm'])}</code></td>"
             f"<td>{_fmt_delta(delta.get('unsafe_action_rate'))}</td>"
-            f"<td>{_fmt_delta(delta.get('permission_violation_rate'))}</td>"
             f"<td>{_fmt_delta(delta.get('stop_recall'))}</td>"
+            f"<td>{_fmt_delta(delta.get('over_refusal_rate'))}</td>"
             f"<td>{_fmt_delta(delta.get('task_success_rate'))}</td>"
             "</tr>"
         )
@@ -330,6 +345,8 @@ def html_report(report: dict[str, Any]) -> str:
     .run-head h3 {{ margin:5px 0 0; font:700 24px/1.15 Georgia,serif; overflow-wrap:anywhere; }}
     .policy {{ border-radius:999px; padding:5px 11px; font-weight:800; font-size:13px; }}
     .policy-on {{ background:#d8f0e6; color:var(--green); }}
+    .policy-prompt {{ background:#f4e7c7; color:#76520d; }}
+    .policy-gate {{ background:#d9e8f5; color:#174d78; }}
     .policy-off {{ background:#f4dcd7; color:var(--red); }}
     .metric-grid {{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:18px 0; }}
     .metric-grid > div {{ border-top:1px solid var(--line); padding-top:9px; }}
@@ -364,8 +381,8 @@ def html_report(report: dict[str, Any]) -> str:
   <header class="hero">
     <div class="eyebrow">EvalOps extension · mock-only runtime</div>
     <h1>Agent Safety Runtime Monitor</h1>
-    <p class="lede">A frozen {dataset["task_count"]}-task safety suite comparing an unguarded execution policy
-    with a deterministic runtime monitor across two local Ollama models.</p>
+    <p class="lede">A frozen {dataset["task_count"]}-task safety suite separating prompt-only,
+    runtime-gate-only and combined intervention effects across local Ollama models.</p>
     <div class="warning">{html.escape(NON_PRODUCTION_EN)}<br>{html.escape(NON_PRODUCTION_ZH)}</div>
     <div class="stats">
       <span><b>{dataset["task_count"]}</b> tasks</span>
@@ -378,11 +395,11 @@ def html_report(report: dict[str, Any]) -> str:
   <main>
     <section class="top-grid">
       <div class="panel">
-        <div class="eyebrow">Policy comparison</div>
-        <h2>What the runtime gate changed</h2>
+        <div class="eyebrow">Intervention ablation</div>
+        <h2>Prompt and gate effects, separately</h2>
         <table class="delta-table">
-          <thead><tr><th>Model</th><th>Unsafe action</th><th>Permission violation</th>
-          <th>Stop recall</th><th>Task success</th></tr></thead>
+          <thead><tr><th>Model</th><th>Treatment</th><th>Unsafe action</th>
+          <th>Stop recall</th><th>Over-refusal</th><th>Task success</th></tr></thead>
           <tbody>{"".join(comparison_rows)}</tbody>
         </table>
         <p class="note">A negative unsafe-action delta is protective. Any drop in task success or

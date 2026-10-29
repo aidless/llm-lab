@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenCompass Export Contract</title>
+  <style>
+    :root { --ink:#18231f; --paper:#f4f0e6; --accent:#b64b2b; --moss:#436653; }
+    body { margin:0; background:linear-gradient(135deg,#e8e0d0,#f8f5ed 55%,#dce7df);
+      color:var(--ink); font:16px/1.55 Georgia, "Noto Serif SC", serif; }
+    main { max-width:1080px; margin:40px auto; padding:34px 42px; background:rgba(255,255,255,.82);
+      border:1px solid #cabfa9; box-shadow:0 18px 55px rgba(38,42,35,.14); }
+    h1 { font-size:clamp(2rem,5vw,4rem); line-height:1; margin:.1em 0 .35em; color:var(--moss); }
+    h2 { margin-top:2em; border-bottom:2px solid var(--accent); padding-bottom:.25em; }
+    .warning { border-left:6px solid var(--accent); padding:12px 16px; background:#fff4ee; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; }
+    .card { background:#fbfaf6; border:1px solid #d8cebc; padding:14px; }
+    code { overflow-wrap:anywhere; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    th,td { text-align:left; padding:9px 11px; border-bottom:1px solid #ddd4c5; vertical-align:top; }
+    th { background:#e6ede7; }
+  </style>
+</head>
+<body><main>
+  <h1>OpenCompass Export Contract</h1>
+  <p class="warning"><strong>本地安全评测，不是生产安全系统。</strong>
+  Local contract export, not a GPU run, production security system, or leaderboard result.</p>
+  <div class="grid">
+    <div class="card"><strong>API snapshot</strong><br>0.5.4</div>
+    <div class="card"><strong>Static contract</strong><br>PASS_STATIC</div>
+    <div class="card"><strong>Runtime CPU probe</strong><br>NOT_RUN</div>
+    <div class="card"><strong>GPU acceptance</strong><br>BLOCKED_ENVIRONMENT</div>
+  </div>
+  <h2>Dataset and endpoint</h2>
+  <ul>
+    <li>Rows: <strong>201</strong>; protocol:
+      <code>mcq/gen</code></li>
+    <li>JSONL SHA-256: <code>a76b144743ebdff4cb45908a6e7d23253c84e7bd1fc5321ade2eeaf09fc2a802</code></li>
+    <li>Endpoint scope: <strong>loopback</strong>;
+      API key exported: <strong>False</strong></li>
+    <li>Official OpenCompass execution: <strong>False</strong>;
+      GPU execution / throughput: <strong>False / False</strong></li>
+  </ul>
+  <h2>Exported files</h2>
+  <table><thead><tr><th>File</th><th>SHA-256</th></tr></thead><tbody><tr><td><code>README.md</code></td><td><code>e1e103180f8708cf8b1b2691cbe141546b6d9f57db7d877afeb5f692a5bc339e</code></td></tr><tr><td><code>data/ceval-201qa.jsonl</code></td><td><code>a76b144743ebdff4cb45908a6e7d23253c84e7bd1fc5321ade2eeaf09fc2a802</code></td></tr><tr><td><code>data/ceval-201qa.jsonl.meta.json</code></td><td><code>eef85425a5892db89bb1228b449e51eae0b98bf8cb825c04b5982404356575a3</code></td></tr><tr><td><code>dataset_ceval_201.py</code></td><td><code>173595bf66be35cb839e1378b1a16bfeed312ca132d8d498d0294efe0994d794</code></td></tr><tr><td><code>env.example</code></td><td><code>281d4d394c78934f6a25f5d65a1e6c9d95df314c17a7975f949f30b8b710e128</code></td></tr><tr><td><code>eval-infra-openai-api.py</code></td><td><code>f5a1c63c3de518cd68cc6f6c6bfccd831cf4f7bc6126eb22d1287a135ccbd6d9</code></td></tr><tr><td><code>model_openai_api.py</code></td><td><code>f4c248848ecb003e7222a33d4700b347ae17e3ec2db32bf0fc53816fea7d3613</code></td></tr><tr><td><code>official-api-contract.json</code></td><td><code>17e402d3259ae09305e09d927867691c31d5e8d002bc44e1fbd79ecd22d2d0c6</code></td></tr></tbody></table>
+  <h2>Preserved existing 201-row CPU evidence</h2>
+  <p>Source: <code>evalops/evidence-20261027/summary.json</code></p>
+  <table><thead><tr><th>C</th><th>Success</th><th>Correct</th></tr></thead>
+  <tbody><tr><td>1</td><td>201/201</td><td>108</td></tr><tr><td>4</td><td>201/201</td><td>107</td></tr><tr><td>8</td><td>201/201</td><td>108</td></tr></tbody></table>
+  <h2>Safety boundary</h2>
+  <p>No endpoint call, model inference, OpenCompass execution, GPU allocation, or
+  throughput measurement is performed by this export. Credentials remain in
+  <code>EVAL_INFRA_OPENAI_API_KEY</code> and are never exported.</p>
+  <p>The 201-row public validation subset is not the official C-Eval test set.</p>
+</main></body></html>

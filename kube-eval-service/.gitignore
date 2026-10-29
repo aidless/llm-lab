@@ -4,4 +4,9 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 *.egg-info/
+jobs.sqlite3
+jobs.sqlite3-*
+smoke-output.log
+.evidence-*/
+.reproduce-*/
 evidence/verification-result.json

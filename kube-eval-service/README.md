@@ -12,6 +12,10 @@ requests cannot choose arbitrary upstream URLs.
 - `GET /readyz`: deterministic readiness or a bounded upstream `/models` check;
 - `GET /metrics`: Prometheus text metrics;
 - `POST /v1/evaluate`: bounded task list and concurrency, per-task errors, JSON result.
+- `POST /v1/jobs`: persist an evaluation request and enqueue it for workers;
+- `GET /v1/jobs/{id}` and `POST /v1/jobs/{id}/cancel`: durable status and
+  cooperative cancellation;
+- optional bearer or `X-Eval-Token` authentication for the job endpoints.
 
 Request-level limits:
 
@@ -39,10 +43,12 @@ curl -fsS -X POST http://127.0.0.1:8080/v1/evaluate \
 ## kind smoke
 
 The script downloads `kind` and `kubectl` into `llm-lab/.tools/bin`, builds a
-local image, creates a cluster, deploys the service, checks health, runs 24
-concurrent requests, deletes the pod, verifies replacement readiness, and writes
-checksummed evidence. It then runs `verify_evidence.py` and exits non-zero if
-any check fails.
+local image, creates a cluster, deploys the API and worker, checks health, runs
+24 concurrent requests, verifies idempotent job submission, force-deletes the
+worker, and verifies that both an interrupted running job and a queued job
+recover from the shared SQLite/PVC state. It also replaces the API pod and
+checks readiness. The run writes checksummed evidence and exits non-zero if
+`verify_evidence.py` fails.
 
 ```bash
 cd kube-eval-service
@@ -70,7 +76,7 @@ make kind-clean
 
 ## Evidence verification
 
-The smoke writes 24 checksum-covered files plus
+The smoke writes 36 checksum-covered files plus
 `evidence/verification-result.json`. Verify them independently:
 
 ```bash
@@ -87,21 +93,28 @@ make reproduce
 
 The verifier checks the live Deployment/Service/ConfigMap/NetworkPolicy,
 non-root/read-only/dropped-capability settings, readiness after pod replacement,
-the 24-request concurrency smoke, Prometheus counters, and the checksum manifest.
+the API and worker Deployments, the bound PVC and PDB, durable job idempotency
+and post-worker-restart recovery, the 24-request concurrency smoke, Prometheus
+counters, and the checksum manifest.
 
 ## Kubernetes boundary
 
 The included manifests demonstrate:
 
-- namespace-scoped Deployment and Service;
+- namespace-scoped API and worker Deployments plus a Service;
+- a SQLite-backed durable queue with worker leases and bounded retries;
 - readiness/liveness probes;
 - non-root user, read-only root filesystem, dropped capabilities and seccomp;
 - CPU/memory requests and limits;
-- NetworkPolicy;
+- NetworkPolicy, PVC and PodDisruptionBudget;
 - pod replacement/readiness after deletion.
 
 They do not demonstrate multi-node scheduling, autoscaling, GPU allocation,
-multi-tenancy, upgrades, backups or production incident response.
+multi-tenancy, upgrades, backups or production incident response. The API and
+worker share a `ReadWriteOnce` PVC on one kind node; this does not establish a
+safe multi-node storage design. The kind CNI may not enforce NetworkPolicy, so
+the evidence verifies the policy documents structurally rather than proving
+runtime isolation.
 
 ## Tests
 

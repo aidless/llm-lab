@@ -85,11 +85,11 @@ silently converted into passes.
 
 | Project | Evidence | Current gate |
 |---|---|---|
-| [Agent Safety Runtime Monitor](agent-safety-eval/README.md) | 96 mock-only tasks, two local models, policy-off/on trajectories | `HOLD` until at least 100 human-review records and required unsafe trajectories are reviewed |
-| [Safety Judge Calibration](safety-judge-calibration/README.md) | 200 frozen requests, two local judges, FPR/FNR, Wilson intervals, per-slice results | `HOLD` until all 200 reference labels have human provenance |
+| [Agent Safety Runtime Monitor](agent-safety-eval/README.md) | 96 mock-only tasks, two local models, four arms (`off`/`prompt`/`gate`/`on`), 768 trajectories | `HOLD` until at least 100 human-review records and required unsafe trajectories are reviewed |
+| [Safety Judge Calibration](safety-judge-calibration/README.md) | 200 frozen requests, two local judges, FPR/FNR, Wilson intervals, per-slice results, repeat and presentation-sensitivity probes | `HOLD` until all 200 reference labels have human provenance |
 | [Benchmark Contamination Preflight](benchmark-contamination-scan/README.md) | 201 C-Eval tasks, seeded corpus, exact/n-gram/semantic matches, fail-closed EvalOps gate | `HOLD` until 40 human reviews; current non-PASS gate exits `2` |
 | [Eval Infra Adapters](eval-infra-adapters/README.md) | vLLM/LMDeploy contract smoke, real Ollama probe, existing 201-task CPU `C=1/4/8` evidence | GPU experiments `BLOCKED_ENVIRONMENT`; no production throughput claim |
-| [Kube Eval Service](kube-eval-service/README.md) | Fresh kind cluster, bounded HTTP service, 24-request concurrency smoke, pod replacement | Local single-node CPU smoke only |
+| [Kube Eval Service](kube-eval-service/README.md) | Fresh kind cluster, API + durable worker queue, idempotent jobs, forced worker replacement, 24-request concurrency smoke | Local single-node CPU smoke only |
 
 The main safety project is deliberately separate from `agi_harness.py`. All
 dangerous actions run against an in-memory mock filesystem and mock outboxes;
@@ -100,6 +100,10 @@ Verify every checked-in package without rerunning a model or cluster:
 ```bash
 ./scripts/verify_portfolio.sh
 ```
+
+For an evidence-based assessment of what is genuinely advanced, what is still
+a prototype, and which claims remain blocked, see
+[`PORTFOLIO_REVIEW.md`](PORTFOLIO_REVIEW.md).
 
 ## Architecture
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import hmac
 import os
 import time
 import uuid
@@ -12,9 +13,10 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import httpx
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, Header, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
+from .jobstore import JobStore
 from .settings import Settings, SettingsError
 
 
@@ -29,12 +31,18 @@ class EvalRequest(BaseModel):
     concurrency: int = Field(default=4, ge=1, le=32)
 
 
+class JobSubmitRequest(EvalRequest):
+    idempotency_key: str | None = Field(default=None, min_length=1, max_length=200)
+
+
 @dataclass
 class Metrics:
     request_count: int = 0
     task_count: int = 0
     error_count: int = 0
     total_latency_seconds: float = 0.0
+    job_requests: int = 0
+    job_cancellations: int = 0
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
     async def record(
@@ -66,9 +74,20 @@ class Metrics:
                 "# HELP eval_service_request_latency_seconds Average request latency.",
                 "# TYPE eval_service_request_latency_seconds gauge",
                 f"eval_service_request_latency_seconds {average:.6f}",
+                "# HELP eval_service_jobs_total Durable jobs submitted.",
+                "# TYPE eval_service_jobs_total counter",
+                f"eval_service_jobs_total {self.job_requests}",
+                "# HELP eval_service_job_cancellations_total Job cancellation requests.",
+                "# TYPE eval_service_job_cancellations_total counter",
+                f"eval_service_job_cancellations_total {self.job_cancellations}",
                 "",
             ]
         )
+
+    async def record_job(self, *, cancelled: bool = False) -> None:
+        async with self.lock:
+            self.job_requests += 1
+            self.job_cancellations += int(cancelled)
 
 
 def _settings() -> Settings:
@@ -120,6 +139,7 @@ def create_app(
 ) -> FastAPI:
     runtime_settings = settings or _settings()
     metrics = Metrics()
+    job_store = JobStore(runtime_settings.database_path)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):  # noqa: ARG001
@@ -141,6 +161,21 @@ def create_app(
         if asyncio.iscoroutine(result):
             return str(await result)
         return str(result)
+
+    async def require_api_token(
+        authorization: str | None = Header(default=None),
+        x_eval_token: str | None = Header(default=None),
+    ) -> None:
+        expected = runtime_settings.api_token
+        if not expected:
+            return
+        supplied = x_eval_token or ""
+        if not supplied and authorization:
+            scheme, _, value = authorization.partition(" ")
+            if scheme.lower() == "bearer":
+                supplied = value
+        if not hmac.compare_digest(supplied, expected):
+            raise HTTPException(status_code=401, detail="invalid evaluation API token")
 
     @app.get("/healthz")
     async def healthz() -> dict[str, str]:
@@ -173,7 +208,7 @@ def create_app(
     async def prometheus_metrics() -> Response:
         return Response(metrics.render(), media_type="text/plain; version=0.0.4")
 
-    @app.post("/v1/evaluate")
+    @app.post("/v1/evaluate", dependencies=[Depends(require_api_token)])
     async def evaluate(payload: EvalRequest, request: Request) -> dict[str, Any]:
         try:
             runtime_settings.validate_request(
@@ -239,6 +274,49 @@ def create_app(
             ],
         }
         return response
+
+    @app.post("/v1/jobs", status_code=202, dependencies=[Depends(require_api_token)])
+    async def submit_job(payload: JobSubmitRequest) -> dict[str, Any]:
+        try:
+            runtime_settings.validate_request(len(payload.tasks), payload.concurrency)
+        except SettingsError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        request = {
+            "tasks": [task.model_dump() for task in payload.tasks],
+            "concurrency": payload.concurrency,
+        }
+        job, existing = job_store.create(
+            request,
+            idempotency_key=payload.idempotency_key,
+        )
+        if not existing:
+            await metrics.record_job()
+        return {
+            "schema_version": "kube-eval.job.v1",
+            "job_id": job["job_id"],
+            "state": job["state"],
+            "existing": existing,
+            "status_url": f"/v1/jobs/{job['job_id']}",
+            "cancel_url": f"/v1/jobs/{job['job_id']}/cancel",
+        }
+
+    @app.get("/v1/jobs/{job_id}", dependencies=[Depends(require_api_token)])
+    async def get_job(job_id: str) -> dict[str, Any]:
+        try:
+            return {"schema_version": "kube-eval.job.v1", **job_store.get(job_id)}
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="job not found") from exc
+
+    @app.post("/v1/jobs/{job_id}/cancel", dependencies=[Depends(require_api_token)])
+    async def cancel_job(job_id: str) -> dict[str, Any]:
+        try:
+            before = job_store.get(job_id)
+            job = job_store.cancel(job_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="job not found") from exc
+        if not before["cancel_requested"]:
+            await metrics.record_job(cancelled=True)
+        return {"schema_version": "kube-eval.job.v1", **job}
 
     return app
 

@@ -14,7 +14,7 @@ from llm_lab.evalops import write_json, write_jsonl
 from .data import build_fixture, load_ceval_tasks, read_jsonl
 from .embeddings import Embedder, save_vectors
 from .reporting import build_report, write_reports
-from .scanner import best_match
+from .scanner import Match, best_match, is_suspect
 
 ROOT = Path(__file__).resolve().parent.parent
 LLM_LAB_ROOT = ROOT.parent
@@ -153,12 +153,17 @@ def write_review_queue(
     thresholds: dict[str, float],
     output: Path,
 ) -> None:
+    def suspect(row: dict[str, Any]) -> bool:
+        return is_suspect(
+            Match(**row["match"]),
+            ngram_threshold=thresholds["ngram_threshold"],
+            semantic_threshold=thresholds["semantic_threshold"],
+        )
+
     suspects = [
         row
         for row in rows
-        if row["match"]["exact"]
-        or row["match"]["ngram_score"] >= thresholds["ngram_threshold"]
-        or row["match"]["semantic_score"] >= thresholds["semantic_threshold"]
+        if suspect(row)
     ]
     controls = [row for row in rows if row not in suspects][:10]
     selected = (suspects + controls)[:40]
@@ -170,11 +175,7 @@ def write_review_queue(
                 "review_id": f"contamination:{row['task_id']}",
                 "task_id": row["task_id"],
                 "subject": row["subject"],
-                "suggested_contaminated": bool(
-                    match["exact"]
-                    or match["ngram_score"] >= thresholds["ngram_threshold"]
-                    or match["semantic_score"] >= thresholds["semantic_threshold"]
-                ),
+                "suggested_contaminated": suspect(row),
                 "match": match,
                 "decision": "pending",
                 "reviewer": "",

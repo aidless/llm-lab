@@ -23,16 +23,28 @@ REQUIRED_NONEMPTY = {
     "readyz.json",
     "readyz-after-restart.json",
     "evaluate.json",
+    "job-submit.json",
+    "job-status.json",
+    "job-idempotent.json",
+    "job-before-restart.json",
+    "job-after-worker-restart.json",
     "concurrency-smoke.json",
     "metrics.txt",
     "resources.txt",
     "deployment-live.json",
+    "worker-deployment-live.json",
     "service-live.json",
     "configmap-live.json",
     "networkpolicy-live.json",
+    "worker-networkpolicy-live.json",
+    "pvc-live.json",
+    "pdb-live.json",
     "pod-before.json",
     "pod-after.json",
     "pods-after.json",
+    "worker-pod-before.json",
+    "worker-pod-after.json",
+    "worker-restart-request.txt",
     "events.txt",
     "restart-result.txt",
     "kind-clusters.txt",
@@ -75,7 +87,7 @@ def _container(pod: dict[str, Any]) -> dict[str, Any] | None:
     if not isinstance(containers, list):
         return None
     for container in containers:
-        if isinstance(container, dict) and container.get("name") == "service":
+        if isinstance(container, dict) and container.get("name") in {"service", "worker"}:
             return container
     return None
 
@@ -85,6 +97,31 @@ def _ready(pod: dict[str, Any]) -> bool:
     return any(
         item.get("type") == "Ready" and item.get("status") == "True" for item in conditions if isinstance(item, dict)
     )
+
+
+def _policy_types(policy: dict[str, Any]) -> set[str]:
+    values = policy.get("spec", {}).get("policyTypes", [])
+    if not isinstance(values, list):
+        return set()
+    return {value for value in values if isinstance(value, str)}
+
+
+def _verify_worker_network_policy(
+    policy: dict[str, Any],
+    errors: list[str],
+) -> None:
+    """An omitted or empty ingress list means deny-all ingress."""
+    if not {"Ingress", "Egress"}.issubset(_policy_types(policy)):
+        errors.append("worker network policy does not restrict both ingress and egress")
+    spec = policy.get("spec", {})
+    if not isinstance(spec, dict):
+        errors.append("worker network policy spec is invalid")
+        return
+    ingress = spec.get("ingress", [])
+    if ingress is None:
+        return
+    if not isinstance(ingress, list) or ingress:
+        errors.append("worker network policy unexpectedly permits ingress")
 
 
 def _pod_security(
@@ -193,6 +230,8 @@ def _verify_manifests(
         errors.append("configmap task limit mismatch")
     if data.get("EVAL_MAX_CONCURRENCY") != "32":
         errors.append("configmap concurrency limit mismatch")
+    if "Ingress" not in _policy_types(network_policy):
+        errors.append("network policy does not declare Ingress")
     ingress = network_policy.get("spec", {}).get("ingress", [])
     if not ingress:
         errors.append("network policy has no ingress rule")
@@ -258,12 +297,44 @@ def _verify_runtime_evidence(
         errors.append("pod replacement evidence is missing")
     if restart.get("replacement_restart_count") != "0":
         errors.append("replacement pod reports restarts")
+    if restart.get("job_id") is None or restart.get("restart_job_id") is None:
+        errors.append("restart evidence does not identify durable jobs")
+    if restart.get("restart_job_state") != "completed":
+        errors.append("job did not recover after worker replacement")
     checks["restart"] = restart
+
+    job_submit = _read_json(evidence / "job-submit.json")
+    job_status = _read_json(evidence / "job-status.json")
+    idempotent = _read_json(evidence / "job-idempotent.json")
+    restart_job = _read_json(evidence / "job-after-worker-restart.json")
+    if job_submit.get("existing") is not False:
+        errors.append("first durable job submission unexpectedly reports existing=true")
+    if job_status.get("state") != "completed":
+        errors.append("durable worker job is not completed")
+    if idempotent.get("existing") is not True:
+        errors.append("idempotent resubmission created a duplicate job")
+    if idempotent.get("job_id") != job_submit.get("job_id"):
+        errors.append("idempotent resubmission returned a different job id")
+    if restart_job.get("state") != "completed":
+        errors.append("second durable job is not completed after worker restart")
+    if restart_job.get("result", {}).get("summary", {}).get("correct") != 1:
+        errors.append("recovered job did not return the expected result")
+    checks["durable_jobs"] = {
+        "job_id": job_submit.get("job_id"),
+        "restart_job_id": restart.get("restart_job_id"),
+        "idempotent": idempotent.get("existing"),
+    }
 
     before = _read_json(evidence / "pod-before.json")
     after = _read_json(evidence / "pod-after.json")
+    worker_before = _read_json(evidence / "worker-pod-before.json")
+    worker_after = _read_json(evidence / "worker-pod-after.json")
     _pod_security(before, label="pod-before", errors=errors)
     _pod_security(after, label="pod-after", errors=errors)
+    _pod_security(worker_before, label="worker-pod-before", errors=errors)
+    _pod_security(worker_after, label="worker-pod-after", errors=errors)
+    if worker_before.get("metadata", {}).get("uid") == worker_after.get("metadata", {}).get("uid"):
+        errors.append("worker pod was not replaced")
     if before.get("metadata", {}).get("uid") == after.get("metadata", {}).get("uid"):
         errors.append("pod-before and pod-after have the same Kubernetes UID")
 
@@ -271,12 +342,23 @@ def _verify_runtime_evidence(
         _read_json(evidence / "deployment-live.json"),
         errors,
     )
+    worker_deployment = _read_json(evidence / "worker-deployment-live.json")
+    if worker_deployment.get("status", {}).get("readyReplicas") != 1:
+        errors.append("worker deployment does not report one ready replica")
     _verify_manifests(
         service=_read_json(evidence / "service-live.json"),
         configmap=_read_json(evidence / "configmap-live.json"),
         network_policy=_read_json(evidence / "networkpolicy-live.json"),
         errors=errors,
     )
+    worker_policy = _read_json(evidence / "worker-networkpolicy-live.json")
+    _verify_worker_network_policy(worker_policy, errors)
+    pvc = _read_json(evidence / "pvc-live.json")
+    if pvc.get("status", {}).get("phase") != "Bound":
+        errors.append("job database PVC is not bound")
+    pdb = _read_json(evidence / "pdb-live.json")
+    if pdb.get("spec", {}).get("minAvailable") != 0:
+        errors.append("PDB evidence mismatch")
 
     clusters = (evidence / "kind-clusters.txt").read_text(encoding="utf-8").splitlines()
     if not clusters:

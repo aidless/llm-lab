@@ -19,6 +19,8 @@ virtualenv/
 # Runtime / artifacts
 llm_lab.db
 *.db
+jobs.sqlite3
+jobs.sqlite3-*
 .coverage
 .coverage.*
 # Build artifacts (not source)

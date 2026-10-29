@@ -1,0 +1,1 @@
+{"schema_version":"kube-eval.job.v1","job_id":"e99324fe6f614c39ab5ddfaf60ea6cb1","state":"queued","existing":false,"status_url":"/v1/jobs/e99324fe6f614c39ab5ddfaf60ea6cb1","cancel_url":"/v1/jobs/e99324fe6f614c39ab5ddfaf60ea6cb1/cancel"}

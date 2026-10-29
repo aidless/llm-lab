@@ -42,11 +42,17 @@ def _markdown(summary: dict[str, Any]) -> str:
         f"| `{pair['pair']}` | {pair['agree']}/{pair['total']} | {pair['rate']:.2%} |"
         for pair in summary["ollama_201"]["repeat_consistency"]
     )
+    opencompass = summary["opencompass_export"]
     return f"""# Eval Infra Adapter Evidence
 
 > **本地安全评测，不是生产安全系统。 Local safety evaluation, not a production security system.**
 
 - Contract smoke: **{"PASS" if summary["contract_smoke"]["ok"] else "FAIL"}**
+- Contract smoke identity: **{summary["contract_smoke"]["implementation"]}**,
+  real vLLM/LMDeploy executed: **False**
+- OpenCompass config export: **{opencompass["status"]}**
+- OpenCompass official interface contract: **{opencompass["official_interface_contract"]["status"]}**
+- OpenCompass runtime CPU probe: **{opencompass["official_interface_contract"]["runtime_probe"]["status"]}**
 - Real Ollama OpenAI-compatible probe: **{"PASS" if summary["real_ollama_probe"]["ok"] else "FAIL"}**
 - GPU acceptance: **{summary["gpu_acceptance"]["status"]}**
 - vLLM / LMDeploy executed: **False**
@@ -70,6 +76,20 @@ Model: `{summary["ollama_201"]["model"]}`
 These are local CPU Ollama results, not GPU serving throughput, not a production SLO,
 and not an official C-Eval leaderboard result.
 
+## OpenCompass export
+
+- Config: `{opencompass["combined_config"]}`
+- Frozen C-Eval rows: **{opencompass["dataset"]["rows"]}**
+- Dataset SHA-256: `{opencompass["dataset"]["jsonl_sha256"]}`
+- Endpoint scope: **{opencompass["endpoint"]["host_scope"]}**
+- API key exported: **{opencompass["endpoint"]["api_key_exported"]}**
+- Official OpenCompass execution: **{opencompass["claims"]["official_opencompass_execution"]}**
+
+The export is executable when a compatible endpoint and an official OpenCompass
+installation are supplied separately. The offline contract verifies the pinned
+imports/fields and the frozen 201-row input; it does not start a model or call an
+endpoint. The fake OpenAI server remains a fixture, not a vLLM/LMDeploy execution.
+
 ## GPU blockers
 
 - NVIDIA device available: **{summary["gpu_acceptance"]["gpu_available"]}**
@@ -77,14 +97,16 @@ and not an official C-Eval leaderboard result.
 - LMDeploy module installed: **{summary["gpu_acceptance"]["lmdeploy_installed"]}**
 - Real C=1/4/8 GPU OOM and throughput experiment: **not executed**
 
-The adapter command generation, process lifecycle, HTTP contract, error taxonomy and
-201-task runner integration are tested. A real GPU acceptance run remains blocked by
-the host environment and requires separately authorized GPU resources.
+The adapter command generation, process lifecycle, HTTP contract, error taxonomy,
+OpenCompass config/data export and 201-task runner integration are tested. A real
+GPU acceptance run remains blocked by the host environment and requires separately
+authorized GPU resources.
 """
 
 
 def main() -> int:
     contract = _json(EVIDENCE / "report.json")
+    opencompass = _json(EVIDENCE / "opencompass-export.json")
     probe = _json(EVIDENCE / "ollama-probe.json")
     environment = _json(EVIDENCE / "environment.json")
     evalops = _json(EVALOPS_SUMMARY)
@@ -104,7 +126,19 @@ def main() -> int:
         "contract_smoke": {
             "ok": bool(contract.get("ok")),
             "backends": [str(item.get("backend")) for item in contract.get("backends", [])],
+            "implementation": "deterministic_openai_compatible_fixture",
+            "real_backends_executed": False,
             "source_sha256": _sha256(EVIDENCE / "report.json"),
+        },
+        "opencompass_export": {
+            "status": opencompass["status"],
+            "source_sha256": _sha256(EVIDENCE / "opencompass-export.json"),
+            "combined_config": "opencompass-export/eval-infra-openai-api.py",
+            "official_interface_contract": opencompass["official_interface_contract"],
+            "dataset": opencompass["dataset"],
+            "endpoint": opencompass["endpoint"],
+            "claims": opencompass["claims"],
+            "limitations": opencompass["limitations"],
         },
         "real_ollama_probe": {
             "ok": bool(probe.get("ok")),
@@ -139,15 +173,20 @@ def main() -> int:
         },
         "claims": {
             "openai_compatible_contract": True,
-            "real_local_ollama_probe": bool(probe.get("ok")),
+            "fake_openai_fixture": True,
             "real_vllm_execution": False,
             "real_lmdeploy_execution": False,
+            "opencompass_config_exported": True,
+            "official_opencompass_execution": False,
+            "official_ceval_leaderboard": False,
+            "real_local_ollama_probe": bool(probe.get("ok")),
             "gpu_throughput": False,
             "production_slo": False,
         },
         "limitations": [
             "The vLLM and LMDeploy contract smoke uses a deterministic localhost fixture.",
             "The 201-task C=1/4/8 measurements were collected with Ollama on CPU.",
+            "The OpenCompass export is statically checked against a pinned official API; the external runner was not executed here.",
             "No GPU, multi-GPU, OOM, production latency or official leaderboard claim is made.",
         ],
     }

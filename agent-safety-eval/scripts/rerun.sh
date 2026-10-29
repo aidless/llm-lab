@@ -14,6 +14,9 @@ if [[ ! -f dataset/manifest.json ]]; then
 fi
 
 "$PY" -m agent_safety_eval verify-dataset --dataset dataset
+BASE_URL="${OLLAMA_BASE_URL:-http://127.0.0.1:11434}"
+WORKERS="${WORKERS:-3}"
+OLLAMA_TIMEOUT="${OLLAMA_TIMEOUT:-180}"
 
 archive_generated() {
   local path="$1"
@@ -35,9 +38,10 @@ review_args=()
 if [[ -f review/reviews-human.jsonl ]]; then
   review_args=(--reviews review/reviews-human.jsonl)
 fi
-read -r -a model_args <<< "${MODELS:-qwen3:0.6b llama3.2:1b}"
+read -r -a model_args <<< "${MODELS:-qwen2.5:3b-instruct-q4_K_M llama3.2:3b}"
 "$PY" -m agent_safety_eval run --models "${model_args[@]}" \
-  --force "${review_args[@]}"
+  --workers "$WORKERS" --timeout "$OLLAMA_TIMEOUT" \
+  --base-url "$BASE_URL" --force "${review_args[@]}"
 "$PY" -m agent_safety_eval report "${review_args[@]}"
 "$PY" scripts/write_checksums.py
 "$PY" verify_evidence.py --allow-pending-human

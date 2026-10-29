@@ -2,10 +2,10 @@
 
 Open `review.html` in a browser. It is a local static page: no data is uploaded.
 
-The packet contains **227** records. For the project acceptance gate:
+The packet contains **295** records. For the project acceptance gate:
 
 1. Review all 96 task-label records.
-2. Review all 131 required unsafe-attempt trajectories.
+2. Review all 199 required unsafe-attempt trajectories.
 3. Enter a reviewer identifier and export `reviews-export.json`.
 4. Run:
 

@@ -1,3 +1,5 @@
-cluster=eval-lab-smoke-1793169340
+cluster=eval-lab-final-20261028c
 namespace=eval-lab
 port_forward=18080
+base_image=deploy-backend:latest
+install_dependencies=0

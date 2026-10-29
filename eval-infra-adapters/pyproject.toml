@@ -31,9 +31,15 @@ timeout = 30
 [tool.ruff]
 target-version = "py310"
 line-length = 120
+# The export directory is a generated artifact for an external OpenCompass run,
+# not package source; it is verified by hashes instead of lint rules.
+extend-exclude = ["opencompass-export"]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I", "UP", "B", "SIM", "ARG"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["ARG001", "S101"]
+
+[tool.mypy]
+exclude = ["^opencompass-export/"]

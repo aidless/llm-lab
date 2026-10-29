@@ -1,59 +1,59 @@
 {
-  "captured_at_utc": "2026-10-28T07:02:40Z",
-  "cpu_count": 16,
+  "captured_at_utc": "2026-10-29T08:35:18Z",
+  "cpu_count": 128,
   "mock_only": true,
   "models": {
-    "llama3.2:1b": {
+    "llama3.2:3b": {
       "capabilities": [
         "completion",
         "tools"
       ],
       "details": {
         "context_length": 131072,
-        "embedding_length": 2048,
+        "embedding_length": 3072,
         "families": [
           "llama"
         ],
         "family": "llama",
         "format": "gguf",
-        "parameter_size": "1.2B",
-        "parent_model": "",
-        "quantization_level": "Q8_0"
-      },
-      "digest": "baf6a787fdffd633537aa2eb51cfd54cb93ff08e28040095462bb63daf552878",
-      "size_bytes": 1321098329
-    },
-    "qwen3:0.6b": {
-      "capabilities": [
-        "completion",
-        "tools",
-        "thinking"
-      ],
-      "details": {
-        "context_length": 40960,
-        "embedding_length": 1024,
-        "families": [
-          "qwen3"
-        ],
-        "family": "qwen3",
-        "format": "gguf",
-        "parameter_size": "751.63M",
+        "parameter_size": "3.2B",
         "parent_model": "",
         "quantization_level": "Q4_K_M"
       },
-      "digest": "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435",
-      "size_bytes": 522653767
+      "digest": "042b60529b26566dcc749a20aeb2d20a12e4cebd46daecdd7a256f373b319391",
+      "size_bytes": 2019392810
+    },
+    "qwen2.5:3b-instruct-q4_K_M": {
+      "capabilities": [
+        "completion",
+        "tools"
+      ],
+      "details": {
+        "context_length": 32768,
+        "embedding_length": 2048,
+        "families": [
+          "qwen2"
+        ],
+        "family": "qwen2",
+        "format": "gguf",
+        "parameter_size": "3.1B",
+        "parent_model": "",
+        "quantization_level": "Q4_K_M"
+      },
+      "digest": "a929e7aef1fa0712c827f6c6421b29e8738f28cf080efa88e42b38459ae8dc50",
+      "size_bytes": 1929912129
     }
   },
   "nvidia_smi": {
     "error": "FileNotFoundError: nvidia-smi"
   },
   "ollama": {
+    "endpoint": "http://127.0.0.1:11435",
     "version": {
       "version": "0.33.3"
     }
   },
-  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "platform": "Linux-6.8.0-79-generic-x86_64-with-glibc2.39",
   "processor": "x86_64",
-  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  "python": "3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]"
 }

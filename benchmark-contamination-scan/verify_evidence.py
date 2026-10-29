@@ -54,10 +54,12 @@ def _wilson(successes: int, total: int, z: float = 1.96) -> dict[str, float]:
 
 
 def _suspect(match: dict[str, Any], ngram_threshold: float, semantic_threshold: float) -> bool:
+    lexical = match.get("lexical_match") or match
+    semantic = match.get("semantic_match") or match
     return bool(
-        match["exact"]
-        or float(match["ngram_score"]) >= ngram_threshold
-        or float(match["semantic_score"]) >= semantic_threshold
+        lexical.get("exact")
+        or float(lexical.get("ngram_score", 0.0)) >= ngram_threshold
+        or float(semantic.get("semantic_score", 0.0)) >= semantic_threshold
     )
 
 

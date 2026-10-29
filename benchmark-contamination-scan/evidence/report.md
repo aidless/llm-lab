@@ -6,18 +6,18 @@
 - Frozen tasks: **201**
 - Corpus documents: **240**
 - N-gram threshold: `0.40`
-- Semantic threshold: `0.90`
+- Semantic threshold: `0.95`
 
 ## Test metrics
 
 | Metric | Value | 95% Wilson |
 |---|---:|---:|
-| Contamination rate | 25.7% | n/a |
-| False positive rate | 1.4% | [0.2%, 7.6%] |
-| False negative rate | 13.3% | [5.3%, 29.7%] |
-| Precision | 96.3% | n/a |
-| Recall | 86.7% | n/a |
-| F1 | 0.912 | n/a |
+| Contamination rate | 29.7% | n/a |
+| False positive rate | 0.0% | [0.0%, 5.1%] |
+| False negative rate | 0.0% | [0.0%, 11.4%] |
+| Precision | 100.0% | n/a |
+| Recall | 100.0% | n/a |
+| F1 | 1.000 | n/a |
 
 ## Gate
 

@@ -2,6 +2,8 @@
   "backends": [
     {
       "backend": "vllm",
+      "backend_contract_only": true,
+      "execution_kind": "deterministic_openai_compatible_fixture",
       "generated_serve_command": [
         "vllm",
         "serve",
@@ -9,38 +11,40 @@
         "--host",
         "127.0.0.1",
         "--port",
-        "38409",
+        "33855",
         "--tensor-parallel-size",
         "1"
       ],
-      "generated_serve_command_shell": "vllm serve fixture-model --host 127.0.0.1 --port 38409 --tensor-parallel-size 1",
+      "generated_serve_command_executed": false,
+      "generated_serve_command_shell": "vllm serve fixture-model --host 127.0.0.1 --port 33855 --tensor-parallel-size 1",
+      "implementation": "scripts/fake_openai_server.py",
       "logs": {
         "stderr": "vllm-server-logs/server.stderr.log",
         "stdout": "vllm-server-logs/server.stdout.log"
       },
       "managed_process": {
-        "command": "<python> eval-infra-adapters/scripts/fake_openai_server.py --port 38409 --backend vllm",
-        "elapsed_seconds": 0.1563223810007912,
+        "command": "<python> eval-infra-adapters/scripts/fake_openai_server.py --port 33855 --backend vllm",
+        "elapsed_seconds": 0.14901488399482332,
         "health_status": 200,
         "models": [
           "fixture-model"
         ],
-        "pid": 1074837,
+        "pid": 3983261,
         "ready": true,
         "return_code": -15,
-        "startup_seconds": 0.09012211200024467,
+        "startup_seconds": 0.08626966900192201,
         "stderr_log": "vllm-server-logs/server.stderr.log",
         "stdout_log": "vllm-server-logs/server.stdout.log",
         "stopped": true
       },
       "probe": {
         "backend": "vllm",
-        "base_url": "http://127.0.0.1:38409",
+        "base_url": "http://127.0.0.1:33855",
         "checks": {
           "chat": {
             "content": "OK",
             "finish_reason": "stop",
-            "latency_ms": 0.9290460002375767,
+            "latency_ms": 0.931557995500043,
             "model": "fixture-model",
             "usage": {
               "completion_tokens": 1,
@@ -49,15 +53,15 @@
             }
           },
           "health": {
-            "latency_ms": 1.0984140026266687,
+            "latency_ms": 1.2394229997880757,
             "ok": true,
             "status": 200
           },
           "identity": {
             "backend": "vllm",
-            "base_url": "http://127.0.0.1:38409",
+            "base_url": "http://127.0.0.1:33855",
             "health_status": 200,
-            "latency_ms": 1.0984140026266687,
+            "latency_ms": 1.2394229997880757,
             "models": [
               "fixture-model"
             ]
@@ -69,10 +73,13 @@
         "error": null,
         "error_class": null,
         "ok": true
-      }
+      },
+      "real_backend_executed": false
     },
     {
       "backend": "lmdeploy",
+      "backend_contract_only": true,
+      "execution_kind": "deterministic_openai_compatible_fixture",
       "generated_serve_command": [
         "lmdeploy",
         "serve",
@@ -81,38 +88,40 @@
         "--server-name",
         "127.0.0.1",
         "--server-port",
-        "33513",
+        "58779",
         "--tp",
         "1"
       ],
-      "generated_serve_command_shell": "lmdeploy serve api_server fixture-model --server-name 127.0.0.1 --server-port 33513 --tp 1",
+      "generated_serve_command_executed": false,
+      "generated_serve_command_shell": "lmdeploy serve api_server fixture-model --server-name 127.0.0.1 --server-port 58779 --tp 1",
+      "implementation": "scripts/fake_openai_server.py",
       "logs": {
         "stderr": "lmdeploy-server-logs/server.stderr.log",
         "stdout": "lmdeploy-server-logs/server.stdout.log"
       },
       "managed_process": {
-        "command": "<python> eval-infra-adapters/scripts/fake_openai_server.py --port 33513 --backend lmdeploy",
-        "elapsed_seconds": 0.13159511200137786,
+        "command": "<python> eval-infra-adapters/scripts/fake_openai_server.py --port 58779 --backend lmdeploy",
+        "elapsed_seconds": 0.269652456001495,
         "health_status": 200,
         "models": [
           "fixture-model"
         ],
-        "pid": 1074843,
+        "pid": 3983267,
         "ready": true,
         "return_code": -15,
-        "startup_seconds": 0.06403843199950643,
+        "startup_seconds": 0.2043270529975416,
         "stderr_log": "lmdeploy-server-logs/server.stderr.log",
         "stdout_log": "lmdeploy-server-logs/server.stdout.log",
         "stopped": true
       },
       "probe": {
         "backend": "lmdeploy",
-        "base_url": "http://127.0.0.1:33513",
+        "base_url": "http://127.0.0.1:58779",
         "checks": {
           "chat": {
             "content": "OK",
             "finish_reason": "stop",
-            "latency_ms": 3.7107349999132566,
+            "latency_ms": 2.928490997874178,
             "model": "fixture-model",
             "usage": {
               "completion_tokens": 1,
@@ -121,15 +130,15 @@
             }
           },
           "health": {
-            "latency_ms": 1.5691529988544062,
+            "latency_ms": 1.015089001157321,
             "ok": true,
             "status": 200
           },
           "identity": {
             "backend": "lmdeploy",
-            "base_url": "http://127.0.0.1:33513",
+            "base_url": "http://127.0.0.1:58779",
             "health_status": 200,
-            "latency_ms": 1.5691529988544062,
+            "latency_ms": 1.015089001157321,
             "models": [
               "fixture-model"
             ]
@@ -141,14 +150,16 @@
         "error": null,
         "error_class": null,
         "ok": true
-      }
+      },
+      "real_backend_executed": false
     }
   ],
   "boundary": "\u672c\u5730\u5b89\u5168\u8bc4\u6d4b\uff0c\u4e0d\u662f\u751f\u4ea7\u5b89\u5168\u7cfb\u7edf\u3002 Local contract smoke, not a GPU serving benchmark or production security system.",
   "limitations": [
     "This is a localhost OpenAI-compatible fixture, not a real vLLM or LMDeploy server.",
     "The host has no usable NVIDIA GPU and neither serving package was executed.",
-    "Passing this smoke proves the adapter and process lifecycle only."
+    "Passing this smoke proves the adapter, fixture compatibility and process lifecycle only.",
+    "The generated vLLM/LMDeploy commands are displayed but intentionally not executed."
   ],
   "ok": true,
   "schema_version": "eval-infra.contract-smoke.v1"

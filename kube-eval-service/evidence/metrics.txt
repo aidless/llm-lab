@@ -9,4 +9,10 @@ eval_service_tasks_total 100
 eval_service_errors_total 0
 # HELP eval_service_request_latency_seconds Average request latency.
 # TYPE eval_service_request_latency_seconds gauge
-eval_service_request_latency_seconds 0.001634
+eval_service_request_latency_seconds 0.003083
+# HELP eval_service_jobs_total Durable jobs submitted.
+# TYPE eval_service_jobs_total counter
+eval_service_jobs_total 1
+# HELP eval_service_job_cancellations_total Job cancellation requests.
+# TYPE eval_service_job_cancellations_total counter
+eval_service_job_cancellations_total 0

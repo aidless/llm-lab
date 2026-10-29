@@ -1,11 +1,14 @@
 NAME                                READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                  SELECTOR
-deployment.apps/kube-eval-service   1/1     1            1           7s    service      kube-eval-service:dev   app.kubernetes.io/name=kube-eval-service
+deployment.apps/kube-eval-service   1/1     1            1           11s   service      kube-eval-service:dev   app.kubernetes.io/name=kube-eval-service
+deployment.apps/kube-eval-worker    1/1     1            1           11s   worker       kube-eval-service:dev   app.kubernetes.io/name=kube-eval-worker
 
-NAME                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR
-service/kube-eval-service   ClusterIP   10.96.122.146   <none>        8080/TCP   7s    app.kubernetes.io/name=kube-eval-service
+NAME                        TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/kube-eval-service   ClusterIP   10.96.10.86   <none>        8080/TCP   11s   app.kubernetes.io/name=kube-eval-service
 
-NAME                                    READY   STATUS    RESTARTS   AGE   IP           NODE                                      NOMINATED NODE   READINESS GATES
-pod/kube-eval-service-7b686ccf5-wmqrj   1/1     Running   0          7s    10.244.0.5   eval-lab-smoke-1793169340-control-plane   <none>           <none>
+NAME                                     READY   STATUS    RESTARTS   AGE   IP           NODE                                     NOMINATED NODE   READINESS GATES
+pod/kube-eval-service-69568cf5c4-zr9dw   1/1     Running   0          11s   10.244.0.6   eval-lab-final-20261028c-control-plane   <none>           <none>
+pod/kube-eval-worker-f97d5ddc8-qk9gz     1/1     Running   0          11s   10.244.0.7   eval-lab-final-20261028c-control-plane   <none>           <none>
 
 NAME                                                POD-SELECTOR                               AGE
-networkpolicy.networking.k8s.io/kube-eval-service   app.kubernetes.io/name=kube-eval-service   6s
+networkpolicy.networking.k8s.io/kube-eval-service   app.kubernetes.io/name=kube-eval-service   11s
+networkpolicy.networking.k8s.io/kube-eval-worker    app.kubernetes.io/name=kube-eval-worker    11s

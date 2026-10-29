@@ -12,6 +12,7 @@ import subprocess
 import sys
 import time
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +27,7 @@ from llm_lab.safety.models import (
 from llm_lab.safety.runner import (
     ChatModel,
     SafetyRunConfig,
+    SafetyRunError,
     ScriptedChatModel,
     Trajectory,
     aggregate_trajectories,
@@ -58,7 +60,8 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DATASET = ROOT / "dataset"
 DEFAULT_EVIDENCE = ROOT / "evidence"
 DEFAULT_REVIEW = ROOT / "review"
-DEFAULT_MODELS = ["qwen3:0.6b", "llama3.2:1b"]
+DEFAULT_MODELS = ["qwen2.5:3b-instruct-q4_K_M", "llama3.2:3b"]
+DEFAULT_ARMS = ["off", "prompt", "gate", "on"]
 
 
 def _resolve_review_dir(
@@ -154,7 +157,9 @@ def select_stratified_tasks(tasks: list[SafetyTask], limit: int) -> list[SafetyT
     return [task for task in tasks if task.id in selected_ids]
 
 
-def _environment(models: list[str], *, adapter: str) -> dict[str, Any]:
+def _environment(
+    models: list[str], *, adapter: str, base_url: str
+) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "captured_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "platform": platform.platform(),
@@ -168,10 +173,16 @@ def _environment(models: list[str], *, adapter: str) -> dict[str, Any]:
     if adapter == "deterministic":
         payload["models"] = {model: {"fixture": True} for model in models}
         return payload
+    # Probe the same endpoint the run actually used; a hard-coded default
+    # would record another instance's models or an unreachable port.
+    api_root = base_url.rstrip("/")
+    if api_root.endswith("/v1"):
+        api_root = api_root[: -len("/v1")]
+    payload["ollama"]["endpoint"] = api_root
     try:
         with httpx.Client(timeout=10.0) as client:
-            tags = client.get("http://127.0.0.1:11434/api/tags").json()
-            version = client.get("http://127.0.0.1:11434/api/version").json()
+            tags = client.get(f"{api_root}/api/tags").json()
+            version = client.get(f"{api_root}/api/version").json()
         payload["ollama"]["version"] = version
         by_name = {str(item.get("name")): item for item in tags.get("models", []) if isinstance(item, dict)}
         for model in models:
@@ -252,9 +263,19 @@ def command_run(args: argparse.Namespace) -> int:
     elif args.max_tasks:
         tasks = tasks[: args.max_tasks]
         selection_mode = f"head-{len(tasks)}"
-    policies = [item.strip() for item in args.policies.split(",") if item.strip()]
-    if not set(policies).issubset({"off", "on"}):
-        raise SystemExit("--policies must contain only off and/or on")
+    raw_arms = args.arms if args.arms is not None else args.policies
+    arms = [item.strip() for item in raw_arms.split(",") if item.strip()]
+    if not arms or not set(arms).issubset(set(DEFAULT_ARMS)):
+        raise SystemExit("--arms must contain only off, prompt, gate and/or on")
+    if len(arms) != len(set(arms)):
+        raise SystemExit("--arms must not contain duplicates")
+    workers = max(1, int(args.workers))
+    if args.adapter == "deterministic" and workers != 1:
+        print(
+            "deterministic adapter is stateful; forcing --workers 1",
+            file=sys.stderr,
+        )
+        workers = 1
     reviews, review_rows = _load_task_reviews(Path(args.reviews) if args.reviews else None)
     try:
         preflight_empty_output(review_dir, "review")
@@ -263,7 +284,11 @@ def command_run(args: argparse.Namespace) -> int:
     _ensure_output(evidence, force=args.force)
     write_json(
         evidence / "environment.json",
-        _environment(args.models, adapter=args.adapter),
+        _environment(
+            args.models,
+            adapter=args.adapter,
+            base_url=args.base_url,
+        ),
     )
     selection = {
         "mode": selection_mode,
@@ -291,7 +316,7 @@ def command_run(args: argparse.Namespace) -> int:
                 think=args.think,
             )
         try:
-            for policy_mode in policies:
+            for policy_mode in arms:
                 config = SafetyRunConfig(
                     provider=args.adapter,
                     model=model,
@@ -310,24 +335,33 @@ def command_run(args: argparse.Namespace) -> int:
                     flush=True,
                 )
                 started = time.perf_counter()
-                trajectories = []
-                for index, task in enumerate(tasks, 1):
-                    trajectory = run_task(
-                        task,
-                        client,
-                        config,
-                        review=reviews.get(task.id),
-                    )
-                    trajectories.append(trajectory)
-                    if index % 8 == 0 or index == len(tasks):
-                        print(
-                            f"  {index}/{len(tasks)} trajectories",
-                            file=sys.stderr,
-                            flush=True,
-                        )
+                trajectories: list[Trajectory | None] = [None] * len(tasks)
+                with ThreadPoolExecutor(max_workers=min(workers, len(tasks))) as executor:
+                    futures = {
+                        executor.submit(
+                            run_task,
+                            task,
+                            client,
+                            config,
+                            review=reviews.get(task.id),
+                        ): index
+                        for index, task in enumerate(tasks)
+                    }
+                    for completed, future in enumerate(as_completed(futures), 1):
+                        index = futures[future]
+                        trajectories[index] = future.result()
+                        if completed % 8 == 0 or completed == len(tasks):
+                            print(
+                                f"  {completed}/{len(tasks)} trajectories",
+                                file=sys.stderr,
+                                flush=True,
+                            )
+                if any(item is None for item in trajectories):
+                    raise SafetyRunError("one or more trajectories did not complete")
+                completed_trajectories = [item for item in trajectories if item is not None]
                 wall_seconds = time.perf_counter() - started
                 aggregate = aggregate_trajectories(
-                    trajectories,
+                    completed_trajectories,
                     tasks=tasks,
                     config=config,
                     wall_seconds=wall_seconds,
@@ -335,7 +369,7 @@ def command_run(args: argparse.Namespace) -> int:
                 run_dir = evidence / "runs" / f"{_slug(model)}-policy-{policy_mode}"
                 write_jsonl(
                     run_dir / "trajectories.jsonl",
-                    [item.to_dict() for item in trajectories],
+                    [item.to_dict() for item in completed_trajectories],
                 )
                 write_json(run_dir / "report.json", aggregate)
                 run_payload = {
@@ -350,7 +384,7 @@ def command_run(args: argparse.Namespace) -> int:
                 }
                 write_json(run_dir / "run-meta.json", run_payload)
                 runs.append(aggregate)
-                trajectories_all.extend(item.to_dict() for item in trajectories)
+                trajectories_all.extend(item.to_dict() for item in completed_trajectories)
         finally:
             if hasattr(client, "close"):
                 client.close()
@@ -524,16 +558,31 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("ollama", "deterministic"),
         default="ollama",
     )
-    run.add_argument("--policies", default="off,on")
+    run.add_argument(
+        "--arms",
+        default=",".join(DEFAULT_ARMS),
+        help="Comma-separated interventions: off, prompt, gate, on (all four by default)",
+    )
+    run.add_argument(
+        "--policies",
+        default=None,
+        help="Deprecated alias for --arms; accepts off, prompt, gate, on.",
+    )
     run.add_argument("--base-url", default="http://127.0.0.1:11434")
     run.add_argument("--reviews", default="")
-    run.add_argument("--timeout", type=float, default=90.0)
+    run.add_argument("--timeout", type=float, default=180.0)
     run.add_argument("--retries", type=int, default=1)
     run.add_argument("--max-tokens", type=int, default=160)
     run.add_argument("--seed", type=int, default=0)
     run.add_argument("--think", action="store_true")
     run.add_argument("--max-tasks", type=int, default=0)
     run.add_argument("--stratified-smoke", type=int, default=0)
+    run.add_argument(
+        "--workers",
+        type=int,
+        default=3,
+        help="Concurrent task workers within one model/arm (Ollama only; default: 3)",
+    )
     run.add_argument(
         "--review-output",
         default=None,

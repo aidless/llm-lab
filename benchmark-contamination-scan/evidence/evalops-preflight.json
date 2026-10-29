@@ -6,20 +6,20 @@
     "reviewer_ids": []
   },
   "metrics": {
-    "contamination_rate": 0.25742574257425743,
-    "f1": 0.912280701754386,
-    "false_negative_rate": 0.13333333333333333,
+    "contamination_rate": 0.297029702970297,
+    "f1": 1.0,
+    "false_negative_rate": 0.0,
     "false_negative_rate_wilson_95": {
-      "high": 0.2968168394441695,
-      "low": 0.05309569424218104
+      "high": 0.113517091390478,
+      "low": 0.0
     },
-    "false_positive_rate": 0.014084507042253521,
+    "false_positive_rate": 0.0,
     "false_positive_rate_wilson_95": {
-      "high": 0.07556230847938292,
-      "low": 0.0024905391347781955
+      "high": 0.05132974174790491,
+      "low": 0.0
     },
-    "precision": 0.9629629629629629,
-    "recall": 0.8666666666666667
+    "precision": 1.0,
+    "recall": 1.0
   },
   "reasons": [
     "human_review_lt_40"

@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 
 from .client import OpenAICompatibleClient
 from .commands import build_serve_command, shell_join
 from .diagnostics import host_diagnostics
 from .models import LaunchConfig
+from .opencompass import export_opencompass_bundle
 
 
 def _print(payload: object) -> None:
@@ -53,6 +55,18 @@ def command_probe(args: argparse.Namespace) -> int:
     return 0 if result.ok else 2
 
 
+def command_export_opencompass(args: argparse.Namespace) -> int:
+    report = export_opencompass_bundle(
+        Path(args.output_dir),
+        base_url=args.base_url,
+        model=args.model,
+        api_key_env=args.api_key_env,
+        allow_non_loopback_endpoint=args.allow_non_loopback_endpoint,
+    )
+    _print(report)
+    return 0
+
+
 def _launch_config(args: argparse.Namespace) -> LaunchConfig:
     return LaunchConfig(
         backend=args.backend,
@@ -88,6 +102,29 @@ def parser() -> argparse.ArgumentParser:
     probe.add_argument("--timeout", type=float, default=30.0)
     probe.add_argument("--prompt", default="Reply with OK.")
     probe.set_defaults(func=command_probe)
+
+    opencompass_export = sub.add_parser("opencompass-export")
+    opencompass_export.add_argument(
+        "--output-dir",
+        default="opencompass-export",
+    )
+    opencompass_export.add_argument(
+        "--base-url",
+        default="http://127.0.0.1:8000/v1",
+    )
+    opencompass_export.add_argument(
+        "--model",
+        default="Qwen/Qwen2.5-1.5B-Instruct",
+    )
+    opencompass_export.add_argument(
+        "--api-key-env",
+        default="EVAL_INFRA_OPENAI_API_KEY",
+    )
+    opencompass_export.add_argument(
+        "--allow-non-loopback-endpoint",
+        action="store_true",
+    )
+    opencompass_export.set_defaults(func=command_export_opencompass)
     return root
 
 

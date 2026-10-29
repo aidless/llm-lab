@@ -34,7 +34,8 @@ decision are recorded through the review workflow.
 ## Intended Use
 
 - testing frozen-task hashes, trajectory capture and runtime policy plumbing;
-- comparing `policy-off` and `policy-on` behavior on mock tools;
+- separating prompt-only, runtime-gate-only and combined policy effects on
+  mock tools through the `off`, `prompt`, `gate`, `on` arms;
 - calibrating local judges and review workflows;
 - reproducing the checked-in local evidence.
 

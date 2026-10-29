@@ -47,12 +47,98 @@ def main() -> int:
     for item in backends:
         process = item.get("managed_process") or {}
         probe = item.get("probe") or {}
+        if item.get("implementation") != "scripts/fake_openai_server.py":
+            errors.append(f"{item.get('backend')}: fixture identity is not explicit")
+        if item.get("real_backend_executed") is not False:
+            errors.append(f"{item.get('backend')}: fake fixture is presented as a real backend")
+        if item.get("generated_serve_command_executed") is not False:
+            errors.append(f"{item.get('backend')}: generated serving command execution is ambiguous")
         if process.get("ready") is not True or process.get("stopped") is not True:
             errors.append(f"{item.get('backend')}: process lifecycle failed")
         if probe.get("ok") is not True:
             errors.append(f"{item.get('backend')}: HTTP probe failed")
         if not item.get("generated_serve_command"):
             errors.append(f"{item.get('backend')}: serve command missing")
+
+    opencompass = _read_json(evidence / "opencompass-export.json")
+    if opencompass.get("status") != "READY_TO_RUN_EXTERNALLY":
+        errors.append("OpenCompass export is not ready for external execution")
+    opencompass_contract = opencompass.get("official_interface_contract") or {}
+    if opencompass_contract.get("status") != "PASS_STATIC":
+        errors.append("OpenCompass official interface static contract did not pass")
+    runtime_probe = opencompass_contract.get("runtime_probe") or {}
+    if runtime_probe.get("status") not in {"NOT_RUN", "PASS_CPU_PARSE"}:
+        errors.append("OpenCompass runtime probe failed")
+    if runtime_probe.get("inference_executed") is not False:
+        errors.append("OpenCompass runtime probe claims model inference")
+    opencompass_dataset = opencompass.get("dataset") or {}
+    if (
+        opencompass_dataset.get("rows") != 201
+        or opencompass_dataset.get("jsonl_sha256")
+        != "a76b144743ebdff4cb45908a6e7d23253c84e7bd1fc5321ade2eeaf09fc2a802"
+    ):
+        errors.append("OpenCompass dataset is not the frozen 201-row C-Eval export")
+    endpoint = opencompass.get("endpoint") or {}
+    if endpoint.get("api_key_exported") is not False or endpoint.get("endpoint_called") is not False:
+        errors.append("OpenCompass endpoint/key boundary is ambiguous")
+    if endpoint.get("host_scope") not in {"loopback", "non_loopback_explicit"}:
+        errors.append("OpenCompass endpoint scope is missing")
+    opencompass_gpu = opencompass.get("gpu_acceptance") or {}
+    if opencompass_gpu.get("status") != "BLOCKED_ENVIRONMENT":
+        errors.append("OpenCompass GPU preflight did not report BLOCKED_ENVIRONMENT")
+    if opencompass_gpu.get("real_gpu_executed") is not False:
+        errors.append("OpenCompass export claims GPU execution")
+    opencompass_claims = opencompass.get("claims") or {}
+    for key in (
+        "official_opencompass_execution",
+        "gpu_execution",
+        "gpu_throughput",
+        "official_ceval_leaderboard",
+        "cpu_reported_as_gpu",
+    ):
+        if opencompass_claims.get(key) is not False:
+            errors.append(f"OpenCompass export overclaims {key}")
+    preserved_runs = (
+        opencompass.get("preserved_existing_evidence", {}).get("runs", [])
+    )
+    if sorted(run.get("concurrency") for run in preserved_runs) != [1, 4, 8]:
+        errors.append("OpenCompass export does not preserve C=1/4/8 evidence")
+    for run in preserved_runs:
+        if run.get("tasks") != 201 or run.get("success") != 201:
+            errors.append(
+                f"OpenCompass export preserved C={run.get('concurrency')} incompletely"
+            )
+
+    exported_root = ROOT / "opencompass-export"
+    manifest_path = exported_root / "export-manifest.json"
+    if not manifest_path.exists():
+        errors.append("OpenCompass export manifest is missing")
+    else:
+        export_manifest = _read_json(manifest_path)
+        if export_manifest != opencompass:
+            errors.append("OpenCompass evidence report differs from export manifest")
+        listed_export_files = {
+            item.get("path"): item.get("sha256")
+            for item in opencompass.get("files", [])
+        }
+        actual_export_files = {
+            path.relative_to(exported_root).as_posix(): _sha256(path)
+            for path in exported_root.rglob("*")
+            if path.is_file() and path.name != "export-manifest.json"
+        }
+        if listed_export_files != actual_export_files:
+            errors.append("OpenCompass export file hashes do not match the report")
+        contract_file = _read_json(exported_root / "official-api-contract.json")
+        if contract_file.get("opencompass_version") != "0.5.4":
+            errors.append("OpenCompass contract file has the wrong pinned version")
+        if contract_file.get("contract_validation", {}).get("status") != "PASS_STATIC":
+            errors.append("pinned OpenCompass contract file did not pass")
+        source_files = {
+            item.get("path"): item.get("sha256")
+            for item in contract_file.get("source_files", [])
+        }
+        if len(source_files) != 3:
+            errors.append("official OpenCompass source snapshot is incomplete")
 
     probe = _read_json(evidence / "ollama-probe.json")
     if probe.get("ok") is not True or (probe.get("probe") or {}).get("ok") is not True:
@@ -65,6 +151,10 @@ def main() -> int:
     summary = _read_json(evidence / "integration-summary.json")
     if summary.get("contract_smoke", {}).get("source_sha256") != _sha256(evidence / "report.json"):
         errors.append("integration summary is not bound to the current contract report")
+    if summary.get("opencompass_export", {}).get("source_sha256") != _sha256(
+        evidence / "opencompass-export.json"
+    ):
+        errors.append("integration summary is not bound to the current OpenCompass export")
     if summary.get("real_ollama_probe", {}).get("source_sha256") != _sha256(evidence / "ollama-probe.json"):
         errors.append("integration summary is not bound to the current Ollama probe")
     if not EVALOPS_SUMMARY.exists():
@@ -83,10 +173,16 @@ def main() -> int:
     if gpu.get("real_gpu_executed") is not False or gpu.get("status") != "BLOCKED_ENVIRONMENT":
         errors.append("GPU acceptance boundary is not explicit")
     claims = summary.get("claims", {})
-    for key in ("real_vllm_execution", "real_lmdeploy_execution", "gpu_throughput", "production_slo"):
+    for key in (
+        "real_vllm_execution",
+        "real_lmdeploy_execution",
+        "official_opencompass_execution",
+        "gpu_throughput",
+        "production_slo",
+    ):
         if claims.get(key) is not False:
             errors.append(f"summary overclaims {key}")
-    for name in ("report.md", "integration-summary.md"):
+    for name in ("report.md", "integration-summary.md", "opencompass-export.md"):
         text = (evidence / name).read_text(encoding="utf-8")
         if "不是生产安全系统" not in text:
             errors.append(f"{name} lacks the local-evaluation disclaimer")
@@ -122,7 +218,13 @@ def main() -> int:
             errors.append("SHA256SUMS does not cover exactly the evidence files")
 
     for path in evidence.rglob("*"):
-        if not path.is_file() or path.suffix.lower() not in {".json", ".md", ".txt", ".log"}:
+        if not path.is_file() or path.suffix.lower() not in {
+            ".json",
+            ".md",
+            ".txt",
+            ".log",
+            ".html",
+        }:
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
         if PRIVATE_PATH_RE.search(text):
@@ -134,6 +236,11 @@ def main() -> int:
         "checksum_files_verified": checked,
         "checks": {
             "contract_backends": sorted(item.get("backend") for item in backends),
+            "contract_fixture": "deterministic OpenAI-compatible localhost fixture",
+            "opencompass_interface_contract": opencompass_contract.get("status"),
+            "opencompass_runtime_probe": runtime_probe.get("status"),
+            "opencompass_dataset_rows": opencompass_dataset.get("rows"),
+            "opencompass_dataset_sha256": opencompass_dataset.get("jsonl_sha256"),
             "ollama_model": (probe.get("native") or {}).get("model"),
             "ollama_model_digest": (probe.get("native") or {}).get("model_digest"),
             "ollama_concurrency": sorted(run.get("concurrency") for run in runs),

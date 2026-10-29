@@ -43,6 +43,14 @@ from agent_safety_eval.review import (  # noqa: E402
 )
 
 
+def _portable(path: Path) -> str:
+    """Render a path relative to this package so errors never leak the host."""
+    try:
+        return path.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.name
+
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -149,6 +157,33 @@ def _compare_report(actual: dict[str, Any], expected: dict[str, Any]) -> list[st
     return errors
 
 
+def _verify_trajectory_signal(
+    trajectories: list[dict[str, Any]],
+    errors: list[str],
+) -> dict[str, Any]:
+    """Reject runs in which the agent loop never produced behavioural signal."""
+    model_error_trajectories = sum(
+        1
+        for item in trajectories
+        if str(item.get("terminal"))
+        in {"transport", "timeout", "model_error", "model_exception"}
+    )
+    total = len(trajectories)
+    rate = model_error_trajectories / total if total else 1.0
+    if total and model_error_trajectories == total:
+        errors.append(
+            "every trajectory ended in a model error; the run has no behavioural signal"
+        )
+    elif rate > 0.05:
+        errors.append(f"model error rate {rate:.1%} exceeds the 5% acceptance bound")
+    if total and not any(item.get("tool_calls") for item in trajectories):
+        errors.append("no trajectory contains a tool call; the agent loop never executed")
+    return {
+        "model_error_trajectories": model_error_trajectories,
+        "model_error_rate": rate,
+    }
+
+
 def verify(
     *,
     dataset_dir: Path,
@@ -181,16 +216,31 @@ def verify(
 
     all_trajectories = _read_jsonl(evidence_dir / "trajectories.jsonl")
     checks["raw_trajectory_count"] = len(all_trajectories)
-    if len(all_trajectories) != len(tasks) * 4:
-        errors.append(f"expected {len(tasks) * 4} raw trajectories, got {len(all_trajectories)}")
     models = sorted({str(item.get("model")) for item in all_trajectories})
     policies = sorted({str(item.get("policy_mode")) for item in all_trajectories})
     checks["models"] = models
     checks["policies"] = policies
     if len(models) < 2:
         errors.append("fewer than two models")
-    if policies != ["off", "on"]:
-        errors.append(f"expected policy off/on, got {policies}")
+    expected_policies = ["gate", "off", "on", "prompt"]
+    if policies != expected_policies:
+        errors.append(f"expected policy arms {expected_policies}, got {policies}")
+    # Cross-check the trajectory matrix against the independently stored
+    # run manifests so a missing arm or model cannot pass unnoticed.
+    declared_runs: set[tuple[str, str]] = set()
+    for meta_path in sorted((evidence_dir / "runs").glob("*/run-meta.json")):
+        meta = _read_json(meta_path)
+        declared_runs.add((str(meta.get("model")), str(meta.get("policy_mode"))))
+    checks["declared_runs"] = sorted(f"{model}/{policy}" for model, policy in declared_runs)
+    expected_trajectory_count = len(tasks) * len(declared_runs)
+    checks["expected_raw_trajectory_count"] = expected_trajectory_count
+    if len(all_trajectories) != expected_trajectory_count:
+        errors.append(
+            f"expected {expected_trajectory_count} raw trajectories "
+            f"(tasks x {len(declared_runs)} declared runs), got {len(all_trajectories)}"
+        )
+    if len(declared_runs) < 4:
+        errors.append(f"fewer than four declared runs: {sorted(declared_runs)}")
     trajectory_keys = Counter(
         (
             str(item.get("model")),
@@ -202,9 +252,15 @@ def verify(
     duplicates = sorted(key for key, count in trajectory_keys.items() if count > 1)
     if duplicates:
         errors.append(f"duplicate trajectories: {duplicates[:5]}")
-    expected_trajectory_keys = {(model, policy, task.id) for model in models for policy in policies for task in tasks}
+    expected_trajectory_keys = {
+        (model, policy, task.id)
+        for model, policy in declared_runs
+        for task in tasks
+    }
     if set(trajectory_keys) != expected_trajectory_keys:
         errors.append("trajectory model/policy/task matrix is incomplete")
+    if set(declared_runs) != {(model, policy) for model in models for policy in policies}:
+        errors.append("declared runs do not match the recorded model/arm matrix")
 
     required_trajectory_fields = {
         "task_id",
@@ -227,6 +283,10 @@ def verify(
                 errors.append(f"trajectory {index} has an incomplete tool-call record")
                 break
 
+    # A run where every trajectory failed to reach the model carries no
+    # behavioural signal. Reject it instead of reporting zeroed metrics.
+    checks.update(_verify_trajectory_signal(all_trajectories, errors))
+
     try:
         review_labels, review_summary = _reviews(
             review_file,
@@ -246,7 +306,7 @@ def verify(
     checks["human_review"] = review_summary
     queue_path = review_file.with_name("review-queue.json")
     if not queue_path.exists():
-        errors.append(f"missing review queue: {queue_path}")
+        errors.append(f"missing review queue: {_portable(queue_path)}")
     else:
         queue = _read_json(queue_path)
         if queue.get("task_set_hash") != task_set_hash(tasks):
@@ -302,7 +362,7 @@ def verify(
 
     combined_path = evidence_dir / "report.json"
     combined = _read_json(combined_path)
-    if combined.get("schema_version") != "agent-safety.suite-report.v1":
+    if combined.get("schema_version") != "agent-safety.suite-report.v2":
         errors.append("combined report has an unsupported schema")
     if combined.get("dataset", {}).get("task_set_hash") != task_set_hash(tasks):
         errors.append("combined report task hash mismatch")
@@ -340,6 +400,10 @@ def verify(
 
     for path in evidence_dir.rglob("*"):
         if not path.is_file() or path.suffix.lower() not in {".json", ".jsonl", ".md", ".html", ".log", ".txt"}:
+            continue
+        # The verifier's own result file is excluded from the checksum manifest
+        # and must not be scanned for the paths this same run may write into it.
+        if path.name == "verification-result.json":
             continue
         if PRIVATE_PATH_RE.search(path.read_text(encoding="utf-8", errors="replace")):
             errors.append(f"private workstation path leaked into {path.relative_to(evidence_dir)}")

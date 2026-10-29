@@ -1,0 +1,60 @@
+{
+    "apiVersion": "networking.k8s.io/v1",
+    "kind": "NetworkPolicy",
+    "metadata": {
+        "annotations": {
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"NetworkPolicy\",\"metadata\":{\"annotations\":{},\"name\":\"kube-eval-worker\",\"namespace\":\"eval-lab\"},\"spec\":{\"egress\":[{\"ports\":[{\"port\":53,\"protocol\":\"UDP\"},{\"port\":53,\"protocol\":\"TCP\"}],\"to\":[{\"namespaceSelector\":{\"matchLabels\":{\"kubernetes.io/metadata.name\":\"kube-system\"}}}]},{\"to\":[{\"namespaceSelector\":{\"matchLabels\":{\"kubernetes.io/metadata.name\":\"eval-lab\"}}}]}],\"podSelector\":{\"matchLabels\":{\"app.kubernetes.io/name\":\"kube-eval-worker\"}},\"policyTypes\":[\"Ingress\",\"Egress\"]}}\n"
+        },
+        "creationTimestamp": "2026-10-29T02:34:26Z",
+        "generation": 1,
+        "name": "kube-eval-worker",
+        "namespace": "eval-lab",
+        "resourceVersion": "554",
+        "uid": "90bbd33e-87b0-4749-8895-e6d4a4b59a1d"
+    },
+    "spec": {
+        "egress": [
+            {
+                "ports": [
+                    {
+                        "port": 53,
+                        "protocol": "UDP"
+                    },
+                    {
+                        "port": 53,
+                        "protocol": "TCP"
+                    }
+                ],
+                "to": [
+                    {
+                        "namespaceSelector": {
+                            "matchLabels": {
+                                "kubernetes.io/metadata.name": "kube-system"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "to": [
+                    {
+                        "namespaceSelector": {
+                            "matchLabels": {
+                                "kubernetes.io/metadata.name": "eval-lab"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "podSelector": {
+            "matchLabels": {
+                "app.kubernetes.io/name": "kube-eval-worker"
+            }
+        },
+        "policyTypes": [
+            "Ingress",
+            "Egress"
+        ]
+    }
+}

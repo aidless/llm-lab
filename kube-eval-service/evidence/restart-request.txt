@@ -1,1 +1,1 @@
-pod "kube-eval-service-7b686ccf5-wmqrj" deleted from eval-lab namespace
+pod "kube-eval-service-69568cf5c4-zr9dw" deleted from eval-lab namespace
