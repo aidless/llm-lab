@@ -105,6 +105,29 @@ For an evidence-based assessment of what is genuinely advanced, what is still
 a prototype, and which claims remain blocked, see
 [`PORTFOLIO_REVIEW.md`](PORTFOLIO_REVIEW.md).
 
+## Related work and comparison
+
+The safety and evaluation packages here are compared against two real
+baselines rather than a single coarse on/off pair:
+
+- **Four-arm intervention ablation** (`off` / `prompt` / `gate` / `on`) is the
+  explicit control structure. Unlike a single `policy-off` vs `policy-on`
+  comparison, it isolates prompt-only, runtime-gate-only and combined effects
+  so a claim like "the gate helps" is not confounded by the prompt alone.
+  The arm counts are fixed at 96 tasks × 2 models × 4 arms = 768 trajectories.
+- **Judge calibration probes** are the baseline for deployment decisions: a
+  judge's FPR/FNR is only usable once its repeat flip rate (< 5%) and its
+  response to presentation perturbations are known. This is the difference
+  between "a judge scored it" and "a judge's score can be trusted".
+
+Against the wider literature this is deliberately scoped: it is local,
+CPU-scale, mock-environment engineering evidence, not a frontier safety
+ranking and not an official benchmark. The comparison the evidence actually
+supports is "evidence-first prototype with a recomputation path and a
+fail-closed gate" versus "notebook-only project that shows a number with no
+raw records". See [`PORTFOLIO_REVIEW.md`](PORTFOLIO_REVIEW.md) for the full
+per-project verdict on what each comparison does and does not establish.
+
 ## Help with human review
 
 Independent reviewers are welcome. The three pending safety gates include
