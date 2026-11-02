@@ -1,0 +1,58 @@
+{
+  "fixed": {
+    "architecture": "fixed",
+    "task_accuracies": {
+      "Task1": 97.39,
+      "Task2": 97.39999999999999,
+      "Task3": 97.44,
+      "Task4": 97.2,
+      "Task5": 97.11
+    },
+    "final_accuracies": {
+      "Task1": 97.39,
+      "Task2": 97.39999999999999,
+      "Task3": 97.44,
+      "Task4": 97.2,
+      "Task5": 97.11
+    },
+    "params": 203530
+  },
+  "dynamic": {
+    "architecture": "dynamic",
+    "task_accuracies": {
+      "Task1": 97.39,
+      "Task2": 97.35000000000001,
+      "Task3": 97.38,
+      "Task4": 97.33000000000001,
+      "Task5": 96.81
+    },
+    "final_accuracies": {
+      "Task1": {
+        "Task1": 97.39
+      },
+      "Task2": {
+        "Task1": 10.299999999999999,
+        "Task2": 97.35000000000001
+      },
+      "Task3": {
+        "Task1": 9.55,
+        "Task2": 3.45,
+        "Task3": 97.38
+      },
+      "Task4": {
+        "Task1": 12.06,
+        "Task2": 10.549999999999999,
+        "Task3": 13.05,
+        "Task4": 97.33000000000001
+      },
+      "Task5": {
+        "Task1": 7.95,
+        "Task2": 12.09,
+        "Task3": 10.23,
+        "Task4": 3.7199999999999998,
+        "Task5": 96.81
+      }
+    },
+    "params": 466698
+  }
+}

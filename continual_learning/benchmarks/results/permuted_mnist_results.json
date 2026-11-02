@@ -1,0 +1,192 @@
+{
+  "none": {
+    "strategy": "none",
+    "metrics": {
+      "overall_performance": 81.978,
+      "average_forgetting": 9.431999999999999,
+      "average_forward_transfer": -9.431999999999999
+    },
+    "accuracies": [
+      [
+        91.06
+      ],
+      [
+        86.77,
+        91.59
+      ],
+      [
+        83.16,
+        86.31,
+        91.72
+      ],
+      [
+        74.68,
+        83.36,
+        85.84,
+        91.14999999999999
+      ],
+      [
+        73.46000000000001,
+        77.28,
+        81.99,
+        85.63,
+        91.53
+      ]
+    ],
+    "task_names": [
+      "PermutedMNIST_Task1",
+      "PermutedMNIST_Task2",
+      "PermutedMNIST_Task3",
+      "PermutedMNIST_Task4",
+      "PermutedMNIST_Task5"
+    ]
+  },
+  "ewc": {
+    "strategy": "ewc",
+    "metrics": {
+      "overall_performance": 81.576,
+      "average_forgetting": 9.834,
+      "average_forward_transfer": -9.834
+    },
+    "accuracies": [
+      [
+        91.06
+      ],
+      [
+        85.75,
+        91.3
+      ],
+      [
+        82.0,
+        86.52,
+        91.27
+      ],
+      [
+        73.9,
+        80.36999999999999,
+        87.62,
+        91.86
+      ],
+      [
+        73.94,
+        78.63,
+        79.47,
+        84.28,
+        91.56
+      ]
+    ],
+    "task_names": [
+      "PermutedMNIST_Task1",
+      "PermutedMNIST_Task2",
+      "PermutedMNIST_Task3",
+      "PermutedMNIST_Task4",
+      "PermutedMNIST_Task5"
+    ]
+  },
+  "distillation": {
+    "strategy": "distillation",
+    "metrics": {
+      "overall_performance": 72.7,
+      "average_forgetting": 17.620000000000008,
+      "average_forward_transfer": -17.620000000000008
+    },
+    "accuracies": [
+      [
+        91.06
+      ],
+      [
+        87.07000000000001,
+        90.29
+      ],
+      [
+        74.38,
+        80.25,
+        89.84
+      ],
+      [
+        69.03,
+        71.25,
+        80.69,
+        90.88000000000001
+      ],
+      [
+        65.57,
+        60.42999999999999,
+        69.57,
+        78.4,
+        89.53
+      ]
+    ],
+    "task_names": [
+      "PermutedMNIST_Task1",
+      "PermutedMNIST_Task2",
+      "PermutedMNIST_Task3",
+      "PermutedMNIST_Task4",
+      "PermutedMNIST_Task5"
+    ]
+  },
+  "replay": {
+    "strategy": "replay",
+    "metrics": {
+      "overall_performance": 86.44200000000001,
+      "average_forgetting": 4.2219999999999995,
+      "average_forward_transfer": -4.2219999999999995
+    },
+    "accuracies": [
+      [
+        91.06
+      ],
+      [
+        90.18,
+        91.02
+      ],
+      [
+        87.81,
+        90.49000000000001,
+        90.77
+      ],
+      [
+        84.91,
+        88.02,
+        88.72,
+        90.38000000000001
+      ],
+      [
+        82.84,
+        83.77,
+        85.26,
+        90.25,
+        90.09
+      ]
+    ],
+    "task_names": [
+      "PermutedMNIST_Task1",
+      "PermutedMNIST_Task2",
+      "PermutedMNIST_Task3",
+      "PermutedMNIST_Task4",
+      "PermutedMNIST_Task5"
+    ]
+  },
+  "lora": {
+    "strategy": "lora",
+    "metrics": {
+      "overall_performance": 60.136,
+      "average_forgetting": 0.0,
+      "average_forward_transfer": 0.0
+    },
+    "accuracies": {
+      "Task1": 53.38,
+      "Task2": 61.040000000000006,
+      "Task3": 56.87,
+      "Task4": 62.63999999999999,
+      "Task5": 66.75
+    },
+    "task_names": [
+      "Task1",
+      "Task2",
+      "Task3",
+      "Task4",
+      "Task5"
+    ]
+  }
+}

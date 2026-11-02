@@ -1,0 +1,682 @@
+{
+  "permuted_mnist": {
+    "none": {
+      "strategy": "none",
+      "metrics": {
+        "overall_performance": 81.978,
+        "average_forgetting": 9.431999999999999,
+        "average_forward_transfer": -9.431999999999999
+      },
+      "accuracies": [
+        [
+          91.06
+        ],
+        [
+          86.77,
+          91.59
+        ],
+        [
+          83.16,
+          86.31,
+          91.72
+        ],
+        [
+          74.68,
+          83.36,
+          85.84,
+          91.14999999999999
+        ],
+        [
+          73.46000000000001,
+          77.28,
+          81.99,
+          85.63,
+          91.53
+        ]
+      ],
+      "task_names": [
+        "PermutedMNIST_Task1",
+        "PermutedMNIST_Task2",
+        "PermutedMNIST_Task3",
+        "PermutedMNIST_Task4",
+        "PermutedMNIST_Task5"
+      ]
+    },
+    "ewc": {
+      "strategy": "ewc",
+      "metrics": {
+        "overall_performance": 81.576,
+        "average_forgetting": 9.834,
+        "average_forward_transfer": -9.834
+      },
+      "accuracies": [
+        [
+          91.06
+        ],
+        [
+          85.75,
+          91.3
+        ],
+        [
+          82.0,
+          86.52,
+          91.27
+        ],
+        [
+          73.9,
+          80.36999999999999,
+          87.62,
+          91.86
+        ],
+        [
+          73.94,
+          78.63,
+          79.47,
+          84.28,
+          91.56
+        ]
+      ],
+      "task_names": [
+        "PermutedMNIST_Task1",
+        "PermutedMNIST_Task2",
+        "PermutedMNIST_Task3",
+        "PermutedMNIST_Task4",
+        "PermutedMNIST_Task5"
+      ]
+    },
+    "distillation": {
+      "strategy": "distillation",
+      "metrics": {
+        "overall_performance": 72.7,
+        "average_forgetting": 17.620000000000008,
+        "average_forward_transfer": -17.620000000000008
+      },
+      "accuracies": [
+        [
+          91.06
+        ],
+        [
+          87.07000000000001,
+          90.29
+        ],
+        [
+          74.38,
+          80.25,
+          89.84
+        ],
+        [
+          69.03,
+          71.25,
+          80.69,
+          90.88000000000001
+        ],
+        [
+          65.57,
+          60.42999999999999,
+          69.57,
+          78.4,
+          89.53
+        ]
+      ],
+      "task_names": [
+        "PermutedMNIST_Task1",
+        "PermutedMNIST_Task2",
+        "PermutedMNIST_Task3",
+        "PermutedMNIST_Task4",
+        "PermutedMNIST_Task5"
+      ]
+    },
+    "replay": {
+      "strategy": "replay",
+      "metrics": {
+        "overall_performance": 86.44200000000001,
+        "average_forgetting": 4.2219999999999995,
+        "average_forward_transfer": -4.2219999999999995
+      },
+      "accuracies": [
+        [
+          91.06
+        ],
+        [
+          90.18,
+          91.02
+        ],
+        [
+          87.81,
+          90.49000000000001,
+          90.77
+        ],
+        [
+          84.91,
+          88.02,
+          88.72,
+          90.38000000000001
+        ],
+        [
+          82.84,
+          83.77,
+          85.26,
+          90.25,
+          90.09
+        ]
+      ],
+      "task_names": [
+        "PermutedMNIST_Task1",
+        "PermutedMNIST_Task2",
+        "PermutedMNIST_Task3",
+        "PermutedMNIST_Task4",
+        "PermutedMNIST_Task5"
+      ]
+    },
+    "lora": {
+      "strategy": "lora",
+      "metrics": {
+        "overall_performance": 60.136,
+        "average_forgetting": 0.0,
+        "average_forward_transfer": 0.0
+      },
+      "accuracies": {
+        "Task1": 53.38,
+        "Task2": 61.040000000000006,
+        "Task3": 56.87,
+        "Task4": 62.63999999999999,
+        "Task5": 66.75
+      },
+      "task_names": [
+        "Task1",
+        "Task2",
+        "Task3",
+        "Task4",
+        "Task5"
+      ]
+    }
+  },
+  "strategy_combinations": {
+    "ewc+replay": {
+      "strategy": "ewc+replay",
+      "metrics": {
+        "overall_performance": 81.606,
+        "average_forgetting": 15.968000000000007,
+        "average_forward_transfer": -15.968000000000007
+      },
+      "accuracies": [
+        [
+          97.56
+        ],
+        [
+          96.65,
+          97.96000000000001
+        ],
+        [
+          85.91,
+          96.78,
+          97.67
+        ],
+        [
+          68.85,
+          77.21000000000001,
+          95.88,
+          97.18
+        ],
+        [
+          57.199999999999996,
+          64.31,
+          92.45,
+          96.57,
+          97.5
+        ]
+      ],
+      "task_names": [
+        "PermutedMNIST_Task1",
+        "PermutedMNIST_Task2",
+        "PermutedMNIST_Task3",
+        "PermutedMNIST_Task4",
+        "PermutedMNIST_Task5"
+      ]
+    },
+    "ewc+distill": {
+      "strategy": "ewc+distill",
+      "metrics": {
+        "overall_performance": 64.328,
+        "average_forgetting": 32.902,
+        "average_forward_transfer": -32.902
+      },
+      "accuracies": [
+        [
+          97.56
+        ],
+        [
+          92.2,
+          96.64
+        ],
+        [
+          73.86,
+          71.78,
+          97.37
+        ],
+        [
+          49.769999999999996,
+          42.28,
+          89.97,
+          97.17
+        ],
+        [
+          37.04,
+          31.630000000000003,
+          63.62,
+          91.94,
+          97.41
+        ]
+      ],
+      "task_names": [
+        "PermutedMNIST_Task1",
+        "PermutedMNIST_Task2",
+        "PermutedMNIST_Task3",
+        "PermutedMNIST_Task4",
+        "PermutedMNIST_Task5"
+      ]
+    },
+    "replay+distill": {
+      "strategy": "replay+distill",
+      "metrics": {
+        "overall_performance": 87.46400000000001,
+        "average_forgetting": 8.469999999999995,
+        "average_forward_transfer": -8.469999999999995
+      },
+      "accuracies": [
+        [
+          97.56
+        ],
+        [
+          97.06,
+          96.41
+        ],
+        [
+          93.28,
+          96.06,
+          95.28999999999999
+        ],
+        [
+          86.53,
+          90.10000000000001,
+          95.84,
+          95.12
+        ],
+        [
+          81.53,
+          74.64,
+          90.88000000000001,
+          94.98,
+          95.28999999999999
+        ]
+      ],
+      "task_names": [
+        "PermutedMNIST_Task1",
+        "PermutedMNIST_Task2",
+        "PermutedMNIST_Task3",
+        "PermutedMNIST_Task4",
+        "PermutedMNIST_Task5"
+      ]
+    },
+    "ewc+replay+distill": {
+      "strategy": "ewc+replay+distill",
+      "metrics": {
+        "overall_performance": 87.78,
+        "average_forgetting": 8.215999999999998,
+        "average_forward_transfer": -8.215999999999998
+      },
+      "accuracies": [
+        [
+          97.56
+        ],
+        [
+          96.69,
+          96.08
+        ],
+        [
+          94.39999999999999,
+          95.39,
+          95.5
+        ],
+        [
+          88.06,
+          89.51,
+          95.98,
+          96.41999999999999
+        ],
+        [
+          77.07000000000001,
+          81.66,
+          90.05,
+          95.7,
+          94.42
+        ]
+      ],
+      "task_names": [
+        "PermutedMNIST_Task1",
+        "PermutedMNIST_Task2",
+        "PermutedMNIST_Task3",
+        "PermutedMNIST_Task4",
+        "PermutedMNIST_Task5"
+      ]
+    }
+  },
+  "continuous_metrics": {
+    "Task1": {
+      "accuracy": 97.74000000000001,
+      "brier_score": 0.03512707339841872,
+      "error_rate": 2.259999999999991,
+      "accuracy_small": 98.5,
+      "accuracy_tiny": 100.0
+    },
+    "Task2": {
+      "accuracy": 97.61,
+      "brier_score": 0.036144631258328445,
+      "error_rate": 2.3900000000000006,
+      "accuracy_small": 98.5,
+      "accuracy_tiny": 97.0
+    },
+    "Task3": {
+      "accuracy": 97.44,
+      "brier_score": 0.04078363143578172,
+      "error_rate": 2.5600000000000023,
+      "accuracy_small": 97.7,
+      "accuracy_tiny": 98.0
+    },
+    "Task4": {
+      "accuracy": 97.64,
+      "brier_score": 0.036060693049320254,
+      "error_rate": 2.3599999999999994,
+      "accuracy_small": 98.6,
+      "accuracy_tiny": 98.0
+    },
+    "Task5": {
+      "accuracy": 97.54,
+      "brier_score": 0.03846560695450753,
+      "error_rate": 2.4599999999999937,
+      "accuracy_small": 98.3,
+      "accuracy_tiny": 99.0
+    }
+  },
+  "dynamic_architecture": {
+    "fixed": {
+      "architecture": "fixed",
+      "task_accuracies": {
+        "Task1": 97.39,
+        "Task2": 97.39999999999999,
+        "Task3": 97.44,
+        "Task4": 97.2,
+        "Task5": 97.11
+      },
+      "final_accuracies": {
+        "Task1": 97.39,
+        "Task2": 97.39999999999999,
+        "Task3": 97.44,
+        "Task4": 97.2,
+        "Task5": 97.11
+      },
+      "params": 203530
+    },
+    "dynamic": {
+      "architecture": "dynamic",
+      "task_accuracies": {
+        "Task1": 97.39,
+        "Task2": 97.35000000000001,
+        "Task3": 97.38,
+        "Task4": 97.33000000000001,
+        "Task5": 96.81
+      },
+      "final_accuracies": {
+        "Task1": {
+          "Task1": 97.39
+        },
+        "Task2": {
+          "Task1": 10.299999999999999,
+          "Task2": 97.35000000000001
+        },
+        "Task3": {
+          "Task1": 9.55,
+          "Task2": 3.45,
+          "Task3": 97.38
+        },
+        "Task4": {
+          "Task1": 12.06,
+          "Task2": 10.549999999999999,
+          "Task3": 13.05,
+          "Task4": 97.33000000000001
+        },
+        "Task5": {
+          "Task1": 7.95,
+          "Task2": 12.09,
+          "Task3": 10.23,
+          "Task4": 3.7199999999999998,
+          "Task5": 96.81
+        }
+      },
+      "params": 466698
+    }
+  },
+  "data_ratio": {
+    "config": {
+      "num_tasks": 5,
+      "epochs": 3,
+      "seed": 42,
+      "base_samples": 5000,
+      "data_ratios": [
+        1250,
+        2500,
+        5000,
+        10000
+      ]
+    },
+    "runs": {
+      "1250": {
+        "samples_per_task": 1250,
+        "ratio": 0.25,
+        "overall_performance": 79.558,
+        "average_forgetting": 6.452000000000001,
+        "task_accuracies": [
+          [
+            86.91
+          ],
+          [
+            82.61,
+            86.04
+          ],
+          [
+            81.56,
+            81.98,
+            85.34
+          ],
+          [
+            77.64,
+            79.53,
+            84.8,
+            86.52
+          ],
+          [
+            74.44,
+            78.47,
+            80.64,
+            79.0,
+            85.24000000000001
+          ]
+        ],
+        "elapsed": 3.5
+      },
+      "2500": {
+        "samples_per_task": 2500,
+        "ratio": 0.5,
+        "overall_performance": 80.65599999999999,
+        "average_forgetting": 8.187999999999999,
+        "task_accuracies": [
+          [
+            89.42999999999999
+          ],
+          [
+            86.85000000000001,
+            89.09
+          ],
+          [
+            84.75,
+            83.34,
+            88.2
+          ],
+          [
+            80.11,
+            78.09,
+            86.37,
+            89.1
+          ],
+          [
+            76.92999999999999,
+            75.72,
+            80.58,
+            81.65,
+            88.4
+          ]
+        ],
+        "elapsed": 3.1
+      },
+      "5000": {
+        "samples_per_task": 5000,
+        "ratio": 1.0,
+        "overall_performance": 81.978,
+        "average_forgetting": 9.431999999999999,
+        "task_accuracies": [
+          [
+            91.06
+          ],
+          [
+            86.77,
+            91.59
+          ],
+          [
+            83.16,
+            86.31,
+            91.72
+          ],
+          [
+            74.68,
+            83.36,
+            85.84,
+            91.14999999999999
+          ],
+          [
+            73.46000000000001,
+            77.28,
+            81.99,
+            85.63,
+            91.53
+          ]
+        ],
+        "elapsed": 3.2
+      },
+      "10000": {
+        "samples_per_task": 10000,
+        "ratio": 2.0,
+        "overall_performance": 79.70599999999999,
+        "average_forgetting": 13.769999999999992,
+        "task_accuracies": [
+          [
+            93.27
+          ],
+          [
+            84.67,
+            93.57
+          ],
+          [
+            78.7,
+            87.99,
+            93.27
+          ],
+          [
+            66.52,
+            82.12,
+            90.81,
+            93.78999999999999
+          ],
+          [
+            61.6,
+            73.49,
+            82.76,
+            87.2,
+            93.47999999999999
+          ]
+        ],
+        "elapsed": 5.9
+      }
+    }
+  },
+  "few_shot_emergence": {
+    "config": {
+      "num_tasks": 3,
+      "epochs": 3,
+      "seed": 42,
+      "shot_counts": [
+        1,
+        5,
+        20,
+        50,
+        100,
+        500
+      ]
+    },
+    "runs": {
+      "1": {
+        "shots_per_class": 1,
+        "avg_accuracy": 0.26016666666666666,
+        "task_accuracies": [
+          0.2815,
+          0.2179,
+          0.2811
+        ]
+      },
+      "5": {
+        "shots_per_class": 5,
+        "avg_accuracy": 0.36656666666666665,
+        "task_accuracies": [
+          0.2752,
+          0.2135,
+          0.611
+        ]
+      },
+      "20": {
+        "shots_per_class": 20,
+        "avg_accuracy": 0.6825000000000001,
+        "task_accuracies": [
+          0.6249,
+          0.7073,
+          0.7153
+        ]
+      },
+      "50": {
+        "shots_per_class": 50,
+        "avg_accuracy": 0.8028666666666666,
+        "task_accuracies": [
+          0.8047,
+          0.8199,
+          0.784
+        ]
+      },
+      "100": {
+        "shots_per_class": 100,
+        "avg_accuracy": 0.8697333333333334,
+        "task_accuracies": [
+          0.8723,
+          0.8733,
+          0.8636
+        ]
+      },
+      "500": {
+        "shots_per_class": 500,
+        "avg_accuracy": 0.9161,
+        "task_accuracies": [
+          0.922,
+          0.9043,
+          0.922
+        ]
+      }
+    }
+  }
+}

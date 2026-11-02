@@ -1,0 +1,37 @@
+{
+  "Task1": {
+    "accuracy": 97.74000000000001,
+    "brier_score": 0.03512707339841872,
+    "error_rate": 2.259999999999991,
+    "accuracy_small": 98.5,
+    "accuracy_tiny": 100.0
+  },
+  "Task2": {
+    "accuracy": 97.61,
+    "brier_score": 0.036144631258328445,
+    "error_rate": 2.3900000000000006,
+    "accuracy_small": 98.5,
+    "accuracy_tiny": 97.0
+  },
+  "Task3": {
+    "accuracy": 97.44,
+    "brier_score": 0.04078363143578172,
+    "error_rate": 2.5600000000000023,
+    "accuracy_small": 97.7,
+    "accuracy_tiny": 98.0
+  },
+  "Task4": {
+    "accuracy": 97.64,
+    "brier_score": 0.036060693049320254,
+    "error_rate": 2.3599999999999994,
+    "accuracy_small": 98.6,
+    "accuracy_tiny": 98.0
+  },
+  "Task5": {
+    "accuracy": 97.54,
+    "brier_score": 0.03846560695450753,
+    "error_rate": 2.4599999999999937,
+    "accuracy_small": 98.3,
+    "accuracy_tiny": 99.0
+  }
+}

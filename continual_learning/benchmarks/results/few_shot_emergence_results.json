@@ -1,0 +1,71 @@
+{
+  "config": {
+    "num_tasks": 3,
+    "epochs": 3,
+    "seed": 42,
+    "shot_counts": [
+      1,
+      5,
+      20,
+      50,
+      100,
+      500
+    ]
+  },
+  "runs": {
+    "1": {
+      "shots_per_class": 1,
+      "avg_accuracy": 0.26016666666666666,
+      "task_accuracies": [
+        0.2815,
+        0.2179,
+        0.2811
+      ]
+    },
+    "5": {
+      "shots_per_class": 5,
+      "avg_accuracy": 0.36656666666666665,
+      "task_accuracies": [
+        0.2752,
+        0.2135,
+        0.611
+      ]
+    },
+    "20": {
+      "shots_per_class": 20,
+      "avg_accuracy": 0.6825000000000001,
+      "task_accuracies": [
+        0.6249,
+        0.7073,
+        0.7153
+      ]
+    },
+    "50": {
+      "shots_per_class": 50,
+      "avg_accuracy": 0.8028666666666666,
+      "task_accuracies": [
+        0.8047,
+        0.8199,
+        0.784
+      ]
+    },
+    "100": {
+      "shots_per_class": 100,
+      "avg_accuracy": 0.8697333333333334,
+      "task_accuracies": [
+        0.8723,
+        0.8733,
+        0.8636
+      ]
+    },
+    "500": {
+      "shots_per_class": 500,
+      "avg_accuracy": 0.9161,
+      "task_accuracies": [
+        0.922,
+        0.9043,
+        0.922
+      ]
+    }
+  }
+}
