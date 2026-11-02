@@ -10,6 +10,12 @@
 扩展策略（2026-11-01，来自前沿论文搜索）：
 - MatrixLoRA（统一矩阵分解 LoRA，合并 OPLoRA + CURLoRA）
 - SR-ML（2025）：序列级路由 + 混合低秩专家
+
+前沿扩展策略（2026-11-02，来自 arXiv 2610 批次）：
+- FisherShapedEWC（2610.37145）：邻域 Fisher 敏感性增强 EWC
+- EvidenceGated（2610.39840）：证据门控防止 surprise 学习假话
+- AutoHebb（2610.40757）：自修改神经网络持续学习
+- RoutedCL（2610.38796）：多智能体经验路由
 """
 
 from .base import Task, ContinualStrategy, StrategyConfig
@@ -23,6 +29,10 @@ from .strategies import (
     ModelSoupsMerger,
     MatrixLoRAStrategy,
     SRMLStrategy,
+    FisherShapedEWCStrategy,
+    EvidenceGatedStrategy,
+    AutoHebbStrategy,
+    RoutedContinualStrategy,
 )
 
 try:
@@ -48,8 +58,12 @@ __all__ = [
     "CompositeStrategy",
     "MatrixLoRAStrategy",
     "SRMLStrategy",
+    "FisherShapedEWCStrategy",
+    "EvidenceGatedStrategy",
+    "AutoHebbStrategy",
+    "RoutedContinualStrategy",
     "OPLoRAStrategy",
     "CURLoRAStrategy",
 ]
 
-__version__ = "0.3.1"
+__version__ = "0.4.0"

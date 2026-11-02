@@ -12,6 +12,12 @@
 - SR-ML：序列级路由 + 混合低秩专家（2025）
 - Bayesian PEFT：Laplace 近似增强 EWC（2024）
 - mix-cd：附带损伤采样增强 Replay（NAACL 2025）
+
+前沿扩展策略（2026-11-02 新增，来自 arXiv 2610 批次）：
+- FisherShapedEWC：邻域 Fisher 敏感性增强 EWC（2610.37145）
+- EvidenceGated：证据门控防止 surprise 学习假话（2610.39840）
+- AutoHebb：自修改神经网络持续学习（2610.40757）
+- RoutedCL：多智能体经验路由（2610.38796）
 """
 
 from .ewc import EWCTrainingStrategy
@@ -28,6 +34,10 @@ from .matrix_lora import (
     cur_decomposition,
 )
 from .sr_ml import SRMLStrategy, SRMLModel, LowRankExpert, SequenceRouter
+from .fisher_shaped_ewc import FisherShapedEWCStrategy
+from .evidence_gated import EvidenceGatedStrategy
+from .autohebb import AutoHebbStrategy
+from .routed import RoutedContinualStrategy
 
 # 向后兼容：OPLoRA/CURLoRA 已合并为 MatrixLoRA，旧导入重定向到统一接口
 OPLoRAStrategy = MatrixLoRAStrategy
@@ -53,6 +63,10 @@ __all__ = [
     "SRMLModel",
     "LowRankExpert",
     "SequenceRouter",
+    "FisherShapedEWCStrategy",
+    "EvidenceGatedStrategy",
+    "AutoHebbStrategy",
+    "RoutedContinualStrategy",
     # 向后兼容导出
     "OPLoRAStrategy",
     "OPLoRALayer",

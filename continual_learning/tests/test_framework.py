@@ -24,6 +24,10 @@ from continual_learning.strategies.distillation import DistillationStrategy
 from continual_learning.strategies.lora import LoRAStrategy, LoRALayer, LoRAModel
 from continual_learning.strategies.replay import ReplayStrategy
 from continual_learning.strategies.model_soups import ModelSoupsMerger
+from continual_learning.strategies.fisher_shaped_ewc import FisherShapedEWCStrategy
+from continual_learning.strategies.evidence_gated import EvidenceGatedStrategy
+from continual_learning.strategies.autohebb import AutoHebbStrategy
+from continual_learning.strategies.routed import RoutedContinualStrategy
 from continual_learning.cli import SimpleMLP
 
 
@@ -188,6 +192,68 @@ class TestOrchestrator:
         assert results is not None
 
 
+class TestNewStrategies:
+    """新增前沿策略（FisherShapedEWC/EvidenceGated/AutoHebb/RoutedCL）测试。"""
+
+    def _make_model(self) -> nn.Module:
+        model = SimpleMLP()
+        model.eval()
+        return model
+
+    def _make_batch(self):
+        torch.manual_seed(42)
+        x = torch.randn(8, 28 * 28)
+        y = torch.randint(0, 10, (8,))
+        return (x, y)
+
+    def test_fisher_shaped_ewc_init(self):
+        s = FisherShapedEWCStrategy(fisher_multiplier=100.0, num_samples=5, neighborhood_samples=2)
+        assert s.name() == "FisherShapedEWC"
+        assert s.state_dict()["fisher_multiplier"] == 100.0
+        assert s.state_dict()["neighborhood_samples"] == 2
+
+    def test_fisher_shaped_ewc_loss(self):
+        s = FisherShapedEWCStrategy(fisher_multiplier=100.0, num_samples=5)
+        model = self._make_model()
+        batch = self._make_batch()
+        task = Task(name="t1", dataloader=None)
+        # 初始无 Fisher 信息 → 无惩罚
+        loss = s.compute_loss(model, batch, torch.tensor(1.0), task)
+        assert loss.item() == 1.0
+
+    def test_evidence_gated_init(self):
+        s = EvidenceGatedStrategy(evidence_threshold=0.5, surprise_threshold=0.1)
+        assert s.name() == "EvidenceGated"
+        assert s.state_dict()["evidence_threshold"] == 0.5
+
+    def test_evidence_gated_gate_rate(self):
+        s = EvidenceGatedStrategy(evidence_threshold=0.5, surprise_threshold=0.0)
+        model = self._make_model()
+        batch = self._make_batch()
+        task = Task(name="t1", dataloader=None)
+        s.compute_loss(model, batch, torch.tensor(1.0), task)
+        state = s.state_dict()
+        assert "gate_rate" in state
+        assert state["gate_rate"] >= 0.0
+
+    def test_autohebb_init(self):
+        s = AutoHebbStrategy(learning_rate=1e-4, hebbian_epochs=2)
+        assert s.name() == "AutoHebb"
+        assert s.state_dict()["learning_rate"] == 1e-4
+
+    def test_routed_cl_init(self):
+        s = RoutedContinualStrategy(num_experts=3)
+        assert s.name() == "RoutedCL"
+        assert s.state_dict()["num_experts"] == 3
+
+    def test_routed_task_assignment(self):
+        s = RoutedContinualStrategy(num_experts=3)
+        model = self._make_model()
+        task = Task(name="t1", dataloader=None)
+        s.before_task(model, task)
+        assert task.name in s.state_dict()["task_expert_map"]
+
+
 def create_minimal_task(name: str = "test", num_samples: int = 20) -> Task:
     """创建一个最小合成任务。"""
     from torch.utils.data import DataLoader, TensorDataset
@@ -204,7 +270,7 @@ def main() -> None:
     """简单手动测试入口。"""
     print("=== 运行单元测试 ===")
     for cls in [TestCLMetrics, TestEWCStrategy, TestLoRA, TestDistillation,
-                TestReplay, TestModelSoups, TestOrchestrator]:
+                TestReplay, TestModelSoups, TestOrchestrator, TestNewStrategies]:
         instance = cls()
         for name in dir(instance):
             if name.startswith("test_"):

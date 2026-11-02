@@ -23,6 +23,10 @@
 | **SR-ML**（序列级路由+混合专家） | Zheng & Li 2025 | 多任务知识复用，减少冗余适配器 |
 | **Bayesian PEFT**（Laplace 增强 EWC） | Chen & Garner 2024 | 更精确的 Fisher 近似（Kronecker） |
 | **mix-cd Rehearsal**（附带损伤采样） | Bai et al. 2025 | 固定计算预算回放，优先回放损伤样本 |
+| **Fisher-Shaped EWC** | Wang et al. 2026, arXiv:2610.37145 | 邻域 Fisher 敏感性增强 EWC |
+| **Evidence-Gated** | Metales & Grabenheinrich 2026, arXiv:2610.39840 | 证据门控防止 surprise 学习假话 |
+| **AutoHebb** | Levine et al. 2026, arXiv:2610.40757 | 自修改神经网络，Hebbian 可塑性 |
+| **Routed CL** | Philip et al. 2026, arXiv:2610.38796 | 多智能体经验路由 |
 
 ## 快速开始
 
@@ -73,6 +77,10 @@ continual_learning/
 │   ├── model_soups.py       # 模型合并（权重平均）
 │   ├── matrix_lora.py       # MatrixLoRA：统一矩阵分解 LoRA（SVD/CUR）
 │   ├── sr_ml.py             # SR-ML：序列级路由 + 混合低秩专家
+│   ├── fisher_shaped_ewc.py # Fisher-Shaped EWC（邻域 Fisher 敏感性）
+│   ├── evidence_gated.py    # Evidence-Gated（证据门控）
+│   ├── autohebb.py          # AutoHebb（自修改神经网络）
+│   ├── routed.py            # Routed CL（多智能体经验路由）
 │   └── composite.py         # 策略组合（多策略协同）
 ├── metrics.py               # 评估协议：遗忘/前向迁移/整体性能
 ├── orchestrator.py          # 编排器：顺序任务训练 + 策略注入 + 评估
@@ -87,7 +95,7 @@ continual_learning/
 ├── visualization.py         # 结果可视化（matplotlib）
 ├── cli.py                   # 命令行入口
 └── tests/
-    └── test_framework.py    # 单元测试（17 个测试全部通过）
+    └── test_framework.py    # 单元测试（24 个测试全部通过）
 ```
 
 ## 关键接口
@@ -134,6 +142,18 @@ strategy = EWCTrainingStrategy(fisher_multiplier=400.0, use_kronecker=True)
 
 # Replay + mix-cd（附带损伤采样，NAACL 2025）
 strategy = ReplayStrategy(memory_size=1000, sample_mode="mix_cd")
+
+# Fisher-Shaped EWC（邻域 Fisher 敏感性，arXiv:2610.37145）
+strategy = FisherShapedEWCStrategy(fisher_multiplier=400.0, neighborhood_samples=10)
+
+# Evidence-Gated（证据门控，arXiv:2610.39840）
+strategy = EvidenceGatedStrategy(evidence_threshold=0.5, surprise_threshold=0.1)
+
+# AutoHebb（自修改神经网络，arXiv:2610.40757）
+strategy = AutoHebbStrategy(learning_rate=1e-3, hebbian_epochs=5)
+
+# Routed CL（多智能体经验路由，arXiv:2610.38796）
+strategy = RoutedContinualStrategy(num_experts=4, routing_temperature=1.0)
 ```
 
 ### 3. 运行持续学习
@@ -291,3 +311,4 @@ python3 continual_learning/tests/test_framework.py
 | 0.2.0 | 2026-10-31 | 添加基准套件、CLI、可视化 |
 | 0.3.0 | 2026-11-01 | 添加 OPLoRA/CURLoRA/SR-ML 策略；EWC 支持 Bayesian PEFT；Replay 支持 mix-cd |
 | 0.3.1 | 2026-11-01 | 合并 OPLoRA/CURLoRA 为 MatrixLoRA 统一接口 |
+| 0.4.0 | 2026-11-02 | 添加 Fisher-Shaped EWC/Evidence-Gated/AutoHebb/Routed CL 策略 |
