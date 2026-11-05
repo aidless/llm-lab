@@ -1,0 +1,18 @@
+# Non-product trees stay in git and in a normal clone.
+# `git archive` and GitHub source downloads omit them.
+# See SCOPE.md before treating a source tarball as the whole checkout.
+knowledge/** export-ignore
+计划/** export-ignore
+phase8-deploy/** export-ignore
+continual_learning/** export-ignore
+agent-safety-dpo/** export-ignore
+evalops-gpu-sim/** export-ignore
+llm_lab/docs/blog-posts/** export-ignore
+llm_lab/docs/talks/** export-ignore
+llm_lab/docs/MARKETING-COPY.md export-ignore
+llm_lab/docs/CONTENT-CALENDAR.md export-ignore
+llm_lab/docs/OUTREACH-TEMPLATES.md export-ignore
+llm_lab/docs/outreach-tracking.csv export-ignore
+llm_lab/docs/FINDING-FIRST-USER.md export-ignore
+llm_lab/docs/PERSONAS.md export-ignore
+llm_lab/docs/MASTER-PLAN.md export-ignore

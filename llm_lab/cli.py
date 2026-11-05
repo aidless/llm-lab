@@ -527,6 +527,11 @@ def verify(
             legacy = report.get("legacy_genesis_count", 0)
             legacy_msg = f" ({legacy} legacy genesis rows skipped)" if legacy else ""
             console.print(f"[green]OK[/green] {report['rows_checked']} rows verified, chain intact{legacy_msg}")
+            if legacy:
+                console.print(
+                    "[yellow]WARNING[/yellow] legacy rows have no hash. "
+                    "Edits inside them do not fail this command. See FAILURE_MODES.md."
+                )
         else:
             brk = report["first_break"]
             if brk is None:

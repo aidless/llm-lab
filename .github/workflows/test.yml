@@ -43,9 +43,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate documentation links
+      - name: Validate documentation links and honesty surface
         working-directory: .
-        run: python3 tools/check_knowledge_links.py
+        run: |
+          python3 tools/check_knowledge_links.py
+          python3 tools/check_honesty_surface.py
 
       - uses: actions/setup-python@v5
         with:
@@ -76,14 +78,38 @@ jobs:
         run: |
           pytest --cov --cov-report=xml --cov-report=term-missing --timeout=30 -q
 
-      - name: "Test (repo-root suite: tests/test_selfevolve.py)"
+      - name: "Test (repo-root suites)"
         # The job default working directory is llm_lab/, so the step above
-        # collects the package suite. This step adds the repository-root
-        # self-evolution suite, which previously had no CI coverage even though
-        # the README badge counted it.
+        # collects the package suite. This step runs the repository-root
+        # modules listed in docs/test-inventory.json. test_repair_bench.py
+        # used to be collected by neither this job nor the old badge.
         working-directory: .
         run: |
-          python -m pytest tests/test_selfevolve.py -q --timeout=30
+          python -m pytest tests/test_selfevolve.py tests/test_repair_bench.py -q --timeout=30
+
+      - name: Offline demo (no API key, no network)
+        working-directory: .
+        env:
+          OPENAI_API_KEY: ""
+          LLM_API_KEY: ""
+        run: |
+          llm-lab demo --output-dir "${RUNNER_TEMP}/llm-lab-demo"
+          python - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "llm-lab-demo"
+          result = json.loads((root / "result.json").read_text(encoding="utf-8"))
+          if result.get("model") != "offline-demo-v1":
+              raise SystemExit(f"unexpected model: {result.get('model')!r}")
+          for name in ("audit.db", "result.json", "report.html"):
+              if not (root / name).is_file():
+                  raise SystemExit(f"missing {name}")
+          print("offline demo artifacts ok")
+          PY
+
+      - name: Test inventory drift
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        working-directory: .
+        run: python tools/check_test_inventory.py --only llm_lab,repo_root
 
       - name: Upload coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
@@ -246,6 +272,11 @@ jobs:
             echo "== pytest: $project"
             (cd "$project" && pytest -q tests --timeout=30)
           done
+
+      - name: Test inventory drift
+        run: |
+          python tools/check_test_inventory.py --only \
+            agent-safety-eval,safety-judge-calibration,benchmark-contamination-scan,eval-infra-adapters,kube-eval-service
 
       - name: Verify checked-in evidence
         run: |

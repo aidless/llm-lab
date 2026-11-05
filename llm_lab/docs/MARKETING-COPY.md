@@ -1,5 +1,8 @@
 # Marketing copy-paste pack (v0.9.7)
 
+Unpublished drafts. Nothing in this file is a posted announcement, a PyPI
+listing, or a measured adoption number.
+
 > **What this is:** 4 ready-to-paste text blocks for the 4 most useful
 > distribution channels. Each is sized for the channel's norms (HN
 > terse, Reddit slightly more technical, dev.to long-form, outreach

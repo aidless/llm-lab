@@ -16,7 +16,7 @@ The `self_bench.py` harness runs three scenarios:
 The smoke scenario requires **no LLM credentials** and is what CI runs:
 
 ```bash
-cd F:\TMLR\llm_lab
+cd llm_lab
 python benchmarks/self_bench.py --mode smoke \
     --output /tmp/smoke.json
 ```
@@ -32,7 +32,7 @@ cost — the numbers that go in your README or blog post):
 ```bash
 export OPENAI_API_KEY=sk-...   # or ANTHROPIC_API_KEY, GEMINI_API_KEY
 
-cd F:\TMLR\llm_lab
+cd llm_lab
 python benchmarks/self_bench.py --mode all --steps 50 --real \
     --output benchmarks/v2-results.json
 ```

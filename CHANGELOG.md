@@ -19,6 +19,17 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) once 
 
 ### Added
 
+- **Honesty surface for portfolio review.** [`FAILURE_MODES.md`](FAILURE_MODES.md)
+  records audit-log forgery and CI false greens, with tests that lock the
+  forward-recompute and legacy-row gaps. [`SCOPE.md`](SCOPE.md) separates the
+  installable package from `knowledge/` and other non-product trees and
+  documents sparse checkout plus `git archive` export-ignore. Collection
+  counts live in [`docs/test-inventory.json`](docs/test-inventory.json) and
+  are checked in CI. The package README no longer carries a CodeQL badge,
+  a PyPI badge, or a static pass-count shield. There is still no PyPI release.
+- **Repo-root CI** now runs `tests/test_repair_bench.py` as well as
+  `tests/test_selfevolve.py`. The offline `llm-lab demo` command runs in the
+  test job with no API key.
 - **Agent Safety Runtime Monitor.** A 96-task, mock-only agent benchmark
   covering prompt injection, unauthorized tools, dangerous file operations,
   data exfiltration, stop failures and tool-error recovery. It records every
@@ -131,10 +142,11 @@ and this project aims to follow [Semantic Versioning](https://semver.org/) once 
   patches (`LLM patches: 3` in one 3-cycle run, 2 promoted each cycle
   with tests passing); full suite verified locally: 479 passed /
   11 skipped (fresh run, Python 3.12).
-- **Local verification after EvalOps changes (2026-10-27).** Product package:
-  419 passed / 2 skipped; repository-root self-evolution suite: 106 passed;
-  ruff and mypy clean.  The checked-in evidence verifier also passes 52 file
-  checksums and recomputes every recorded aggregate.
+- **Local verification after EvalOps changes (2026-10-27).** Point-in-time
+  local run, not a live count: product package 419 passed / 2 skipped;
+  repository-root self-evolution file 106 passed. Current collection counts
+  are in `docs/test-inventory.json`. The checked-in evidence verifier also
+  passed 52 file checksums and recomputed every recorded aggregate.
 
 ---
 

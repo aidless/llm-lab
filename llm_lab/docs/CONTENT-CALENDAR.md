@@ -1,5 +1,7 @@
 # Content calendar — first 12 months of llm-lab content
 
+Unpublished plan. It is not a record of posts, talks, stars, or users.
+
 > **What this is:** A month-by-month plan for blog posts, talks, and
 > community presence. Goal: 1 substantial piece per month, no more
 > (single maintainer can sustain that, not 4).
@@ -119,8 +121,8 @@
 - **Topic:** "Year in review: what worked, what didn't, what's next"
 - **Audience:** subscribers, the project's own maintainer (this is
   the most useful one to write for *yourself*)
-- **Hook:** "365 days, 3,847 stars, 0 paying customers. Here's what
-  I'd do differently."
+- **Hook:** "365 days, N GitHub stars (copy the live count; do not invent it),
+  0 paying customers. Here's what I'd do differently."
 
 ## Talks / meetups (3, low-stakes first)
 

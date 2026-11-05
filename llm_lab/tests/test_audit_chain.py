@@ -152,6 +152,79 @@ async def test_chain_detects_deletion():
     assert report["first_break"] is not None
 
 
+@pytest.mark.asyncio
+async def test_forward_recompute_hides_a_verdict_edit():
+    """Rewriting the chain after an edit is invisible to ``verify_log``.
+
+    FAILURE_MODES.md: file-system write access plus a forward recompute is a
+    false green, not a detected break.
+    """
+    await database.init_db()
+    for i in range(3):
+        await database.append_event(
+            intent_id="rewrite-1",
+            seq=i + 1,
+            action="call",
+            model="m",
+            verdict="pass",
+            output_text=f"out {i}",
+        )
+    with sqlite3.connect(database.DB_PATH) as raw_db:
+        raw_db.row_factory = sqlite3.Row
+        rows = list(raw_db.execute("SELECT * FROM event_log ORDER BY id"))
+        prev = ""
+        for row in rows:
+            payload = {col: row[col] for col in database._CHAIN_COLUMNS}
+            if row["seq"] == 1:
+                payload["verdict"] = "fail-rewritten"
+            row_hash = database.compute_row_hash(prev, payload)
+            raw_db.execute(
+                "UPDATE event_log SET verdict = ?, prev_hash = ?, row_hash = ? WHERE id = ?",
+                (payload["verdict"], prev, row_hash, row["id"]),
+            )
+            prev = row_hash
+        raw_db.commit()
+    report = await database.verify_log()
+    assert report["ok"] is True
+    assert report["first_break"] is None
+    assert report["legacy_genesis_count"] == 0
+
+
+@pytest.mark.asyncio
+async def test_legacy_row_mutation_still_verifies():
+    """NULL hash rows are skipped, so their content is not evidence."""
+    await database.init_db()
+    with sqlite3.connect(database.DB_PATH) as raw_db:
+        raw_db.execute(
+            """INSERT INTO event_log
+               (intent_id, seq, timestamp, action, model, detail,
+                input_hash, output_hash, token_usage, cost_usd, verdict,
+                prev_hash, row_hash)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL)""",
+            (
+                "legacy-2",
+                1,
+                "2026-01-01T00:00:00+00:00",
+                "call",
+                "m",
+                None,
+                None,
+                None,
+                None,
+                None,
+                "pass",
+            ),
+        )
+        raw_db.execute(
+            "UPDATE event_log SET verdict = ?, output_hash = ? WHERE intent_id = ?",
+            ("tampered", "deadbeef", "legacy-2"),
+        )
+        raw_db.commit()
+    report = await database.verify_log()
+    assert report["ok"] is True
+    assert report["legacy_genesis_count"] == 1
+
+
 # ---------------------------------------------------------------------------
 # Backward compatibility �?pre-M3 rows are legacy genesis
 # ---------------------------------------------------------------------------

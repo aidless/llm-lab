@@ -1,21 +1,21 @@
 # llm-lab
 
-[[Latest release](https://img.shields.io/github/v/release/aidless/llm-lab?label=release)](https://github.com/aidless/llm-lab/releases)
+**Local-first LLM evaluation workbench.** Plan a task, call a model, verify the
+output, and inspect a hash-linked audit trail without sending run data to a
+hosted evaluation service.
+
 [![CI](https://github.com/aidless/llm-lab/actions/workflows/test.yml/badge.svg)](https://github.com/aidless/llm-lab/actions/workflows/test.yml)
-[![CodeQL](https://github.com/aidless/llm-lab/actions/workflows/codeql.yml/badge.svg)](https://github.com/aidless/llm-lab/security/code-scanning)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org)
-[![Tests](https://img.shields.io/badge/tests-419%20passed%20%C2%B7%202%20skipped-brightgreen)](../CHANGELOG.md)
-[![Ruff + Mypy + Bandit](https://img.shields.io/badge/lint-ruff%20%2B%20mypy%20%2B%20bandit-blue)](../CONTRIBUTING.md)
 
-> **The eval tool you can show your security team.**
-> LLM evaluation & orchestration for security-conscious teams — auditable,
-> air-gap-able, hardened by default, and Prometheus-observable.
+This directory is the installable package (`pyproject.toml` version 0.9.7).
+Python 3.10+. MIT. There is no PyPI release. The repository also holds
+unevaluated notes and draft planning; those are not this package. See
+[`SCOPE.md`](../SCOPE.md) and [`FAILURE_MODES.md`](../FAILURE_MODES.md).
 
-**Current status: v0.9.7 — first CI-green release.** 419 package tests pass
-(2 environment-dependent skips), ruff + mypy + bandit clean,
-macOS + 3 Python versions matrix, SBOM per release, CodeQL 0 open alerts.
-See [`CHANGELOG.md`](../CHANGELOG.md) for the journey from v0.1.0 → v0.9.7.
+The CI badge reports [`.github/workflows/test.yml`](../.github/workflows/test.yml).
+There is no `codeql.yml` in this repo, so this file does not carry a CodeQL
+badge. Collection counts are checked against
+[`docs/test-inventory.json`](../docs/test-inventory.json). A green workflow
+does not mean a real model was called.
 
 **Tamper-evident audit log.** Every `event_log` row carries a SHA-256 hash
 chained to its predecessor. Run `llm-lab verify` to detect any insertion,
@@ -34,48 +34,55 @@ and [`docs/adr/0008-prometheus-metrics.md`](./docs/adr/0008-prometheus-metrics.m
 Other eval tools optimise for **ergonomics**. `llm-lab` optimises for
 **defensibility**:
 
-- ✅ **8 security audit fixes already shipped** (XSS, path traversal, auth bypass,
-  timing attacks, security headers, …) — see [`THREAT_MODEL.md`](../THREAT_MODEL.md).
-- ✅ **Multi-tenant isolation** with explicit authentication on 8 endpoints.
-- ✅ **Auditable event log** with `verdict` + input/output hashes (path to
-  tamper-evident chain tracked in
-  [`docs/adr/0006-audit-trail-integrity.md`](./docs/adr/0006-audit-trail-integrity.md)).
-- ✅ **Graceful degradation** under provider outages, missing API keys, and
-  SQLite lock contention — verified by
-  [`benchmarks/self_bench.py --mode fault`](./benchmarks/self_bench.py).
-- ✅ **419 package tests, ruff + mypy + bandit + pip-audit clean**.
+- The threat model names specific controls (path checks, HTML escaping,
+  auth on selected endpoints, security headers) and the cases they do not
+  cover. See [`THREAT_MODEL.md`](../THREAT_MODEL.md) and
+  [`FAILURE_MODES.md`](../FAILURE_MODES.md).
+- SQLite is one file shared by every `intent_id`. That is not tenant
+  isolation. [`THREAT_MODEL.md`](../THREAT_MODEL.md) says to run one process
+  per tenant if isolation matters.
+- `event_log` stores a SHA-256 hash chain. `llm-lab verify` detects an edit
+  that does not recompute later hashes. It does not detect a forward
+  recompute or a replaced database file. See
+  [`docs/adr/0006-audit-trail-integrity.md`](./docs/adr/0006-audit-trail-integrity.md).
+- Fault-path coverage for timeouts, missing keys, and SQLite lock waits lives
+  in [`benchmarks/self_bench.py`](./benchmarks/self_bench.py). CI runs
+  `--mode smoke` only.
 
-If your security team needs to know *why* your eval pipeline picked model B
-over model A, and *which prompt hashes* it ran, `llm-lab` gives you the answer.
+No organisation is listed in [`ADOPTERS.md`](../ADOPTERS.md).
 
 ---
 
-## 5-minute quickstart
+## Offline path
+
+No API key and no network. CI runs this after installing the package.
 
 ```bash
-# Install
 git clone https://github.com/aidless/llm-lab
 cd llm-lab
-pip install -e ".[dev]"
-
-# Set a provider key (any of OpenAI / Anthropic / Gemini; or run Ollama locally)
-export LLM_API_KEY=sk-...
-export LLM_MODEL=gpt-4o-mini      # or claude-3-5-haiku-20241022, gemini-1.5-flash, ...
-
-# Run a single eval — a goal becomes a planner plan → LLM steps → verifier verdicts
-llm-lab run "explain the difference between supervised and self-supervised learning"
-
-# A/B compare two models
-llm-lab compare "write a haiku about Rust" \
-    --model-a gpt-4o-mini \
-    --model-b claude-3-5-haiku-20241022
-
-# Start the web UI + REST API at http://127.0.0.1:8123
-llm-lab serve
+python3 -m venv .venv
+.venv/bin/pip install -e './llm_lab[dev]'
+.venv/bin/llm-lab demo
 ```
 
-The CLI prints a verdict (`pass`/`fail`), per-step token counts, total cost,
-and emits an HTML report you can share with auditors.
+`pyproject.toml` lives in this directory, so the install path is `./llm_lab`
+from the repository root, not `.` . The demo writes `.llm-lab-demo/audit.db`,
+`result.json`, and `report.html`. Exit 0 means the fixture passed the verifier
+and the chain was internally consistent. The provider id is `offline-demo-v1`.
+
+## Run with a real model
+
+```bash
+cp llm_lab/.env.example .env
+# Edit .env: LLM_PROVIDER, LLM_MODEL, LLM_BASE_URL, LLM_API_KEY
+.venv/bin/llm-lab run "explain the difference between supervised and self-supervised learning"
+.venv/bin/llm-lab compare "write a haiku about Rust" --model-a gpt-4o-mini --model-b claude-3-5-haiku-20241022
+.venv/bin/llm-lab serve
+```
+
+`serve` listens on `http://127.0.0.1:8123`. Real calls can cost money. The CLI
+prints a verdict, token counts, cost, and an HTML report. That report is not
+an external audit.
 
 ---
 
@@ -137,6 +144,7 @@ Every row in `event_log` carries a SHA-256 hash chained to its predecessor
 ```bash
 $ llm-lab verify
 OK 138 rows verified, chain intact (12 legacy genesis rows skipped)
+WARNING legacy rows have no hash. Edits inside them do not fail this command. See FAILURE_MODES.md.
 
 $ llm-lab verify --json | jq '.first_break'
 {
@@ -175,9 +183,11 @@ for the design and limitations.
 
 ---
 
-## Who is this for?
+## Who this was designed around
 
-Three personas drive the design. Read whichever matches you best:
+[`ADOPTERS.md`](../ADOPTERS.md) lists no organisations and no anonymous users.
+The three personas below are hypothetical composites used while writing the
+tool. They are not interviews and not customers.
 
 - **Alice — ML engineer at a 50–500 person SaaS:** you keep losing
   track of which prompt is which. [`docs/PERSONAS.md`](./docs/PERSONAS.md#p0--alice-the-ml-engineer-at-a-50-500-person-saas)
@@ -226,11 +236,13 @@ for the label semantics and cardinality controls.
 
 ---
 
-## Self-benchmark numbers (reproducible)
+## Self-benchmark numbers
 
-`llm-lab` benchmarks itself on every CI run (`--mode smoke`) and publishes
-real-provider numbers in [`benchmarks/v2-results.json`](./benchmarks/v2-results.json)
-on every release.
+CI runs `benchmarks/self_bench.py --mode smoke` and uploads the JSON. It does
+not re-run the real-provider file
+[`benchmarks/v2-results.json`](./benchmarks/v2-results.json). That file is one
+recorded Windows / Python 3.11 session. It is not a service level and not a
+number CI checks.
 
 ### Stub run (offline, what CI runs)
 

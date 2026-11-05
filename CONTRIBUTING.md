@@ -25,24 +25,28 @@ we'd rather merge one good PR a month than twenty sloppy ones.
 ```bash
 git clone <your-fork-url>
 cd <repo>
-pip install -e ".[dev,xlsx,sbom]"
+python3 -m venv .venv
+.venv/bin/pip install -e './llm_lab[dev,xlsx]'
 ```
 
-The install pulls in pytest, pytest-cov, ruff, mypy, plus the optional `openpyxl`
-needed for XLSX export tests.
+`pyproject.toml` is in `llm_lab/`, not the repository root. The install pulls
+in pytest, pytest-cov, ruff, mypy, plus optional `openpyxl` for the XLSX
+export tests. There is no PyPI package to `pip install llm-lab`.
 
 ### Run the test suite
 
-From the `llm_lab/` directory (where `pyproject.toml` lives):
-
 ```bash
-pytest --cov --cov-report=term-missing -q
+cd llm_lab
+../.venv/bin/pytest --cov --cov-report=term-missing -q
+cd ..
+.venv/bin/pytest tests/test_selfevolve.py tests/test_repair_bench.py -q --timeout=30
+.venv/bin/python tools/check_test_inventory.py
 ```
 
-Expected: **488 passed / 2 skipped** with the dev extras installed (490
-collected). Counts shift with optional dependencies: without `openpyxl`,
-10 export tests skip instead (479 passed / 11 skipped). CI is the
-canonical count.
+The canonical collection counts are [`docs/test-inventory.json`](docs/test-inventory.json).
+Do not copy a pass/skip total into this file. One package test skips when no
+real `OPENAI_API_KEY` is set, and the XLSX skip marker flips when `openpyxl`
+is absent. CI compares collection counts, then runs the suites.
 
 ### Lint and type-check
 

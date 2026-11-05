@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "contract": "CI compares `collected` to `pytest --collect-only`. passed/skipped are a local run with llm_lab[dev,xlsx], no real OPENAI_API_KEY, and no OpenCompass install. A real key or an OpenCompass install changes skips, so those fields are not the CI contract.",
+  "suites": [
+    {
+      "id": "llm_lab",
+      "cwd": "llm_lab",
+      "pytest_args": [],
+      "ci_job": "test",
+      "collected": 423,
+      "last_local_passed": 421,
+      "last_local_skipped": 2,
+      "skip_notes": [
+        "tests/test_export.py::TestExportXlsx::test_requires_openpyxl_skip skips when openpyxl is installed (the xlsx extra).",
+        "tests/test_real_provider_smoke.py::test_real_gpt4o_mini_call_succeeds skips unless OPENAI_API_KEY is set and is not a CI dummy."
+      ]
+    },
+    {
+      "id": "repo_root",
+      "cwd": ".",
+      "pytest_args": ["tests/test_selfevolve.py", "tests/test_repair_bench.py"],
+      "ci_job": "test",
+      "collected": 112,
+      "last_local_passed": 112,
+      "last_local_skipped": 0,
+      "skip_notes": [
+        "CI previously ran only tests/test_selfevolve.py (106 collected) and did not run tests/test_repair_bench.py (6 collected)."
+      ]
+    },
+    {
+      "id": "agent-safety-eval",
+      "cwd": "agent-safety-eval",
+      "pytest_args": ["tests"],
+      "ci_job": "portfolio-test",
+      "collected": 31,
+      "last_local_passed": 31,
+      "last_local_skipped": 0,
+      "skip_notes": []
+    },
+    {
+      "id": "safety-judge-calibration",
+      "cwd": "safety-judge-calibration",
+      "pytest_args": ["tests"],
+      "ci_job": "portfolio-test",
+      "collected": 30,
+      "last_local_passed": 30,
+      "last_local_skipped": 0,
+      "skip_notes": []
+    },
+    {
+      "id": "benchmark-contamination-scan",
+      "cwd": "benchmark-contamination-scan",
+      "pytest_args": ["tests"],
+      "ci_job": "portfolio-test",
+      "collected": 6,
+      "last_local_passed": 6,
+      "last_local_skipped": 0,
+      "skip_notes": []
+    },
+    {
+      "id": "eval-infra-adapters",
+      "cwd": "eval-infra-adapters",
+      "pytest_args": ["tests"],
+      "ci_job": "portfolio-test",
+      "collected": 15,
+      "last_local_passed": 13,
+      "last_local_skipped": 2,
+      "skip_notes": [
+        "Two tests skip when official OpenCompass is not installed. CI does not install it."
+      ]
+    },
+    {
+      "id": "kube-eval-service",
+      "cwd": "kube-eval-service",
+      "pytest_args": ["tests"],
+      "ci_job": "portfolio-test",
+      "collected": 16,
+      "last_local_passed": 16,
+      "last_local_skipped": 0,
+      "skip_notes": []
+    }
+  ]
+}

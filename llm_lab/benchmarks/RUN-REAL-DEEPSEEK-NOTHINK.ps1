@@ -4,5 +4,5 @@ $env:LLM_MODEL = "deepseek-v4-flash"
 # Disable thinking mode for cleaner benchmark numbers
 $env:DISABLE_LLM_THINKING = "1"
 
-cd F:\TMLR\llm_lab
+Set-Location (Resolve-Path (Join-Path $PSScriptRoot ".."))
 python benchmarks\self_bench.py --mode all --steps 50 --real --output benchmarks\v2-results.json

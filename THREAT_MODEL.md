@@ -137,10 +137,11 @@ SQLite for state and calls external LLM providers over HTTPS.
   writers (across processes, not just threads) serialize on the SQLite
   reserved lock; `db.verify_log()` recomputes and compares; `llm-lab
   verify` is the CLI surface.
-- **Status:** ⚠️ **Detected, not prevented.** An operator with file-system
-  write access can still tamper — but `llm-lab verify` will catch it on
-  the next run. This raises the cost of undetected tampering from
-  "trivial" to "must also defeat the chain".
+- **Status:** ⚠️ **Detected, not prevented.** `llm-lab verify` catches an
+  edit, insert, or delete that leaves the stored hashes inconsistent. It
+  does **not** catch a forward recompute of `prev_hash` / `row_hash`, a
+  replacement of the SQLite file, or a content change inside a legacy
+  NULL-hash row. Those cases exit 0. See [`FAILURE_MODES.md`](FAILURE_MODES.md).
 - **Recommended external mitigation:** for high-stakes deployments, ship
   a periodic hash snapshot of the SQLite file (or the file itself) to a
   write-once / append-only store. S3 Object Lock, an immutable syslog

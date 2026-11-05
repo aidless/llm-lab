@@ -5,6 +5,10 @@ production or for serious evaluation work. If you are using
 `llm-lab` and would like to be listed (anonymously is fine),
 please open a PR adding a row below.
 
+No row below is filled in. The persona notes are hypothetical design
+sketches, not evidence that those people exist or use the tool. Do not
+infer adoption from an empty table.
+
 > **Why this list exists:** It is one of the strongest signals a
 > serious buyer looks for. "3 SaaS companies and a national lab
 > use this" carries more weight than any benchmark number. We

@@ -52,25 +52,25 @@ Goal: ensure we have a local snapshot AND can identify exactly what files we wil
 
 ```powershell
 # 1.1 Backup local project
-robocopy "C:\Users\Administrator\cow\fortune-web-v2" "F:\fortune-web-v2-backup-2026-07-14" /E /COPYALL /LOG+:F:\fortune-backup.log
+robocopy "$env:FORTUNE_PROJECT_ROOT" "$env:FORTUNE_BACKUP_ROOT" /E /COPYALL /LOG+:$env:FORTUNE_BACKUP_LOG
 # Expected: Files: N > 0, Failed: 0. If Failed > 0 -> STOP, read log
 
 # 1.2 Record hash of files we WILL upload (for post-deploy comparison)
-Get-FileHash "C:\Users\Administrator\cow\fortune-web-v2\.env.local" -Algorithm SHA256
-Get-FileHash "C:\Users\Administrator\cow\fortune-web-v2\app_private_key_sandbox.pem" -Algorithm SHA256
+Get-FileHash "$env:FORTUNE_PROJECT_ROOT\.env.local" -Algorithm SHA256
+Get-FileHash "$env:FORTUNE_PROJECT_ROOT\app_private_key_sandbox.pem" -Algorithm SHA256
 
 # 1.3 Verify .pem is LF-only (Trap 9 + Trap 13)
-$data = [System.IO.File]::ReadAllBytes("C:\Users\Administrator\cow\fortune-web-v2\app_private_key_sandbox.pem")
+$data = [System.IO.File]::ReadAllBytes("$env:FORTUNE_PROJECT_ROOT\app_private_key_sandbox.pem")
 if ($data -match "\r\n") { Write-Error "CRLF detected in .pem -> Trap 9. Run sed/python LF conversion." }
 # Also verify header is PKCS#8 not PKCS#1 (Trap 10)
-$header = (Get-Content "C:\Users\Administrator\cow\fortune-web-v2\app_private_key_sandbox.pem" -TotalCount 1)
+$header = (Get-Content "$env:FORTUNE_PROJECT_ROOT\app_private_key_sandbox.pem" -TotalCount 1)
 if ($header -match "BEGIN RSA PRIVATE KEY") { Write-Warning "PKCS#1 header detected. Check DER bytes (should be 30 82 xx xx 02 01 00 30 0d 06 09 2a 86 48 86 f7 0d 01 01 01 for PKCS#8). If DER shows PKCS#8 -> replace header." }
 
 # 1.4 Audit ACL of private key (no Everyone / Users write)
-(Get-Acl "C:\Users\Administrator\cow\fortune-web-v2\app_private_key_sandbox.pem").Access | Where-Object {$_.IdentityReference -match "Everyone|Users"} | ForEach-Object { if ($_.FileSystemRights -match "Write|FullControl|Modify") { Write-Error "Overly permissive ACL on private key -> icacls reset" } }
+(Get-Acl "$env:FORTUNE_PROJECT_ROOT\app_private_key_sandbox.pem").Access | Where-Object {$_.IdentityReference -match "Everyone|Users"} | ForEach-Object { if ($_.FileSystemRights -match "Write|FullControl|Modify") { Write-Error "Overly permissive ACL on private key -> icacls reset" } }
 
 # 1.5 Confirm .gitignore covers sensitive files
-Select-String -Path "C:\Users\Administrator\cow\fortune-web-v2\.gitignore" -Pattern "^\.env\.local$|^\*\.pem$|^\*\.key$"
+Select-String -Path "$env:FORTUNE_PROJECT_ROOT\.gitignore" -Pattern "^\.env\.local$|^\*\.pem$|^\*\.key$"
 # Expected: at least 2 of 3 patterns matched. If 0 -> STOP and add.
 ```
 
@@ -115,7 +115,7 @@ These are the 6 explicit yes/no decisions. Yi Mu's defaults in brackets `[ ]` ar
 
 | # | Question | Default `[ ]` |
 |---|---|---|
-| 1 | `.env.local` and `app_private_key_sandbox.pem` are backed up to F:\fortune-web-v2-backup-2026-07-14 ? | yes |
+| 1 | `.env.local` and `app_private_key_sandbox.pem` are backed up to $env:FORTUNE_BACKUP_ROOT ? | yes |
 | 2 | Operating in **sandbox** mode (NOT production alipay)? | yes (must be yes for first deploy) |
 | 3 | Order: scp keys FIRST, then git pull, then restart? (avoids git overwriting any future key paths if they get committed) | yes |
 | 4 | Restart strategy: `supervisorctl restart` (cold) vs `reload` (warm)? | `restart` (cleaner for env reload; reload may not pick up .env) |
@@ -192,7 +192,7 @@ Default: **B** is safest (env-only, no code change, instant revert to mock). Use
 
 ## 7. Evidence (写完工报告)
 
-After full pass, write `cow/knowledge/analysis/taixuan-web-v20-phase8-deployment-2026-07-14.md` (note: this is a NEW file in cow, OUTSIDE Yi Mu's scope — Yi Mu can draft it in `F:\test\2026-07-14-12-26-46\` for user to copy). Template fields:
+After full pass, write `cow/knowledge/analysis/taixuan-web-v20-phase8-deployment-2026-07-14.md` (note: this is a NEW file in cow, OUTSIDE Yi Mu's scope — Yi Mu can draft it in `$env:FORTUNE_DRAFT_DIR` for user to copy). Template fields:
 - Status (full / partial / rolled back)
 - 5 scenario results
 - ECS service PID + uptime
@@ -240,7 +240,7 @@ With these, Yi Mu can advise on next steps (运营基线 / 学术转化 / 其它
 **Yi Mu will NOT**:
 - ❌ Read user `.env.local` or `.pem` (sensitive, never)
 - ❌ Execute any script on user's behalf
-- ❌ Modify any file under `C:\Users\Administrator\cow\` (out of scope, "Tai" agent's domain)
+- ❌ Modify any file under the other agent's checkout (out of scope, "Tai" agent's domain). Do not record that checkout's machine path here.
 - ❌ Click confirmation buttons or make decisions for user
 
 If user needs something outside this scope -> say so explicitly, escalate.
