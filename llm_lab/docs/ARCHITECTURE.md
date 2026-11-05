@@ -1,8 +1,8 @@
 # llm-lab 架构文档（Architecture）
 
 > 包路径：仓库根目录下的 `llm_lab/`
-> 测试命令：仓库根 `python -m pytest -q`（干净 clone 下先 `cd llm_lab && pip install -e ".[dev,xlsx]"`）
-> 当前测试状态：**488 passed / 2 skipped**（全仓口径，与 README 徽章和 CI 一致；只跑 `llm_lab/` 子树时收集 384 项 = **382 passed / 2 skipped**）；`ruff`（含 `S` 安全规则）与 `mypy` 均通过。
+> 测试命令与收集数量以 [`docs/test-inventory.json`](../../docs/test-inventory.json) 为准，由 CI 的 `tools/check_test_inventory.py` 对照 `pytest --collect-only`。不要在这里写死通过条数。
+> 安装：仓库根 `python3 -m venv .venv && .venv/bin/pip install -e './llm_lab[dev,xlsx]'`。没有 PyPI 发布。
 
 ---
 
@@ -299,7 +299,7 @@ sequenceDiagram
 ## 8. 测试与验证
 
 - `llm_lab/tests/` 覆盖：`test_api`、`test_auth`、`test_cli`、`test_db`、`test_e2e_smoke`、`test_export`、`test_planner`、`test_promptfoo_provider`、`test_runner`、`test_settings`、`test_tracer`、`test_verifier`、`test_worker`。
-- 运行：仓库根 `python -m pytest -q`（先 `cd llm_lab && pip install -e ".[dev,xlsx]"`）→ **488 passed / 2 skipped**（全仓）；只跑 `llm_lab/` 子树时为 **382 passed / 2 skipped**。
+- 运行：见仓库根 [`README.md`](../../README.md) 的 Development checks，以及 [`docs/test-inventory.json`](../../docs/test-inventory.json)。仓库根直接 `pytest` 会扫到不在 CI 里的目录，不要把那次收集当成 CI 结果。
 - 静态检查：`ruff`（含 `S` 安全规则）与 `mypy` 均通过。
 
 ---

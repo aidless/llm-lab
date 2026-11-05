@@ -38,6 +38,8 @@ llm_lab/coverage.xml
 # OS
 .DS_Store
 Thumbs.db
+# Accidental Windows PowerShell module cache (not project source)
+Microsoft/
 llm_lab/coverage.xml
 # Local large data dirs (not source; keep out of git and opencode snapshots)
 Fusion/

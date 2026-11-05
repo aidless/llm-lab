@@ -6,12 +6,13 @@
 
 set -eu
 
-ECS_IP="116.62.69.83"
-ECS_USER="root"
-ECS_PROJECT="/var/www/taixuan"
-LOCAL_PROJECT="C:\\Users\\Administrator\\cow\\fortune-web-v2"
-# Git Bash path mapping:
-LOCAL_PROJECT_BASH="/c/Users/Administrator/cow/fortune-web-v2"
+ECS_IP="${ECS_IP:-116.62.69.83}"
+ECS_USER="${ECS_USER:-root}"
+ECS_PROJECT="${ECS_PROJECT:-/var/www/taixuan}"
+# Local checkout. Required. Do not default this to a developer profile path.
+: "${FORTUNE_PROJECT_BASH:?Set FORTUNE_PROJECT_BASH to the project checkout (Git Bash path). See phase8-deploy/README.md}"
+LOCAL_PROJECT="${FORTUNE_PROJECT_WIN:-$FORTUNE_PROJECT_BASH}"
+LOCAL_PROJECT_BASH="$FORTUNE_PROJECT_BASH"
 
 ENV_LOCAL_SRC="${LOCAL_PROJECT_BASH}/.env.local"
 PEM_SRC="${LOCAL_PROJECT_BASH}/app_private_key_sandbox.pem"

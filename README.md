@@ -5,12 +5,16 @@ output, and inspect a hash-linked audit trail without sending run data to a
 hosted evaluation service.
 
 [![CI](https://github.com/aidless/llm-lab/actions/workflows/test.yml/badge.svg)](https://github.com/aidless/llm-lab/actions/workflows/test.yml)
-[![Python](https://img.shields.io/badge/python-3.10%2B-1f6f5f)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-MIT-c4552d)](LICENSE)
 
-The repository also contains a large, separately indexed AI/AGI knowledge
-library under [`knowledge/`](knowledge/README.md). The product code and the
-study notes are intentionally kept apart.
+Python 3.10+. MIT. Not published on PyPI. The CI badge is the
+[`test` workflow](.github/workflows/test.yml) only. It does not mean the audit
+log is forgery-proof, that a model was graded, or that anyone has adopted the
+tool. See [`FAILURE_MODES.md`](FAILURE_MODES.md).
+
+The installable product is [`llm_lab/`](llm_lab/README.md). [`knowledge/`](knowledge/README.md)
+is an unevaluated notes index, not a result of those tests. Other trees that
+are not the product, and how to leave them out of a checkout, are in
+[`SCOPE.md`](SCOPE.md).
 
 ## Start with the offline demo
 
@@ -182,16 +186,26 @@ put credentials in the repository.
 
 ## Development checks
 
+CI runs these commands. Collection counts are in
+[`docs/test-inventory.json`](docs/test-inventory.json).
+`tools/check_test_inventory.py` fails the build if `pytest --collect-only`
+disagrees. Pass/skip totals are not pinned: one package test skips without a
+real API key, and another skips or runs depending on the `xlsx` extra.
+
 ```bash
-# Product package
+# Product package (CI working directory: llm_lab/)
 cd llm_lab
 ../.venv/bin/ruff check .
 ../.venv/bin/mypy .
 ../.venv/bin/pytest --timeout=30 -q
 
-# Repository-root self-evolution suite
+# Repository-root suites CI runs. Both files, not only test_selfevolve.py.
 cd ..
-.venv/bin/pytest tests/test_selfevolve.py -q --timeout=30
+.venv/bin/pytest tests/test_selfevolve.py tests/test_repair_bench.py -q --timeout=30
+.venv/bin/python tools/check_test_inventory.py --only llm_lab,repo_root
+
+# Same offline command CI runs after the package install.
+.venv/bin/llm-lab demo --output-dir /tmp/llm-lab-demo
 ```
 
 ## Project layout
@@ -210,8 +224,9 @@ knowledge/            # AI/AGI notes, discussions and reference documents
 ```
 
 The self-evolution code is retained as research context and is not part of the
-offline evaluation demo's quality claim. See [`knowledge/README.md`](knowledge/README.md)
-for the archived document index.
+offline evaluation demo's quality claim. `knowledge/` is the same kind of
+material: notes kept in the tree, omitted from `git archive`, and not evaluated
+science. See [`knowledge/README.md`](knowledge/README.md) and [`SCOPE.md`](SCOPE.md).
 
 ## Governance and security
 

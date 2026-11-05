@@ -13,6 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE_FILES = [
     ROOT / "README.md",
     ROOT / "llm_lab" / "README.md",
+    ROOT / "FAILURE_MODES.md",
+    ROOT / "SCOPE.md",
+    ROOT / "THREAT_MODEL.md",
     *sorted((ROOT / "knowledge").glob("*.md")),
 ]
 LINK_RE = re.compile(

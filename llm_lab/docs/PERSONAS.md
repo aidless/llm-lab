@@ -20,7 +20,7 @@
 - **Reports to:** Eng manager or product manager
 - **Daily tools:** Python, Jupyter, maybe LangChain / LlamaIndex
   for some apps. Not usually a security expert.
-- **Pain point (verbatim from interview-style surveys):**
+- **Pain point (hypothetical composite, not a recorded interview or a user):**
   > "We changed the prompt three weeks ago and nobody can tell
   > you why it changed, or what it used to do. The eval results
   > live in some Slack thread from when we last ran them."

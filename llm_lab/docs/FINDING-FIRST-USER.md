@@ -1,5 +1,8 @@
 # Finding the first external user
 
+Plan only. [`ADOPTERS.md`](../../ADOPTERS.md) has no rows. Targets below are
+not counts of people who have used the tool.
+
 > **What this is:** A concrete, week-by-week playbook for getting the first
 > 1–3 humans (other than you) to actually run `llm-lab` on something they
 > care about. Not a marketing plan. A *recruiting* plan.

@@ -5,9 +5,15 @@
 
 $ErrorActionPreference = "Stop"
 
-$ProjectRoot = "C:\Users\Administrator\cow\fortune-web-v2"
-$BackupRoot  = "F:\fortune-web-v2-backup-2026-07-14"
-$BackupLog   = "F:\fortune-backup.log"
+# Quarantined notes for a different project. Do not embed a developer machine path.
+if (-not $env:FORTUNE_PROJECT_ROOT -or -not $env:FORTUNE_BACKUP_ROOT) {
+    Write-Error "Set FORTUNE_PROJECT_ROOT and FORTUNE_BACKUP_ROOT. See phase8-deploy/README.md."
+    exit 1
+}
+$ProjectRoot = $env:FORTUNE_PROJECT_ROOT
+$BackupRoot  = $env:FORTUNE_BACKUP_ROOT
+$BackupLog = $env:FORTUNE_BACKUP_LOG
+if (-not $BackupLog) { $BackupLog = Join-Path $BackupRoot "fortune-backup.log" }
 $PemPath     = Join-Path $ProjectRoot "app_private_key_sandbox.pem"
 $EnvPath     = Join-Path $ProjectRoot ".env.local"
 $GitignorePath = Join-Path $ProjectRoot ".gitignore"
@@ -31,7 +37,9 @@ $envHash = (Get-FileHash $EnvPath -Algorithm SHA256).Hash
 $pemHash = (Get-FileHash $PemPath -Algorithm SHA256).Hash
 Write-Host "  .env.local : $envHash"
 Write-Host "  .pem       : $pemHash"
-"$(Get-Date -Format o) env=$envHash pem=$pemHash" | Out-File -FilePath "F:\phase8-deploy-audit.log" -Append -Encoding ASCII
+$AuditLog = $env:FORTUNE_AUDIT_LOG
+if (-not $AuditLog) { $AuditLog = Join-Path $BackupRoot "phase8-deploy-audit.log" }
+"$(Get-Date -Format o) env=$envHash pem=$pemHash" | Out-File -FilePath $AuditLog -Append -Encoding ASCII
 
 # 1.3 LF check (Trap 9)
 Write-Host "[1.3] LF check on .pem..."
