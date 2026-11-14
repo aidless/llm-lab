@@ -1425,7 +1425,6 @@ def test_MultiAgentSociety_collective_report() -> None:
 # ===================================================================
 
 if __name__ == "__main__":
-    import textwrap as _tw  # noqa: re-import for safety in runner
     failures = 0
     tests = [fn for fn, _ in globals().items() if fn.startswith("test_")]
     for name in sorted(tests):

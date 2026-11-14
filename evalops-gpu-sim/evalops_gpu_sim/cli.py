@@ -1,3 +1,4 @@
+import json
 import typer, sys
 from . import diagnose, command_gen, probe, simulate, summarize
 app = typer.Typer()

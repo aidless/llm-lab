@@ -191,7 +191,6 @@ def run_lora_experiment(
         param.requires_grad = False
 
     # 为每个任务创建适配器并训练
-    from continual_learning.strategies.lora import LoRAModel
     import torch.nn.functional as F
 
     task_accuracies = {}
